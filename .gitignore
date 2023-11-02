@@ -37,7 +37,7 @@ proguard/
 captures/
 
 # JNI
-.cxx/
+.cxx
 
 # IntelliJ
 *.iml
@@ -45,7 +45,9 @@ captures/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml
+.idea/modules.xml
 .idea/assetWizardSettings.xml
+.idea/navEditor.xml
 .idea/dictionaries
 .idea/libraries
 .idea/caches
