@@ -3,11 +3,12 @@
     <dimen name="action_button_width">266dp</dimen>
     <dimen name="action_button_height">64dp</dimen>
     <dimen name="action_button_border_radius">10dp</dimen>
+    <dimen name="action_button_progress_width">28dp</dimen>
 
     <dimen name="introduction_title_margin_top">100dp</dimen>
     <dimen name="introduction_subtitle_margin_top">18dp</dimen>
     <dimen name="introduction_subtitle_width">260dp</dimen>
     <dimen name="introduction_action_button_margin_bottom">16dp</dimen>
-    <dimen name="introduction_icon_volume_start_offset">-88dp</dimen>
+    <dimen name="introduction_icon_volume_start_offset">-388dp</dimen>
     <dimen name="introduction_icon_volume_end_offset">-10dp</dimen>
 </resources>
