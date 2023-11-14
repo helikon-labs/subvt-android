@@ -15,7 +15,7 @@
         tools:replace="android:allowBackup"
         tools:targetApi="34">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SubVT">
             <intent-filter>

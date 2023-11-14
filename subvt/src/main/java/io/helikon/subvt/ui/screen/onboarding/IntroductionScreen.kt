@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen
+package io.helikon.subvt.ui.screen.onboarding
 
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
@@ -33,6 +33,7 @@ import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.helikon.subvt.data.Loading
 
 @Composable
 fun IntroductionScreen(
@@ -40,7 +41,6 @@ fun IntroductionScreen(
     viewModel: IntroductionViewModel = viewModel(),
 ) {
     var launched by rememberSaveable { mutableStateOf(false) }
-    var loading by rememberSaveable { mutableStateOf(false) }
     val offsetAnimation by animateDpAsState(
         if (launched) {
             dimensionResource(id = R.dimen.introduction_icon_volume_end_offset)
@@ -54,7 +54,7 @@ fun IntroductionScreen(
         ),
         label = "offset_animation"
     )
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         launched = true
     }
     Box {
@@ -86,10 +86,8 @@ fun IntroductionScreen(
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.weight(1.0f))
-            ActionButton(text = stringResource(R.string.introduction_get_started), loading) {
-                loading = true
+            ActionButton(text = stringResource(R.string.introduction_get_started), viewModel.createUserState.value is Loading) {
                 viewModel.createUser()
-                loading = false
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_action_button_margin_bottom)))
         }

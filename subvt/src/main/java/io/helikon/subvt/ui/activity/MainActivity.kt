@@ -1,5 +1,6 @@
-package io.helikon.subvt
+package io.helikon.subvt.ui.activity
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,10 +9,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.helikon.subvt.ui.screen.IntroductionScreen
+import io.helikon.subvt.ui.navigation.AppNavigationHost
 import io.helikon.subvt.ui.theme.SubVTTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,14 +28,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
                 ) {
-                    NavHost(
-                        navController,
-                        startDestination = "introduction"
-                    ) {
-                        composable("introduction") {
-                            IntroductionScreen()
-                        }
-                    }
+                    AppNavigationHost(navController)
                 }
             }
         }
