@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.onboarding
+package io.helikon.subvt.ui.screen.introduction
 
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
@@ -28,6 +28,7 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.theme.SubVTTheme
@@ -38,6 +39,7 @@ import io.helikon.subvt.data.Loading
 @Composable
 fun IntroductionScreen(
     modifier: Modifier = Modifier,
+    onUserCreated: () -> Unit,
     viewModel: IntroductionViewModel = viewModel(),
 ) {
     var launched by rememberSaveable { mutableStateOf(false) }
@@ -54,6 +56,12 @@ fun IntroductionScreen(
         ),
         label = "offset_animation"
     )
+    val userIsCreated: Boolean by viewModel.userIsCreated.collectAsStateWithLifecycle()
+    if (userIsCreated) {
+        LaunchedEffect(Unit) {
+            onUserCreated()
+        }
+    }
     LaunchedEffect(Unit) {
         launched = true
     }
@@ -86,7 +94,10 @@ fun IntroductionScreen(
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.weight(1.0f))
-            ActionButton(text = stringResource(R.string.introduction_get_started), viewModel.createUserState.value is Loading) {
+            ActionButton(
+                text = stringResource(R.string.introduction_get_started),
+                viewModel.createUserState.value is Loading
+            ) {
                 viewModel.createUser()
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_action_button_margin_bottom)))
@@ -101,7 +112,7 @@ fun IntroductionPreview() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            IntroductionScreen()
+            IntroductionScreen(onUserCreated = {})
         }
     }
 }

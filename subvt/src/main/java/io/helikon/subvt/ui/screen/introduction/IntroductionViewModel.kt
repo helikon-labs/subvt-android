@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.onboarding
+package io.helikon.subvt.ui.screen.introduction
 
 import android.app.Application
 import androidx.compose.runtime.State
@@ -12,16 +12,24 @@ import io.helikon.subvt.data.Loading
 import io.helikon.subvt.data.Success
 import io.helikon.subvt.data.repository.UserPreferencesRepository
 import io.helikon.subvt.data.repository.UserRepository
-import io.helikon.subvt.data.repository.dataStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class IntroductionViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository(application)
     private val _createUserState = mutableStateOf<DataRequestState>(Idle)
-    private var userPreferencesRepository = UserPreferencesRepository(application.dataStore)
+    private var userPreferencesRepository = UserPreferencesRepository(application)
     val createUserState: State<DataRequestState>
         get() = _createUserState
+
+    val userIsCreated: StateFlow<Boolean> = userPreferencesRepository.userCreated.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        false,
+    )
 
     fun createUser() {
         _createUserState.value = Loading
@@ -32,8 +40,8 @@ class IntroductionViewModel(application: Application) : AndroidViewModel(applica
                     if (it == null) {
                         _createUserState.value = Error(null)
                     } else {
-                        userPreferencesRepository.setUserCreated(true)
                         _createUserState.value = Success(it)
+                        userPreferencesRepository.setUserIsCreated(true)
                     }
                 }
             } else {
