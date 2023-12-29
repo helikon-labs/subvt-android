@@ -25,10 +25,11 @@ import io.helikon.subvt.ui.util.ThemePreviews
 fun ActionButton(
     text: String,
     isLoading: Boolean = false,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Box(
-        Modifier
+        modifier
             .height(dimensionResource(id = R.dimen.action_button_height))
             .width(dimensionResource(id = R.dimen.action_button_width)),
         contentAlignment = Alignment.Center,

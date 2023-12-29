@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="introduction_icon_volume_anim_delay_ms">100</integer>
-    <integer name="introduction_icon_volume_anim_duration_ms">750</integer>
+    <integer name="appear_anim_duration_ms">1000</integer>
+
+    <integer name="introduction_icon_volume_anim_delay_ms">250</integer>
 </resources>
