@@ -73,5 +73,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.18.0")
+    implementation("com.github.helikon-labs:subvt-data-android:0.19.0")
 }

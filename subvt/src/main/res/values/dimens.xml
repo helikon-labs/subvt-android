@@ -6,12 +6,11 @@
     <dimen name="action_button_progress_width">28dp</dimen>
     <dimen name="action_button_appear_anim_start_offset">200dp</dimen>
 
-    <dimen name="text_appear_anim_start_offset">-30dp</dimen>
+    <dimen name="appear_anim_start_offset">-30dp</dimen>
 
     <dimen name="introduction_title_margin_top">100dp</dimen>
     <dimen name="introduction_subtitle_margin_top">18dp</dimen>
     <dimen name="introduction_subtitle_width">260dp</dimen>
     <dimen name="introduction_action_button_margin_bottom">16dp</dimen>
     <dimen name="introduction_icon_volume_start_offset">-388dp</dimen>
-    <dimen name="introduction_icon_volume_end_offset">-10dp</dimen>
 </resources>
