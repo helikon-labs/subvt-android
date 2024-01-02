@@ -22,10 +22,15 @@ val lexendDecaFamily = FontFamily(
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    headlineMedium = TextStyle(
+    headlineLarge = TextStyle(
         fontFamily = lexendDecaFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = lexendDecaFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
     ),
     bodyMedium = TextStyle(
         fontFamily = lexendDecaFamily,
@@ -33,9 +38,14 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 22.sp,
     ),
+    bodyLarge = TextStyle(
+        fontFamily = lexendDecaFamily,
+        fontWeight = FontWeight.Light,
+        fontSize = 18.sp,
+    ),
     labelMedium = TextStyle(
         fontFamily = lexendDecaFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
+        fontSize = 16.sp,
     ),
 )

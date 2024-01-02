@@ -73,7 +73,7 @@ fun IntroductionScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_title_margin_top)))
             Text(
                 text = stringResource(R.string.introduction_title),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.appear(1, launched),

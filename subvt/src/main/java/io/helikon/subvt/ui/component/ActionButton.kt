@@ -25,7 +25,7 @@ import io.helikon.subvt.ui.util.ThemePreviews
 fun ActionButton(
     text: String,
     isLoading: Boolean = false,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     Box(
@@ -69,7 +69,7 @@ fun ActionButton(
 @Composable
 fun ActionButtonPreview() {
     SubVTTheme {
-        ActionButton(text = "Action") {
+        ActionButton(text = "Action", false, Modifier) {
             // no-op
         }
     }
