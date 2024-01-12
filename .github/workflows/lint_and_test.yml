@@ -22,11 +22,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.1.1/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
-      - name: ktlint
+      - name: Download ktlint
+        run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.1.1/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
+      - name: Run ktlint
         run: ktlint --reporter=checkstyle,output=build/ktlint-report.xml
         continue-on-error: true
-      - uses: yutailang0119/action-ktlint@v3
+      - name: Process ktlint report
+        uses: yutailang0119/action-ktlint@v3
         with:
           report-path: build/*.xml # Support glob patterns by https://www.npmjs.com/package/@actions/glob
           continue-on-error: false # If annotations contain error of severity, action-ktlint exit 1.
