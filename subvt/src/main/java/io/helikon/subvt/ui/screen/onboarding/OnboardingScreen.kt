@@ -37,14 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.helikon.subvt.R
-import io.helikon.subvt.ui.screen.introduction.IntroductionScreen
 import io.helikon.subvt.ui.theme.Blue
 import io.helikon.subvt.ui.theme.Gray
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
 
-private const val PAGE_COUNT = 4;
+private const val PAGE_COUNT = 4
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -58,20 +57,22 @@ fun OnboardingScreen() {
             Modifier.fillMaxSize(),
         ) { pageIndex ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(0.dp),
             ) {
                 Spacer(
-                    modifier = Modifier
-                        .safeContentPadding()
-                        .height(dimensionResource(id = R.dimen.onboarding_content_margin_top))
+                    modifier =
+                        Modifier
+                            .safeContentPadding()
+                            .height(dimensionResource(id = R.dimen.onboarding_content_margin_top)),
                 )
                 Row(
                     Modifier.padding(
                         dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
-                        0.dp
-                    )
+                        0.dp,
+                    ),
                 ) {
                     Text(
                         text = (pageIndex + 1).toString(),
@@ -89,37 +90,41 @@ fun OnboardingScreen() {
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.onboarding_title_margin_top)))
                 Text(
-                    text = stringResource(
-                        when (pageIndex) {
-                            0 -> R.string.onboarding_1_title
-                            1 -> R.string.onboarding_2_title
-                            2 -> R.string.onboarding_3_title
-                            else -> R.string.onboarding_4_title
-                        },
-                    ),
+                    text =
+                        stringResource(
+                            when (pageIndex) {
+                                0 -> R.string.onboarding_1_title
+                                1 -> R.string.onboarding_2_title
+                                2 -> R.string.onboarding_3_title
+                                else -> R.string.onboarding_4_title
+                            },
+                        ),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(
-                        dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
-                        0.dp
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
+                            0.dp,
+                        ),
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.onboarding_description_margin_top)))
                 Text(
-                    text = stringResource(
-                        when (pageIndex) {
-                            0 -> R.string.onboarding_1_description
-                            1 -> R.string.onboarding_2_description
-                            2 -> R.string.onboarding_3_description
-                            else -> R.string.onboarding_4_description
-                        },
-                    ),
+                    text =
+                        stringResource(
+                            when (pageIndex) {
+                                0 -> R.string.onboarding_1_description
+                                1 -> R.string.onboarding_2_description
+                                2 -> R.string.onboarding_3_description
+                                else -> R.string.onboarding_4_description
+                            },
+                        ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(
-                        dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
-                        0.dp
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
+                            0.dp,
+                        ),
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.onboarding_image_margin_top)))
                 Box(
@@ -128,19 +133,22 @@ fun OnboardingScreen() {
                 ) {
                     Image(
                         modifier = Modifier.fillMaxWidth(),
-                        contentScale = when (pageIndex) {
-                            2 -> ContentScale.Crop
-                            else -> ContentScale.Fit
-                        },
-                        painter = painterResource(
-                            id = when (pageIndex) {
-                                0 -> R.drawable.onboarding_step_1
-                                1 -> R.drawable.onboarding_step_2
-                                2 -> R.drawable.onboarding_step_3
-                                else -> R.drawable.onboarding_step_4
-                            }
-                        ),
-                        contentDescription = stringResource(id = R.string.onboarding_1_title)
+                        contentScale =
+                            when (pageIndex) {
+                                2 -> ContentScale.Crop
+                                else -> ContentScale.Fit
+                            },
+                        painter =
+                            painterResource(
+                                id =
+                                    when (pageIndex) {
+                                        0 -> R.drawable.onboarding_step_1
+                                        1 -> R.drawable.onboarding_step_2
+                                        2 -> R.drawable.onboarding_step_3
+                                        else -> R.drawable.onboarding_step_4
+                                    },
+                            ),
+                        contentDescription = stringResource(id = R.string.onboarding_1_title),
                     )
                 }
             }
@@ -148,17 +156,19 @@ fun OnboardingScreen() {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .safeContentPadding()
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = dimensionResource(id = R.dimen.onboarding_content_margin_bottom)),
+            modifier =
+                Modifier
+                    .safeContentPadding()
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimensionResource(id = R.dimen.onboarding_content_margin_bottom)),
         ) {
             TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    Color.Transparent
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        Color.Transparent,
+                    ),
                 modifier = Modifier.background(Color.Transparent),
                 onClick = {},
             ) {
@@ -174,21 +184,23 @@ fun OnboardingScreen() {
                     val color =
                         if (pagerState.currentPage == iteration) Blue else Gray
                     Box(
-                        modifier = Modifier
-                            .padding(
-                                dimensionResource(id = R.dimen.onboarding_page_indicator_padding),
-                                0.dp,
-                            )
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(dimensionResource(id = R.dimen.onboarding_page_indicator_size)),
+                        modifier =
+                            Modifier
+                                .padding(
+                                    dimensionResource(id = R.dimen.onboarding_page_indicator_padding),
+                                    0.dp,
+                                )
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(dimensionResource(id = R.dimen.onboarding_page_indicator_size)),
                     )
                 }
             }
             TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    Color.Transparent,
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        Color.Transparent,
+                    ),
                 onClick = {
                     if (pagerState.currentPage < (PAGE_COUNT - 1)) {
                         scope.launch {

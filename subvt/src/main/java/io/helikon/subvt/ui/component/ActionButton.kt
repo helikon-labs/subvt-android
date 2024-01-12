@@ -37,16 +37,18 @@ fun ActionButton(
         Button(
             onClick,
             enabled = !isLoading,
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.action_button_height))
-                .width(dimensionResource(id = R.dimen.action_button_width)),
+            modifier =
+                Modifier
+                    .height(dimensionResource(id = R.dimen.action_button_height))
+                    .width(dimensionResource(id = R.dimen.action_button_width)),
             shape = RoundedCornerShape(dimensionResource(id = R.dimen.action_button_border_radius)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Blue,
-                contentColor = Light,
-                disabledContainerColor = Blue,
-                disabledContentColor = Color.Transparent,
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = Blue,
+                    contentColor = Light,
+                    disabledContainerColor = Blue,
+                    disabledContentColor = Color.Transparent,
+                ),
         ) {
             Text(
                 text = if (isLoading) "" else text,

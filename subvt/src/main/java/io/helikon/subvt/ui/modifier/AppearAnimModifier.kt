@@ -32,12 +32,13 @@ fun Modifier.appear(
         } else {
             xStart
         },
-        animationSpec = tween(
-            durationMillis = animDurationMs,
-            delayMillis = animDelayMs,
-            easing = EaseInOutCubic,
-        ),
-        label = "x_offset_anim"
+        animationSpec =
+            tween(
+                durationMillis = animDurationMs,
+                delayMillis = animDelayMs,
+                easing = EaseInOutCubic,
+            ),
+        label = "x_offset_anim",
     )
     val yOffsetAnim by animateDpAsState(
         if (launched) {
@@ -45,27 +46,31 @@ fun Modifier.appear(
         } else {
             yStart
         },
-        animationSpec = tween(
-            durationMillis = animDurationMs,
-            delayMillis = animDelayMs,
-            easing = EaseInOutCubic,
-        ),
-        label = "y_offset_anim"
+        animationSpec =
+            tween(
+                durationMillis = animDurationMs,
+                delayMillis = animDelayMs,
+                easing = EaseInOutCubic,
+            ),
+        label = "y_offset_anim",
     )
     val alphaAnim by animateFloatAsState(
-        targetValue = if (launched) {
-            1f
-        } else {
-            0f
-        },
-        animationSpec = tween(
-            durationMillis = animDurationMs,
-            delayMillis = animDelayMs,
-            easing = EaseInOutCubic,
-        ),
-        label = "alpha_anim"
+        targetValue =
+            if (launched) {
+                1f
+            } else {
+                0f
+            },
+        animationSpec =
+            tween(
+                durationMillis = animDurationMs,
+                delayMillis = animDelayMs,
+                easing = EaseInOutCubic,
+            ),
+        label = "alpha_anim",
     )
-    return this then Modifier
-        .offset(xOffsetAnim, yOffsetAnim)
-        .alpha(alphaAnim)
+    return this then
+        Modifier
+            .offset(xOffsetAnim, yOffsetAnim)
+            .alpha(alphaAnim)
 }

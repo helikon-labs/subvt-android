@@ -17,10 +17,11 @@ class UserPreferencesRepository(context: Context) {
 
     private val dataStore = context.dataStore
 
-    val userCreated: Flow<Boolean> = dataStore.data
-        .map { preferences ->
-            preferences[Keys.USER_CREATED] ?: false
-        }
+    val userCreated: Flow<Boolean> =
+        dataStore.data
+            .map { preferences ->
+                preferences[Keys.USER_CREATED] ?: false
+            }
 
     suspend fun setUserIsCreated(userIsCreated: Boolean) {
         dataStore.edit { preferences ->
@@ -28,10 +29,11 @@ class UserPreferencesRepository(context: Context) {
         }
     }
 
-    val onboardingCompleted: Flow<Boolean> = dataStore.data
-        .map { preferences ->
-            preferences[Keys.ONBOARDING_COMPLETED] ?: false
-        }
+    val onboardingCompleted: Flow<Boolean> =
+        dataStore.data
+            .map { preferences ->
+                preferences[Keys.ONBOARDING_COMPLETED] ?: false
+            }
 
     suspend fun setOnboardingCompleted(onboardingCompleted: Boolean) {
         dataStore.edit { preferences ->

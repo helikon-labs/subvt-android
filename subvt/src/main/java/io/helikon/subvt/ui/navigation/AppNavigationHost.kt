@@ -22,7 +22,7 @@ fun AppNavigationHost(
         },
         exitTransition = {
             ExitTransition.None
-        }
+        },
     ) {
         composable(NavigationItem.Introduction.route) {
             IntroductionScreen(onUserCreated = {

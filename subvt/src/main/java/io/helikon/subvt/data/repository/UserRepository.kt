@@ -9,10 +9,11 @@ class UserRepository(private val application: Application) {
 
     private fun init() {
         if (!::appService.isInitialized) {
-            appService = AppService(
-                application,
-                "https://api.kusama.subvt.io:17901/"
-            )
+            appService =
+                AppService(
+                    application,
+                    "https://api.kusama.subvt.io:17901/",
+                )
         }
     }
 
