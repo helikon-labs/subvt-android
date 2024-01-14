@@ -41,7 +41,7 @@ val Typography =
                 fontFamily = lexendDecaFamily,
                 fontWeight = FontWeight.Light,
                 fontSize = 14.sp,
-                lineHeight = 22.sp,
+                lineHeight = 20.sp,
             ),
         bodyLarge =
             TextStyle(

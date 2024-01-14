@@ -1,7 +1,7 @@
 package io.helikon.subvt.ui.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,10 +18,10 @@ fun AppNavigationHost(
         navController,
         startDestination,
         enterTransition = {
-            EnterTransition.None
+            fadeIn()
         },
         exitTransition = {
-            ExitTransition.None
+            fadeOut()
         },
     ) {
         composable(NavigationItem.Introduction.route) {

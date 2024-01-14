@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="common_padding">16dp</dimen>
+
     <dimen name="action_button_width">266dp</dimen>
     <dimen name="action_button_height">64dp</dimen>
     <dimen name="action_button_border_radius">10dp</dimen>
@@ -7,6 +9,11 @@
     <dimen name="action_button_appear_anim_start_offset">200dp</dimen>
 
     <dimen name="appear_anim_start_offset">-30dp</dimen>
+
+    <dimen name="snackbar_horizontal_padding">14dp</dimen>
+    <dimen name="snackbar_vertical_padding">12dp</dimen>
+    <dimen name="snackbar_border_radius">12dp</dimen>
+    <dimen name="snackbar_item_spacing">10dp</dimen>
 
     <dimen name="introduction_title_margin_top">100dp</dimen>
     <dimen name="introduction_subtitle_margin_top">18dp</dimen>

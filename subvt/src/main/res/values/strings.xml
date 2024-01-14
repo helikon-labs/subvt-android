@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">SubVT</string>
 
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+
+    <string name="snackbar_exclamation_icon_description">Exclamation Icon</string>
+
     <string name="introduction_title">Welcome to SubVT</string>
     <string name="introduction_subtitle">Use SubVT to monitor and get notified about Substrate-based proof-of-stake networks and your validators on them.</string>
     <string name="introduction_get_started">Get Started</string>
     <string name="introduction_icon_volume_description">SubVT icon</string>
-    <string name="introduction_user_create_error">There was an error while creating the user. Please check your internet connection.</string>
+    <string name="introduction_user_create_error">Error while creating the user. Please check your connection.</string>
 
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_next">Next</string>

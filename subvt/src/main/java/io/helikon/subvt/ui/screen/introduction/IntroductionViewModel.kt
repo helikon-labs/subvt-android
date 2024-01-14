@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 class IntroductionViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository(application)
     private val _createUserState = mutableStateOf<DataRequestState<User>>(Idle)
+
     private var userPreferencesRepository = UserPreferencesRepository(application)
     val createUserState: State<DataRequestState<User>>
         get() = _createUserState

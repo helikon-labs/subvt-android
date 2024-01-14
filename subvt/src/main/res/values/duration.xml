@@ -2,5 +2,8 @@
 <resources>
     <integer name="appear_anim_duration_ms">1000</integer>
 
+    <integer name="snackbar_anim_duration_ms">500</integer>
+    <integer name="snackbar_medium_display_duration_ms">2500</integer>
+
     <integer name="introduction_icon_volume_anim_delay_ms">250</integer>
 </resources>
