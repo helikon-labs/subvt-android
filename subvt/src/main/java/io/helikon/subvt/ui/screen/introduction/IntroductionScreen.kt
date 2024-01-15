@@ -43,7 +43,7 @@ fun IntroductionScreen(
     onUserCreated: () -> Unit,
 ) {
     val context = LocalContext.current
-    var isLaunched by rememberSaveable { mutableStateOf(true) }
+    var isLaunched by rememberSaveable { mutableStateOf(false) }
     var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(true) {
         isLaunched = true
