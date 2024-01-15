@@ -2,8 +2,9 @@ package io.helikon.subvt.ui.screen.introduction
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.helikon.subvt.data.DataRequestState
@@ -20,35 +21,35 @@ import kotlinx.coroutines.launch
 
 class IntroductionViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository(application)
-    private val _createUserState = mutableStateOf<DataRequestState<User>>(Idle)
+    var createUserState by mutableStateOf<DataRequestState<User>>(Idle)
+        private set
 
     private var userPreferencesRepository = UserPreferencesRepository(application)
-    val createUserState: State<DataRequestState<User>>
-        get() = _createUserState
 
     fun createUser(context: Context) {
-        _createUserState.value = Loading
+        createUserState = Loading
         viewModelScope.launch(Dispatchers.IO) {
             val response =
                 try {
                     SubVTData.reset(context)
                     userRepository.createUser()
                 } catch (error: Throwable) {
-                    _createUserState.value = Error(error)
+                    createUserState = Error(error)
                     return@launch
                 }
             userRepository.createUser()
             if (response.isSuccess) {
                 response.getOrNull().let {
-                    if (it == null) {
-                        _createUserState.value = Error(response.exceptionOrNull())
-                    } else {
-                        userPreferencesRepository.setUserIsCreated(true)
-                        _createUserState.value = Success(it)
-                    }
+                    createUserState =
+                        if (it == null) {
+                            Error(response.exceptionOrNull())
+                        } else {
+                            userPreferencesRepository.setUserIsCreated(true)
+                            Success(it)
+                        }
                 }
             } else {
-                _createUserState.value = Error(response.exceptionOrNull())
+                createUserState = Error(response.exceptionOrNull())
             }
         }
     }

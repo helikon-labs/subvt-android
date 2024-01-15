@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
@@ -36,6 +37,31 @@ import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
+
+@Composable
+fun SnackbarScaffold(
+    snackbarText: String,
+    modifier: Modifier = Modifier,
+    snackbarIsVisible: Boolean = false,
+    onSnackbarClick: (() -> Unit)? = null,
+    onSnackbarRetry: (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier.fillMaxSize(),
+    ) {
+        content()
+        Snackbar(
+            text = snackbarText,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter),
+            isVisible = snackbarIsVisible,
+            onSnackbarClick,
+            onSnackbarRetry,
+        )
+    }
+}
 
 @Composable
 fun Snackbar(
@@ -133,6 +159,10 @@ fun Snackbar(
 @Composable
 fun SnackbarPreview() {
     SubVTTheme {
-        Snackbar(text = stringResource(id = R.string.introduction_user_create_error), onRetry = {})
+        Snackbar(
+            isVisible = true,
+            text = stringResource(id = R.string.introduction_user_create_error),
+            onRetry = {},
+        )
     }
 }

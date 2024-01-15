@@ -30,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.ui.component.ActionButton
-import io.helikon.subvt.ui.component.Scaffold
+import io.helikon.subvt.ui.component.SnackbarScaffold
 import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
@@ -39,22 +39,24 @@ import kotlinx.coroutines.delay
 @Composable
 fun IntroductionScreen(
     modifier: Modifier = Modifier,
-    onUserCreated: () -> Unit,
     viewModel: IntroductionViewModel = viewModel(),
+    onUserCreated: () -> Unit,
 ) {
     val context = LocalContext.current
-    var launched by rememberSaveable { mutableStateOf(false) }
+    var isLaunched by rememberSaveable { mutableStateOf(true) }
     var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
-
-    when (viewModel.createUserState.value) {
+    LaunchedEffect(true) {
+        isLaunched = true
+    }
+    when (viewModel.createUserState) {
         is DataRequestState.Success -> {
-            LaunchedEffect(Unit) {
+            LaunchedEffect(true) {
                 onUserCreated()
             }
         }
 
         is DataRequestState.Error -> {
-            LaunchedEffect(Unit) {
+            LaunchedEffect(true) {
                 snackbarIsVisible = true
                 delay(
                     timeMillis =
@@ -67,15 +69,31 @@ fun IntroductionScreen(
 
         else -> {}
     }
-    LaunchedEffect(Unit) {
-        launched = true
-    }
-    Scaffold(
-        text = stringResource(id = R.string.introduction_user_create_error),
-        modifier = Modifier,
+    IntroductionScreenContent(
+        modifier,
+        isLaunched,
+        isLoading = viewModel.createUserState == DataRequestState.Loading,
+        snackbarIsVisible,
+        onCreateUser = {
+            viewModel.createUser(context)
+        },
+    )
+}
+
+@Composable
+private fun IntroductionScreenContent(
+    modifier: Modifier = Modifier,
+    isLaunched: Boolean = false,
+    isLoading: Boolean = false,
+    snackbarIsVisible: Boolean = false,
+    onCreateUser: () -> Unit,
+) {
+    SnackbarScaffold(
+        snackbarText = stringResource(id = R.string.introduction_user_create_error),
+        modifier,
         snackbarIsVisible,
         onSnackbarClick = {
-            snackbarIsVisible = false
+            // snackbarIsVisible = false
         },
     ) {
         Box(Modifier.fillMaxHeight()) {
@@ -87,7 +105,7 @@ fun IntroductionScreen(
                         .align(Alignment.BottomCenter)
                         .appear(
                             0,
-                            launched,
+                            isVisible = isLaunched,
                             dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
                             0.dp,
                             -dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
@@ -98,7 +116,7 @@ fun IntroductionScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
-                modifier
+                Modifier
                     .fillMaxSize()
                     .safeContentPadding(),
         ) {
@@ -108,7 +126,7 @@ fun IntroductionScreen(
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.appear(1, launched),
+                modifier = Modifier.appear(1, isVisible = isLaunched),
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_subtitle_margin_top)))
             Text(
@@ -119,24 +137,23 @@ fun IntroductionScreen(
                 modifier =
                     Modifier
                         .width(dimensionResource(id = R.dimen.introduction_subtitle_width))
-                        .appear(0, launched),
+                        .appear(0, isVisible = isLaunched),
             )
             Spacer(modifier = Modifier.weight(1.0f))
             ActionButton(
                 text = stringResource(R.string.introduction_get_started),
-                isLoading = viewModel.createUserState.value == DataRequestState.Loading,
+                isLoading,
                 modifier =
                     Modifier.appear(
                         0,
-                        launched,
+                        isVisible = isLaunched,
                         0.dp,
                         0.dp,
                         dimensionResource(id = R.dimen.action_button_appear_anim_start_offset),
                         0.dp,
                     ),
             ) {
-                snackbarIsVisible = false
-                viewModel.createUser(context)
+                onCreateUser()
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_action_button_margin_bottom)))
         }
@@ -145,12 +162,18 @@ fun IntroductionScreen(
 
 @ThemePreviews
 @Composable
-fun IntroductionPreview() {
+fun IntroductionScreenContentPreview() {
     SubVTTheme {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            IntroductionScreen(onUserCreated = {})
+            IntroductionScreenContent(
+                modifier = Modifier,
+                isLaunched = true,
+                isLoading = false,
+                snackbarIsVisible = false,
+                onCreateUser = {},
+            )
         }
     }
 }

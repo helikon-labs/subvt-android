@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
 import io.helikon.subvt.ui.theme.Blue
@@ -47,9 +48,27 @@ import kotlinx.coroutines.launch
 
 private const val PAGE_COUNT = 4
 
+@Composable
+fun OnboardingScreen(
+    modifier: Modifier = Modifier,
+    viewModel: OnboardingViewModel = viewModel(),
+    onComplete: () -> Unit,
+) {
+    OnboardingScreenContent(
+        modifier,
+        onComplete = {
+            viewModel.completeOnboarding()
+            onComplete()
+        },
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen() {
+private fun OnboardingScreenContent(
+    modifier: Modifier,
+    onComplete: () -> Unit,
+) {
     val pagerState = rememberPagerState(pageCount = { PAGE_COUNT })
     val scope = rememberCoroutineScope()
 
@@ -61,7 +80,7 @@ fun OnboardingScreen() {
         }
     }
 
-    Box {
+    Box(modifier) {
         HorizontalPager(
             state = pagerState,
             Modifier.fillMaxSize(),
@@ -180,7 +199,7 @@ fun OnboardingScreen() {
                         Color.Transparent,
                     ),
                 modifier = Modifier.background(Color.Transparent),
-                onClick = {},
+                onClick = onComplete,
                 interactionSource = NoRippleInteractionSource(),
             ) {
                 Text(
@@ -217,6 +236,8 @@ fun OnboardingScreen() {
                         scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
+                    } else {
+                        onComplete()
                     }
                 },
                 interactionSource = NoRippleInteractionSource(),
@@ -234,12 +255,12 @@ fun OnboardingScreen() {
 
 @ThemePreviews
 @Composable
-fun OnboardingPreview() {
+fun OnboardingScreenContentPreview() {
     SubVTTheme {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            OnboardingScreen()
+            OnboardingScreenContent(Modifier, onComplete = {})
         }
     }
 }

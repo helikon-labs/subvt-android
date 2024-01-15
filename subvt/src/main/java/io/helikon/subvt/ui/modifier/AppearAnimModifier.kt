@@ -18,7 +18,7 @@ import io.helikon.subvt.R
 @Composable
 fun Modifier.appear(
     index: Int,
-    launched: Boolean,
+    isVisible: Boolean,
     xStart: Dp = 0.dp,
     xEnd: Dp = 0.dp,
     yStart: Dp = dimensionResource(id = R.dimen.appear_anim_start_offset),
@@ -27,7 +27,7 @@ fun Modifier.appear(
     val animDurationMs = integerResource(id = R.integer.appear_anim_duration_ms)
     val animDelayMs = 250 * index
     val xOffsetAnim by animateDpAsState(
-        if (launched) {
+        if (isVisible) {
             xEnd
         } else {
             xStart
@@ -41,7 +41,7 @@ fun Modifier.appear(
         label = "x_offset_anim",
     )
     val yOffsetAnim by animateDpAsState(
-        if (launched) {
+        if (isVisible) {
             yEnd
         } else {
             yStart
@@ -56,7 +56,7 @@ fun Modifier.appear(
     )
     val alphaAnim by animateFloatAsState(
         targetValue =
-            if (launched) {
+            if (isVisible) {
                 1f
             } else {
                 0f

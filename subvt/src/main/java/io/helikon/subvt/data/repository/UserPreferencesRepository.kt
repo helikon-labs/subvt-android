@@ -7,7 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-val Context.dataStore by preferencesDataStore(name = "subvt_preferences")
+val Context.preferencesDataStore by preferencesDataStore(name = "subvt_preferences")
 
 class UserPreferencesRepository(context: Context) {
     private object Keys {
@@ -15,7 +15,7 @@ class UserPreferencesRepository(context: Context) {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     }
 
-    private val dataStore = context.dataStore
+    private val dataStore = context.preferencesDataStore
 
     val userCreated: Flow<Boolean> =
         dataStore.data

@@ -24,17 +24,21 @@ class MainActivity : ComponentActivity() {
         )
         super.onCreate(savedInstanceState)
         val userPreferencesRepository = UserPreferencesRepository(application)
-        var startDestination = NavigationItem.Introduction.route
-        runBlocking {
-            if (userPreferencesRepository.userCreated.first()) {
-                startDestination = NavigationItem.Onboarding.route
+        val startDestination =
+            runBlocking {
+                if (userPreferencesRepository.onboardingCompleted.first()) {
+                    NavigationItem.NetworkSelection.route
+                } else if (userPreferencesRepository.userCreated.first()) {
+                    NavigationItem.Onboarding.route
+                } else {
+                    NavigationItem.Introduction.route
+                }
             }
-        }
         setContent {
             // create a navhost controller
             val navController = rememberNavController()
             SubVTTheme {
-                // A surface container using the 'background' color from the theme
+                // a surface container using the 'background' color from the theme
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
                 ) {
