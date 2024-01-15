@@ -1,5 +1,6 @@
 package io.helikon.subvt.ui.screen.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.helikon.subvt.R
+import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
 import io.helikon.subvt.ui.theme.Blue
 import io.helikon.subvt.ui.theme.Gray
 import io.helikon.subvt.ui.theme.SubVTTheme
@@ -50,6 +52,14 @@ private const val PAGE_COUNT = 4
 fun OnboardingScreen() {
     val pagerState = rememberPagerState(pageCount = { PAGE_COUNT })
     val scope = rememberCoroutineScope()
+
+    BackHandler {
+        if (pagerState.currentPage > 0) {
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+            }
+        }
+    }
 
     Box {
         HorizontalPager(
@@ -171,6 +181,7 @@ fun OnboardingScreen() {
                     ),
                 modifier = Modifier.background(Color.Transparent),
                 onClick = {},
+                interactionSource = NoRippleInteractionSource(),
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_skip),
@@ -208,6 +219,7 @@ fun OnboardingScreen() {
                         }
                     }
                 },
+                interactionSource = NoRippleInteractionSource(),
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_next),

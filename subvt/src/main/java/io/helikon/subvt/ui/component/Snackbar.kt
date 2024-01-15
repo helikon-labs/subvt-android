@@ -32,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.helikon.subvt.R
+import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
+import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
 
@@ -40,6 +42,7 @@ fun Snackbar(
     text: String,
     modifier: Modifier = Modifier,
     isVisible: Boolean = false,
+    onClick: (() -> Unit)? = null,
     onRetry: (() -> Unit)? = null,
 ) {
     val alphaAnim by animateFloatAsState(
@@ -86,7 +89,10 @@ fun Snackbar(
                     .padding(
                         dimensionResource(id = R.dimen.snackbar_horizontal_padding),
                         dimensionResource(id = R.dimen.snackbar_vertical_padding),
-                    ),
+                    )
+                    .noRippleClickable {
+                        onClick?.invoke()
+                    },
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.snackbar_item_spacing)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -109,6 +115,7 @@ fun Snackbar(
                             Color.Transparent,
                         ),
                     onClick = onRetry,
+                    interactionSource = NoRippleInteractionSource(),
                 ) {
                     Text(
                         text = stringResource(id = R.string.retry),
