@@ -8,11 +8,11 @@ enum class Screen {
 }
 
 sealed class NavigationItem(val route: String) {
-    object Introduction : NavigationItem(Screen.INTRODUCTION.name)
+    data object Introduction : NavigationItem(Screen.INTRODUCTION.name)
 
-    object Onboarding : NavigationItem(Screen.ONBOARDING.name)
+    data object Onboarding : NavigationItem(Screen.ONBOARDING.name)
 
-    object NetworkSelection : NavigationItem(Screen.NETWORK_SELECTION.name)
+    data object NetworkSelection : NavigationItem(Screen.NETWORK_SELECTION.name)
 
-    object Main : NavigationItem(Screen.MAIN.name)
+    data object Main : NavigationItem(Screen.MAIN.name)
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="common_padding">16dp</dimen>
+    <dimen name="common_progress_width">36dp</dimen>
 
     <dimen name="action_button_width">266dp</dimen>
     <dimen name="action_button_height">64dp</dimen>

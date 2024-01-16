@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,8 +25,9 @@ import io.helikon.subvt.ui.util.ThemePreviews
 @Composable
 fun ActionButton(
     text: String,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
     isLoading: Boolean = false,
-    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     Box(
@@ -36,11 +38,18 @@ fun ActionButton(
     ) {
         Button(
             onClick,
-            enabled = !isLoading,
+            enabled = isEnabled && !isLoading,
             modifier =
                 Modifier
                     .height(dimensionResource(id = R.dimen.action_button_height))
-                    .width(dimensionResource(id = R.dimen.action_button_width)),
+                    .width(dimensionResource(id = R.dimen.action_button_width))
+                    .alpha(
+                        if (!isLoading && !isEnabled) {
+                            0.75f
+                        } else {
+                            1.0f
+                        },
+                    ),
             shape = RoundedCornerShape(dimensionResource(id = R.dimen.action_button_border_radius)),
             colors =
                 ButtonDefaults.buttonColors(
@@ -71,7 +80,11 @@ fun ActionButton(
 @Composable
 fun ActionButtonPreview() {
     SubVTTheme {
-        ActionButton(text = "Action", false, Modifier) {
+        ActionButton(
+            text = "Action",
+            isEnabled = true,
+            isLoading = false,
+        ) {
             // no-op
         }
     }

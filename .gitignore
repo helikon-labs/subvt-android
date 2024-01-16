@@ -78,3 +78,5 @@ fastlane/readme.md
 # cmake
 CMakeFiles/
 CMakeCache.txt
+
+subvt.properties

@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
@@ -51,7 +52,7 @@ private const val PAGE_COUNT = 4
 @Composable
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
-    viewModel: OnboardingViewModel = viewModel(),
+    viewModel: OnboardingViewModel = hiltViewModel(),
     onComplete: () -> Unit,
 ) {
     OnboardingScreenContent(

@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import io.helikon.subvt.data.repository.UserPreferencesRepository
 import io.helikon.subvt.ui.navigation.AppNavigationHost
 import io.helikon.subvt.ui.navigation.NavigationItem
@@ -16,6 +17,7 @@ import io.helikon.subvt.ui.theme.SubVTTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(

@@ -1,7 +1,17 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
+
+val propertiesFile = rootProject.file("subvt.properties")
+val properties = Properties()
+properties.load(FileInputStream(propertiesFile))
 
 android {
     namespace = "io.helikon.subvt"
@@ -18,6 +28,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "API_HOST", properties["API_HOST"] as String)
+        buildConfigField("int", "APP_SERVICE_PORT", properties["APP_SERVICE_PORT"] as String)
     }
 
     buildTypes {
@@ -34,14 +47,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -51,6 +64,10 @@ android {
 }
 
 dependencies {
+    val roomVersion = "2.6.1"
+    val daggerHiltVersion = "2.50"
+    val hiltVersion = "1.1.0"
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     // jetpack/compose
@@ -73,7 +90,19 @@ dependencies {
     // debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // room
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    // Dependency Injection
+    implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
+    kapt("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:$hiltVersion")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.20.2")
+    implementation("com.github.helikon-labs:subvt-data-android:0.21.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
 }

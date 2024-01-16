@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
@@ -39,7 +40,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun IntroductionScreen(
     modifier: Modifier = Modifier,
-    viewModel: IntroductionViewModel = viewModel(),
+    viewModel: IntroductionViewModel = hiltViewModel(),
     onUserCreated: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -77,6 +78,9 @@ fun IntroductionScreen(
         onCreateUser = {
             viewModel.createUser(context)
         },
+        onSnackbarClick = {
+            snackbarIsVisible = false
+        },
     )
 }
 
@@ -87,14 +91,13 @@ private fun IntroductionScreenContent(
     isLoading: Boolean = false,
     snackbarIsVisible: Boolean = false,
     onCreateUser: () -> Unit,
+    onSnackbarClick: () -> Unit,
 ) {
     SnackbarScaffold(
         snackbarText = stringResource(id = R.string.introduction_user_create_error),
         modifier,
         snackbarIsVisible,
-        onSnackbarClick = {
-            // snackbarIsVisible = false
-        },
+        onSnackbarClick,
     ) {
         Box(Modifier.fillMaxHeight()) {
             Image(
@@ -142,7 +145,6 @@ private fun IntroductionScreenContent(
             Spacer(modifier = Modifier.weight(1.0f))
             ActionButton(
                 text = stringResource(R.string.introduction_get_started),
-                isLoading,
                 modifier =
                     Modifier.appear(
                         0,
@@ -152,6 +154,7 @@ private fun IntroductionScreenContent(
                         dimensionResource(id = R.dimen.action_button_appear_anim_start_offset),
                         0.dp,
                     ),
+                isLoading = isLoading,
             ) {
                 onCreateUser()
             }
@@ -167,12 +170,18 @@ fun IntroductionScreenContentPreview() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
+            var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
             IntroductionScreenContent(
                 modifier = Modifier,
                 isLaunched = true,
                 isLoading = false,
-                snackbarIsVisible = false,
-                onCreateUser = {},
+                snackbarIsVisible,
+                onCreateUser = {
+                    snackbarIsVisible = true
+                },
+                onSnackbarClick = {
+                    snackbarIsVisible = false
+                },
             )
         }
     }
