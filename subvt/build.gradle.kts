@@ -99,13 +99,13 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
     // Dependency Injection
     implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
-    kapt("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
+    ksp("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
     implementation("androidx.hilt:hilt-work:1.1.0")
-    kapt("androidx.hilt:hilt-compiler:$hiltVersion")
+    ksp("androidx.hilt:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltVersion")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.21.1")
+    implementation("com.github.helikon-labs:subvt-data-android:0.22.1")
     implementation("com.jakewharton.timber:timber:5.0.1")
 }
