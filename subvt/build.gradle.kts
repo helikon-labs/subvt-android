@@ -7,6 +7,7 @@ plugins {
     id("com.google.devtools.ksp")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    id("kotlin-parcelize")
 }
 
 val propertiesFile = rootProject.file("subvt.properties")
@@ -94,6 +95,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
+    // live data
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
     // Dependency Injection
     implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")

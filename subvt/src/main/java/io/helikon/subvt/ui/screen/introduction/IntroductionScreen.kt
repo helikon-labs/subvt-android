@@ -37,6 +37,12 @@ import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.delay
 
+private data class IntroductionScreenState(
+    val isLaunched: Boolean,
+    val isLoading: Boolean,
+    val snackbarIsVisible: Boolean,
+)
+
 @Composable
 fun IntroductionScreen(
     modifier: Modifier = Modifier,
@@ -72,9 +78,11 @@ fun IntroductionScreen(
     }
     IntroductionScreenContent(
         modifier,
-        isLaunched,
-        isLoading = viewModel.createUserState == DataRequestState.Loading,
-        snackbarIsVisible,
+        IntroductionScreenState(
+            isLaunched = isLaunched,
+            isLoading = viewModel.createUserState == DataRequestState.Loading,
+            snackbarIsVisible = snackbarIsVisible,
+        ),
         onCreateUser = {
             viewModel.createUser(context)
         },
@@ -87,17 +95,15 @@ fun IntroductionScreen(
 @Composable
 private fun IntroductionScreenContent(
     modifier: Modifier = Modifier,
-    isLaunched: Boolean = false,
-    isLoading: Boolean = false,
-    snackbarIsVisible: Boolean = false,
+    state: IntroductionScreenState,
     onCreateUser: () -> Unit,
     onSnackbarClick: () -> Unit,
 ) {
     SnackbarScaffold(
         snackbarText = stringResource(id = R.string.introduction_user_create_error),
-        modifier,
-        snackbarIsVisible,
-        onSnackbarClick,
+        modifier = modifier,
+        snackbarIsVisible = state.snackbarIsVisible,
+        onSnackbarClick = onSnackbarClick,
     ) {
         Box(Modifier.fillMaxHeight()) {
             Image(
@@ -108,7 +114,7 @@ private fun IntroductionScreenContent(
                         .align(Alignment.BottomCenter)
                         .appear(
                             0,
-                            isVisible = isLaunched,
+                            isVisible = state.isLaunched,
                             dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
                             0.dp,
                             -dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
@@ -129,7 +135,7 @@ private fun IntroductionScreenContent(
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.appear(1, isVisible = isLaunched),
+                modifier = Modifier.appear(1, isVisible = state.isLaunched),
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_subtitle_margin_top)))
             Text(
@@ -140,7 +146,7 @@ private fun IntroductionScreenContent(
                 modifier =
                     Modifier
                         .width(dimensionResource(id = R.dimen.introduction_subtitle_width))
-                        .appear(0, isVisible = isLaunched),
+                        .appear(0, isVisible = state.isLaunched),
             )
             Spacer(modifier = Modifier.weight(1.0f))
             ActionButton(
@@ -148,13 +154,13 @@ private fun IntroductionScreenContent(
                 modifier =
                     Modifier.appear(
                         0,
-                        isVisible = isLaunched,
+                        isVisible = state.isLaunched,
                         0.dp,
                         0.dp,
                         dimensionResource(id = R.dimen.action_button_appear_anim_start_offset),
                         0.dp,
                     ),
-                isLoading = isLoading,
+                isLoading = state.isLoading,
             ) {
                 onCreateUser()
             }
@@ -173,9 +179,11 @@ fun IntroductionScreenContentPreview() {
             var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
             IntroductionScreenContent(
                 modifier = Modifier,
-                isLaunched = true,
-                isLoading = false,
-                snackbarIsVisible,
+                IntroductionScreenState(
+                    isLaunched = true,
+                    isLoading = false,
+                    snackbarIsVisible = snackbarIsVisible,
+                ),
                 onCreateUser = {
                     snackbarIsVisible = true
                 },

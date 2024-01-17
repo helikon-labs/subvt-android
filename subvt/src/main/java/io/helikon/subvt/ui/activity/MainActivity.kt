@@ -28,7 +28,9 @@ class MainActivity : ComponentActivity() {
         val userPreferencesRepository = UserPreferencesRepository(application)
         val startDestination =
             runBlocking {
-                if (userPreferencesRepository.onboardingCompleted.first()) {
+                if (userPreferencesRepository.selectedNetworkId.first() > 0) {
+                    NavigationItem.Main.route
+                } else if (userPreferencesRepository.onboardingCompleted.first()) {
                     NavigationItem.NetworkSelection.route
                 } else if (userPreferencesRepository.userCreated.first()) {
                     NavigationItem.Onboarding.route

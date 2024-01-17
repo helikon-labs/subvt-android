@@ -1,10 +1,13 @@
 package io.helikon.subvt.data.model
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "network")
+@Parcelize
 data class Network(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
@@ -20,26 +23,26 @@ data class Network(
     @ColumnInfo(name = "ss58_prefix")
     val ss58Prefix: Int,
     @ColumnInfo(name = "network_status_service_host")
-    val networkStatusServiceHost: String?,
+    val networkStatusServiceHost: String? = null,
     @ColumnInfo(name = "network_status_service_port")
-    val networkStatusServicePort: Int?,
+    val networkStatusServicePort: Int? = null,
     @ColumnInfo(name = "report_service_host")
-    val reportServiceHost: String?,
+    val reportServiceHost: String? = null,
     @ColumnInfo(name = "report_service_port")
-    val reportServicePort: Int?,
+    val reportServicePort: Int? = null,
     @ColumnInfo(name = "validator_details_service_host")
-    val validatorDetailsServiceHost: String?,
+    val validatorDetailsServiceHost: String? = null,
     @ColumnInfo(name = "validator_details_service_port")
-    val validatorDetailsServicePort: Int?,
+    val validatorDetailsServicePort: Int? = null,
     @ColumnInfo(name = "active_validator_list_service_host")
-    val activeValidatorListServiceHost: String?,
+    val activeValidatorListServiceHost: String? = null,
     @ColumnInfo(name = "active_validator_list_service_port")
-    val activeValidatorListServicePort: Int?,
+    val activeValidatorListServicePort: Int? = null,
     @ColumnInfo(name = "inactive_validator_list_service_host")
-    val inactiveValidatorListServiceHost: String?,
+    val inactiveValidatorListServiceHost: String? = null,
     @ColumnInfo(name = "inactive_validator_list_service_port")
-    val inactiveValidatorListServicePort: Int?,
-) {
+    val inactiveValidatorListServicePort: Int? = null,
+) : Parcelable {
     companion object {
         fun from(network: io.helikon.subvt.data.model.app.Network) =
             Network(

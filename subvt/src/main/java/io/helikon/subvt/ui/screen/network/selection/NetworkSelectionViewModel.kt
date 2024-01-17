@@ -10,23 +10,36 @@ import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.repository.AppServiceRepository
 import io.helikon.subvt.data.repository.NetworkRepository
+import io.helikon.subvt.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class NetworkSelectionViewModel
     @Inject
     constructor(
+        private val userPreferencesRepository: UserPreferencesRepository,
         private val appServiceRepository: AppServiceRepository,
-        private val repository: NetworkRepository,
+        private val networkRepository: NetworkRepository,
     ) : ViewModel() {
-        var getNetworksState by mutableStateOf<DataRequestState<List<Network>>>(DataRequestState.Loading)
+        var getNetworksState by mutableStateOf<DataRequestState<List<Network>>>(DataRequestState.Idle)
             private set
-        var selectedNetwork by mutableStateOf<Network?>(null)
-            private set
+        val networks = networkRepository.allNetworks
 
         fun getNetworks() {
+            val networks =
+                networks.value.let {
+                    if (it == null) {
+                        return
+                    }
+                    it
+                }
+            if (networks.isNotEmpty()) {
+                getNetworksState = DataRequestState.Success(networks)
+                return
+            }
             getNetworksState = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 val response =
@@ -42,8 +55,7 @@ class NetworkSelectionViewModel
                             if (it == null) {
                                 DataRequestState.Error(response.exceptionOrNull())
                             } else {
-                                val networks = it.map(Network::from)
-                                repository.addAll(networks)
+                                networkRepository.addAll(it.map(Network::from))
                                 DataRequestState.Success(networks)
                             }
                     }
@@ -54,6 +66,8 @@ class NetworkSelectionViewModel
         }
 
         fun selectNetwork(network: Network) {
-            selectedNetwork = network
+            runBlocking(Dispatchers.IO) {
+                userPreferencesRepository.setSelectedNetworkId(network.id)
+            }
         }
     }

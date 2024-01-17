@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
 import io.helikon.subvt.ui.theme.Blue

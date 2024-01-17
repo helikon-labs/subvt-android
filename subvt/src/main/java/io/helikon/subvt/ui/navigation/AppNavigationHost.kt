@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.helikon.subvt.ui.screen.introduction.IntroductionScreen
+import io.helikon.subvt.ui.screen.main.MainScreen
 import io.helikon.subvt.ui.screen.network.selection.NetworkSelectionScreen
 import io.helikon.subvt.ui.screen.onboarding.OnboardingScreen
 
@@ -41,6 +42,7 @@ fun AppNavigationHost(
             })
         }
         composable(NavigationItem.Main.route) {
+            MainScreen()
         }
     }
 }

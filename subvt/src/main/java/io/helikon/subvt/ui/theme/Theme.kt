@@ -15,6 +15,7 @@ private val darkColorScheme =
         primary = Blue,
         onPrimary = Light,
         primaryContainer = BluePanelBg,
+        inversePrimary = ShadowDark,
         tertiary = Green,
     )
 
@@ -27,6 +28,7 @@ private val lightColorScheme =
         primary = Blue,
         onPrimary = Light,
         primaryContainer = GrayPanelBg,
+        inversePrimary = ShadowLight,
         tertiary = Green,
     /*
     secondary = PurpleGrey40,

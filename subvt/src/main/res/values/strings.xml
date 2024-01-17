@@ -23,6 +23,8 @@
     <string name="onboarding_4_title">Soon™: Beyond the Blocks</string>
     <string name="onboarding_4_description">Telemetry support is coming soon to SubVT: get even more reports and notifications about your validators\' peer count, upload and download bandwidth, block height, client version and more.</string>
 
+    <string name="network_selection_title">Selected Network</string>
+    <string name="network_selection_select_network">Select an available network. You can always change later.</string>
     <string name="network_selection_get_networks_error">Error while getting the list of networks. Please check your connection.</string>
     <string name="network_selection_go">Go!</string>
 </resources>
