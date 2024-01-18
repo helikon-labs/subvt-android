@@ -1,8 +1,9 @@
 package io.helikon.subvt.ui.screen.network.status
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 
 @Composable
-fun NetworkStatusScreen(modifier: Modifier = Modifier) {
+fun NetworkStatusScreen() {
+    Text(text = "Network Status")
 }

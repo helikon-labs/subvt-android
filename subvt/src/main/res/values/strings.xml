@@ -27,4 +27,12 @@
     <string name="network_selection_select_network">Select an available network. You can always change later.</string>
     <string name="network_selection_get_networks_error">Error while getting the list of networks. Please check your connection.</string>
     <string name="network_selection_go">Go!</string>
+
+    <string name="network_tab_title">Network</string>
+
+    <string name="my_validators_tab_title">My Validators</string>
+
+    <string name="notifications_tab_title">Notifications</string>
+
+    <string name="network_reports_tab_title">Netw. Reports</string>
 </resources>

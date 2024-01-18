@@ -4,28 +4,61 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.helikon.subvt.R
+import io.helikon.subvt.ui.screen.network.status.NetworkStatusScreen
+import io.helikon.subvt.ui.screen.notification.list.NotificationsScreen
+import io.helikon.subvt.ui.screen.report.network.NetworkReportsScreen
+import io.helikon.subvt.ui.screen.validator.my.MyValidatorsScreen
 import io.helikon.subvt.ui.theme.SubVTTheme
 import io.helikon.subvt.ui.util.ThemePreviews
 
-private data class MainScreenState(
-    val dummy: Int,
-)
-
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    MainScreenContent(modifier, state = MainScreenState(0))
+    MainScreenContent(modifier)
 }
 
 @Composable
-private fun MainScreenContent(
-    modifier: Modifier = Modifier,
-    state: MainScreenState,
-) {
+private fun MainScreenContent(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        Text(text = "Main")
+        val tabs =
+            arrayOf(
+                Tab(
+                    title = stringResource(id = R.string.network_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        NetworkStatusScreen()
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.my_validators_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        MyValidatorsScreen()
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.notifications_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        NotificationsScreen()
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.network_reports_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        NetworkReportsScreen()
+                    },
+                ),
+            )
+        TabLayout(tabs = tabs)
     }
 }
 
@@ -36,7 +69,7 @@ fun MainScreenContentPreview() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            MainScreenContent(state = MainScreenState(0))
+            MainScreenContent()
         }
     }
 }
