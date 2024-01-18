@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -126,11 +125,15 @@ private fun NetworkSelectionScreenContent(
                     modifier =
                         Modifier
                             .align(Alignment.TopCenter)
-                            .safeContentPadding()
                             .width(264.dp)
                             .offset(0.dp, 120.dp),
                 ) {
                     Text(
+                        modifier =
+                            Modifier.appear(
+                                index = 0,
+                                yStart = -dimensionResource(id = R.dimen.appear_anim_start_offset),
+                            ),
                         text =
                             stringResource(
                                 id = R.string.network_selection_title,
@@ -140,6 +143,11 @@ private fun NetworkSelectionScreenContent(
                     )
                     Spacer(Modifier.height(18.dp))
                     Text(
+                        modifier =
+                            Modifier.appear(
+                                index = 1,
+                                yStart = -dimensionResource(id = R.dimen.appear_anim_start_offset),
+                            ),
                         text =
                             stringResource(
                                 id = R.string.network_selection_select_network,
@@ -163,6 +171,10 @@ private fun NetworkSelectionScreenContent(
                                         Column(
                                             modifier =
                                                 Modifier
+                                                    .appear(
+                                                        index = index + 2,
+                                                        yStart = -dimensionResource(id = R.dimen.appear_anim_start_offset),
+                                                    )
                                                     .noRippleClickable {
                                                         onSelectNetwork(network)
                                                     }
@@ -241,17 +253,13 @@ private fun NetworkSelectionScreenContent(
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .safeContentPadding(),
+                modifier = Modifier.fillMaxSize(),
             ) {
                 Spacer(modifier = Modifier.weight(1.0f))
                 ActionButton(
                     text = stringResource(R.string.network_selection_go),
                     Modifier.appear(
                         0,
-                        isVisible = !state.isLoading && !state.snackbarIsVisible,
                         yStart = -dimensionResource(id = R.dimen.appear_anim_start_offset),
                     ),
                     isEnabled = state.selectedNetwork != null,
@@ -259,7 +267,7 @@ private fun NetworkSelectionScreenContent(
                 ) {
                     onComplete()
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_action_button_margin_bottom)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
             }
         }
     }

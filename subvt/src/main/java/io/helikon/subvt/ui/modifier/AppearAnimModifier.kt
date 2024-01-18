@@ -6,7 +6,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
@@ -18,16 +22,16 @@ import io.helikon.subvt.R
 @Composable
 fun Modifier.appear(
     index: Int,
-    isVisible: Boolean,
     xStart: Dp = 0.dp,
     xEnd: Dp = 0.dp,
     yStart: Dp = dimensionResource(id = R.dimen.appear_anim_start_offset),
     yEnd: Dp = 0.dp,
 ): Modifier {
+    var isLaunched by rememberSaveable { mutableStateOf(false) }
     val animDurationMs = integerResource(id = R.integer.appear_anim_duration_ms)
     val animDelayMs = 250 * index
     val xOffsetAnim by animateDpAsState(
-        if (isVisible) {
+        if (isLaunched) {
             xEnd
         } else {
             xStart
@@ -41,7 +45,7 @@ fun Modifier.appear(
         label = "x_offset_anim",
     )
     val yOffsetAnim by animateDpAsState(
-        if (isVisible) {
+        if (isLaunched) {
             yEnd
         } else {
             yStart
@@ -56,7 +60,7 @@ fun Modifier.appear(
     )
     val alphaAnim by animateFloatAsState(
         targetValue =
-            if (isVisible) {
+            if (isLaunched) {
                 1f
             } else {
                 0f
@@ -69,6 +73,9 @@ fun Modifier.appear(
             ),
         label = "alpha_anim",
     )
+    LaunchedEffect(true) {
+        isLaunched = true
+    }
     return this then
         Modifier
             .offset(xOffsetAnim, yOffsetAnim)

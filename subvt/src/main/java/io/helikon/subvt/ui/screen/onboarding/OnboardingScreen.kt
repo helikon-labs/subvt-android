@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -83,7 +82,6 @@ private fun OnboardingScreenContent(
     Box(modifier) {
         HorizontalPager(
             state = pagerState,
-            Modifier.fillMaxSize(),
         ) { pageIndex ->
             Column(
                 modifier =
@@ -94,7 +92,6 @@ private fun OnboardingScreenContent(
                 Spacer(
                     modifier =
                         Modifier
-                            .safeContentPadding()
                             .height(dimensionResource(id = R.dimen.onboarding_content_margin_top)),
                 )
                 Row(
@@ -187,7 +184,6 @@ private fun OnboardingScreenContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier =
                 Modifier
-                    .safeContentPadding()
                     .wrapContentHeight()
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

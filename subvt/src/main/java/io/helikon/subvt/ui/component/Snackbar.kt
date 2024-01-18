@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -40,8 +39,8 @@ import io.helikon.subvt.ui.util.ThemePreviews
 
 @Composable
 fun SnackbarScaffold(
-    snackbarText: String,
     modifier: Modifier = Modifier,
+    snackbarText: String = "",
     snackbarIsVisible: Boolean = false,
     onSnackbarClick: (() -> Unit)? = null,
     onSnackbarRetry: (() -> Unit)? = null,
@@ -102,7 +101,6 @@ fun Snackbar(
     Box(
         modifier =
             modifier
-                .safeContentPadding()
                 .padding(dimensionResource(id = R.dimen.common_padding), 0.dp)
                 .offset(x = 0.dp, y = yOffsetAnim)
                 .alpha(alphaAnim),

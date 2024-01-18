@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,7 +37,6 @@ import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.delay
 
 private data class IntroductionScreenState(
-    val isLaunched: Boolean,
     val isLoading: Boolean,
     val snackbarIsVisible: Boolean,
 )
@@ -50,11 +48,7 @@ fun IntroductionScreen(
     onUserCreated: () -> Unit,
 ) {
     val context = LocalContext.current
-    var isLaunched by rememberSaveable { mutableStateOf(false) }
     var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(true) {
-        isLaunched = true
-    }
     when (viewModel.createUserState) {
         is DataRequestState.Success -> {
             LaunchedEffect(true) {
@@ -79,7 +73,6 @@ fun IntroductionScreen(
     IntroductionScreenContent(
         modifier,
         IntroductionScreenState(
-            isLaunched = isLaunched,
             isLoading = viewModel.createUserState == DataRequestState.Loading,
             snackbarIsVisible = snackbarIsVisible,
         ),
@@ -114,7 +107,6 @@ private fun IntroductionScreenContent(
                         .align(Alignment.BottomCenter)
                         .appear(
                             0,
-                            isVisible = state.isLaunched,
                             dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
                             0.dp,
                             -dimensionResource(id = R.dimen.introduction_icon_volume_start_offset),
@@ -124,10 +116,7 @@ private fun IntroductionScreenContent(
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .safeContentPadding(),
+            modifier = Modifier.fillMaxSize(),
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_title_margin_top)))
             Text(
@@ -135,7 +124,7 @@ private fun IntroductionScreenContent(
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.appear(1, isVisible = state.isLaunched),
+                modifier = Modifier.appear(1),
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_subtitle_margin_top)))
             Text(
@@ -146,7 +135,7 @@ private fun IntroductionScreenContent(
                 modifier =
                     Modifier
                         .width(dimensionResource(id = R.dimen.introduction_subtitle_width))
-                        .appear(0, isVisible = state.isLaunched),
+                        .appear(0),
             )
             Spacer(modifier = Modifier.weight(1.0f))
             ActionButton(
@@ -154,7 +143,6 @@ private fun IntroductionScreenContent(
                 modifier =
                     Modifier.appear(
                         0,
-                        isVisible = state.isLaunched,
                         0.dp,
                         0.dp,
                         dimensionResource(id = R.dimen.action_button_appear_anim_start_offset),
@@ -164,7 +152,7 @@ private fun IntroductionScreenContent(
             ) {
                 onCreateUser()
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_action_button_margin_bottom)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
         }
     }
 }
@@ -180,7 +168,6 @@ fun IntroductionScreenContentPreview() {
             IntroductionScreenContent(
                 modifier = Modifier,
                 IntroductionScreenState(
-                    isLaunched = true,
                     isLoading = false,
                     snackbarIsVisible = snackbarIsVisible,
                 ),
