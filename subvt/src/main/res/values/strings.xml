@@ -29,6 +29,9 @@
     <string name="network_selection_go">Go!</string>
 
     <string name="network_tab_title">Network</string>
+    <string name="network_status_title">Network Status</string>
+    <string name="network_status_active_validators">Active Validators</string>
+    <string name="network_status_inactive_validators">Inactive Validators</string>
 
     <string name="my_validators_tab_title">My Validators</string>
 

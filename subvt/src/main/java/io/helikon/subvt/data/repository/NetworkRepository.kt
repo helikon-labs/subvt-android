@@ -15,5 +15,5 @@ class NetworkRepository(private val dao: NetworkDAO) {
         dao.insertAll(networks)
     }
 
-    fun findById(id: Long): Network? = dao.findById(id)
+    suspend fun findById(id: Long): Network? = dao.findById(id)
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -103,6 +104,7 @@ fun TabLayout(
                             vertical = 0.dp,
                             horizontal = dimensionResource(id = R.dimen.common_padding),
                         )
+                        .navigationBarsPadding()
                         .align(Alignment.BottomCenter)
                         .offset(x = 0.dp, y = -dimensionResource(id = R.dimen.common_padding))
                         .zIndex(15f),

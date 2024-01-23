@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -94,11 +96,16 @@ private fun IntroductionScreenContent(
 ) {
     SnackbarScaffold(
         snackbarText = stringResource(id = R.string.introduction_user_create_error),
-        modifier = modifier,
+        modifier =
+            modifier
+                .navigationBarsPadding()
+                .statusBarsPadding(),
         snackbarIsVisible = state.snackbarIsVisible,
         onSnackbarClick = onSnackbarClick,
     ) {
-        Box(Modifier.fillMaxHeight()) {
+        Box(
+            Modifier.fillMaxHeight(),
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.icon_volume),
                 contentDescription = stringResource(id = R.string.introduction_icon_volume_description),
