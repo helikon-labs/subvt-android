@@ -228,7 +228,7 @@ private fun NetworkSelectionScreenContent(
                                                                     spotColor = Green,
                                                                     shape = RoundedCornerShape(12.dp),
                                                                 )
-                                                                .size(7.dp)
+                                                                .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
                                                                 .clip(CircleShape)
                                                                 .background(Green)
                                                                 .shadow(

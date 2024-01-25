@@ -1,6 +1,5 @@
 package io.helikon.subvt.ui.screen.network.status
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,15 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -43,8 +38,24 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.helikon.subvt.R
-import io.helikon.subvt.ui.modifier.noRippleClickable
+import io.helikon.subvt.data.model.Network
+import io.helikon.subvt.data.model.app.NetworkStatus
+import io.helikon.subvt.data.preview.PreviewData
+import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
+import io.helikon.subvt.ui.screen.network.status.panel.BlockNumberPanel
+import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
+import io.helikon.subvt.ui.screen.network.status.panel.EraPointsPanel
+import io.helikon.subvt.ui.screen.network.status.panel.LastEraTotalRewardPanel
+import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
+import io.helikon.subvt.ui.screen.network.status.panel.ValidatorBackingsPanel
+import io.helikon.subvt.ui.screen.network.status.panel.ValidatorCountPanel
+import io.helikon.subvt.ui.theme.Gray
 import io.helikon.subvt.ui.theme.Green
+import io.helikon.subvt.ui.theme.Orange
+import io.helikon.subvt.ui.theme.Red
+import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.util.ThemePreviews
+import kotlin.math.min
 
 @Composable
 fun NetworkStatusScreen(
@@ -52,6 +63,7 @@ fun NetworkStatusScreen(
     viewModel: NetworkStatusViewModel = hiltViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
 ) {
+    val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
     val networkStatus by viewModel.networkStatus.collectAsStateWithLifecycle()
 
     DisposableEffect(lifecycleOwner) {
@@ -72,18 +84,36 @@ fun NetworkStatusScreen(
         }
     }
 
+    NetworkStatusScreenContent(modifier, viewModel.selectedNetwork, serviceStatus, networkStatus)
+}
+
+@Composable
+fun NetworkStatusScreenContent(
+    modifier: Modifier = Modifier,
+    network: Network,
+    serviceStatus: RPCSubscriptionServiceStatus,
+    networkStatus: NetworkStatus?,
+) {
+    val scrollState = rememberScrollState()
+    val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier =
                 Modifier
+                    .fillMaxWidth()
                     .background(
-                        Color.Transparent,
-                        RoundedCornerShape(
-                            0.dp,
-                            0.dp,
-                            dimensionResource(id = R.dimen.common_panel_border_radius),
-                            dimensionResource(id = R.dimen.common_panel_border_radius),
-                        ),
+                        color =
+                            MaterialTheme
+                                .colorScheme
+                                .primaryContainer
+                                .copy(alpha = min(1f, scrolledRatio * 2)),
+                        shape =
+                            RoundedCornerShape(
+                                0.dp,
+                                0.dp,
+                                dimensionResource(id = R.dimen.common_panel_border_radius),
+                                dimensionResource(id = R.dimen.common_panel_border_radius),
+                            ),
                     )
                     .zIndex(10f),
         ) {
@@ -98,19 +128,32 @@ fun NetworkStatusScreen(
                     Modifier
                         .padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
             ) {
-                Row(verticalAlignment = Alignment.Top) {
-                    Text(
-                        text = stringResource(id = R.string.network_status_title),
-                        style = MaterialTheme.typography.headlineLarge,
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(7.dp)
-                                .clip(CircleShape)
-                                .background(Green),
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.Top) {
+                        Text(
+                            modifier = Modifier.padding(0.dp),
+                            text = stringResource(id = R.string.network_status_title),
+                            style = MaterialTheme.typography.headlineLarge,
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier =
+                                Modifier
+                                    .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
+                                    .clip(CircleShape)
+                                    .background(
+                                        when (serviceStatus) {
+                                            is RPCSubscriptionServiceStatus.Idle -> Gray
+                                            is RPCSubscriptionServiceStatus.Connected -> Orange
+                                            is RPCSubscriptionServiceStatus.Error -> Red
+                                            is RPCSubscriptionServiceStatus.Subscribed -> Green
+                                            is RPCSubscriptionServiceStatus.Unsubscribed -> Orange
+                                        },
+                                    ),
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    NetworkSelectorButton(network)
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
             }
@@ -126,12 +169,17 @@ fun NetworkStatusScreen(
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.common_padding), 0.dp)
                     .zIndex(5f)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(scrollState),
             Arrangement.spacedBy(
                 dimensionResource(id = R.dimen.common_panel_padding),
             ),
         ) {
-            Column(modifier = Modifier.padding(0.dp).alpha(0f)) {
+            Column(
+                modifier =
+                    Modifier
+                        .padding(0.dp)
+                        .alpha(0f),
+            ) {
                 Spacer(
                     modifier =
                         Modifier
@@ -139,7 +187,7 @@ fun NetworkStatusScreen(
                             .statusBarsPadding(),
                 )
                 Text(
-                    text = "dummy",
+                    text = "",
                     style = MaterialTheme.typography.headlineLarge,
                 )
                 Spacer(
@@ -155,119 +203,92 @@ fun NetworkStatusScreen(
                         dimensionResource(id = R.dimen.common_panel_padding),
                     ),
             ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(128.dp)
-                            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(dimensionResource(id = R.dimen.common_padding))
-                            .noRippleClickable {
-                                // no-op
-                            },
+                ValidatorCountPanel(
+                    modifier = Modifier.weight(1f),
+                    title = stringResource(id = R.string.network_status_active_validators),
+                    validatorCount = networkStatus?.activeValidatorCount,
                 ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.network_status_active_validators),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Image(
-                                painter = painterResource(R.drawable.arrow_right_small),
-                                contentDescription = "",
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = (networkStatus?.activeValidatorCount ?: 0).toString(),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontSize = dimensionResource(id = R.dimen.network_status_panel_content_font_size).value.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    // no-op
                 }
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(128.dp)
-                            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(dimensionResource(id = R.dimen.common_padding))
-                            .noRippleClickable {
-                                // no-op
-                            },
+                ValidatorCountPanel(
+                    modifier = Modifier.weight(1f),
+                    title = stringResource(id = R.string.network_status_inactive_validators),
+                    validatorCount = networkStatus?.inactiveValidatorCount,
                 ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.network_status_inactive_validators),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Image(
-                                painter = painterResource(R.drawable.arrow_right_small),
-                                contentDescription = "",
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = (networkStatus?.inactiveValidatorCount ?: 0).toString(),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontSize = dimensionResource(id = R.dimen.network_status_panel_content_font_size).value.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    // no-op
                 }
             }
-
+            BlockNumberPanel(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.network_status_best_block_number),
+                blockNumber = networkStatus?.bestBlockNumber,
+            )
+            BlockNumberPanel(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.network_status_best_block_number),
+                blockNumber = networkStatus?.finalizedBlockNumber,
+            )
             Row(
                 horizontalArrangement =
                     Arrangement.spacedBy(
                         dimensionResource(id = R.dimen.common_panel_padding),
                     ),
             ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(128.dp)
-                            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(dimensionResource(id = R.dimen.common_padding))
-                            .noRippleClickable {
-                                // no-op
-                            },
-                ) {
-                }
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(128.dp)
-                            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(dimensionResource(id = R.dimen.common_padding))
-                            .noRippleClickable {
-                                // no-op
-                            },
-                ) {
-                }
+                EraEpochPanel(
+                    modifier = Modifier.weight(1.0f),
+                    isEra = true,
+                    index = networkStatus?.activeEra?.index,
+                    startTimestamp = networkStatus?.activeEra?.startTimestamp,
+                    endTimestamp = networkStatus?.activeEra?.endTimestamp,
+                )
+                EraEpochPanel(
+                    modifier = Modifier.weight(1.0f),
+                    isEra = false,
+                    index = networkStatus?.currentEpoch?.index,
+                    startTimestamp = networkStatus?.currentEpoch?.startTimestamp,
+                    endTimestamp = networkStatus?.currentEpoch?.endTimestamp,
+                )
             }
+            EraPointsPanel(
+                modifier = Modifier.fillMaxWidth(),
+                eraPoints = networkStatus?.eraRewardPoints,
+            )
+            LastEraTotalRewardPanel(
+                modifier = Modifier.fillMaxWidth(),
+                reward = networkStatus?.lastEraTotalReward,
+                network = network,
+            )
+            ValidatorBackingsPanel(
+                modifier = Modifier.fillMaxWidth(),
+                network = network,
+                minStake = networkStatus?.minStake,
+                averageStake = networkStatus?.averageStake,
+                maxStake = networkStatus?.maxStake,
+            )
 
-            Spacer(modifier = Modifier.navigationBarsPadding().padding(0.dp, 48.dp))
+            Spacer(
+                modifier =
+                    Modifier
+                        .navigationBarsPadding()
+                        .padding(0.dp, 44.dp),
+            )
+        }
+    }
+}
+
+@ThemePreviews
+@Composable
+fun NetworkStatusScreenContentPreview() {
+    SubVTTheme {
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            NetworkStatusScreenContent(
+                modifier = Modifier,
+                network = PreviewData.networks[0],
+                serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
+                networkStatus = PreviewData.networkStatus,
+            )
         }
     }
 }

@@ -32,6 +32,19 @@
     <string name="network_status_title">Network Status</string>
     <string name="network_status_active_validators">Active Validators</string>
     <string name="network_status_inactive_validators">Inactive Validators</string>
+    <string name="network_status_best_block_number">Best Block Number</string>
+    <string name="network_status_finalized_block_number">Finalized Number</string>
+    <string name="network_status_era_title">Era</string>
+    <string name="network_status_epoch_title">Epoch</string>
+    <string name="network_status_remaining_hours">%1$d hr</string>
+    <string name="network_status_remaining_minute">%1$d min left</string>
+    <string name="network_status_remaining_minutes">%1$d mins left</string>
+    <string name="network_status_era_points">Era Points</string>
+    <string name="network_status_last_era_total_reward">Last Era Total Reward</string>
+    <string name="network_status_validator_backings">Validator Backings</string>
+    <string name="network_status_validator_backings_minimum">Minimum</string>
+    <string name="network_status_validator_backings_average">Average</string>
+    <string name="network_status_validator_backings_maximum">Maximum</string>
 
     <string name="my_validators_tab_title">My Validators</string>
 

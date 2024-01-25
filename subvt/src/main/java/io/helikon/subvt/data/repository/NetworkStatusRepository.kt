@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.StateFlow
 
 class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkStatusDiff> {
     private var subscriptionId = -1L
-    private lateinit var service: NetworkStatusService
+    private var service = NetworkStatusService(this)
     private val _networkStatus = MutableStateFlow<NetworkStatus?>(null)
     val networkStatus: StateFlow<NetworkStatus?> = _networkStatus
+    val serviceStatus = service.status
 
     suspend fun subscribe(
         host: String,
         port: Int,
     ) {
-        this.service = NetworkStatusService(host, port, this)
-        this.service.subscribe(listOf())
+        this.service.subscribe(host, port, listOf())
     }
 
     suspend fun unsubscribe() {

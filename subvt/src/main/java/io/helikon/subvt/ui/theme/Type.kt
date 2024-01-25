@@ -49,6 +49,12 @@ val Typography =
                 fontWeight = FontWeight.Light,
                 fontSize = 18.sp,
             ),
+        labelSmall =
+            TextStyle(
+                fontFamily = lexendDecaFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+            ),
         labelMedium =
             TextStyle(
                 fontFamily = lexendDecaFamily,
