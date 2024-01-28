@@ -2,6 +2,7 @@ package io.helikon.subvt.ui.screen.network.selection
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,11 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -50,10 +48,8 @@ import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.component.SnackbarScaffold
 import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.modifier.noRippleClickable
-import io.helikon.subvt.ui.theme.Green
-import io.helikon.subvt.ui.theme.LightGray
-import io.helikon.subvt.ui.theme.SubVTTheme
-import io.helikon.subvt.ui.theme.lexendDecaFamily
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 private data class NetworkSelectionScreenState(
@@ -77,13 +73,14 @@ fun NetworkSelectionScreen(
         viewModel.getNetworks()
     }
     NetworkSelectionScreenContent(
-        modifier,
-        NetworkSelectionScreenState(
-            isLoading = viewModel.getNetworksState == DataRequestState.Loading,
-            snackbarIsVisible = viewModel.getNetworksState is DataRequestState.Error,
-            networks = networks ?: listOf(),
-            selectedNetwork = selectedNetwork,
-        ),
+        modifier = modifier,
+        state =
+            NetworkSelectionScreenState(
+                isLoading = viewModel.getNetworksState == DataRequestState.Loading,
+                snackbarIsVisible = viewModel.getNetworksState is DataRequestState.Error,
+                networks = networks ?: listOf(),
+                selectedNetwork = selectedNetwork,
+            ),
         onSnackbarRetry = {
             viewModel.getNetworks()
         },
@@ -100,6 +97,7 @@ fun NetworkSelectionScreen(
 @Composable
 private fun NetworkSelectionScreenContent(
     modifier: Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     state: NetworkSelectionScreenState,
     onSnackbarRetry: () -> Unit,
     onSelectNetwork: (Network) -> Unit,
@@ -121,8 +119,8 @@ private fun NetworkSelectionScreenContent(
                         Modifier
                             .width(dimensionResource(id = R.dimen.common_progress_width))
                             .align(Alignment.Center),
-                    color = LightGray,
-                    trackColor = Color.Transparent,
+                    color = Color.lightGray(),
+                    trackColor = Color.transparent(),
                 )
             }
             if (!state.isLoading && state.networks.isNotEmpty()) {
@@ -143,8 +141,8 @@ private fun NetworkSelectionScreenContent(
                             stringResource(
                                 id = R.string.network_selection_title,
                             ),
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = Font.semiBold(24.sp),
+                        color = Color.text(isDark),
                     )
                     Spacer(Modifier.height(18.dp))
                     Text(
@@ -157,8 +155,8 @@ private fun NetworkSelectionScreenContent(
                             stringResource(
                                 id = R.string.network_selection_select_network,
                             ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = Font.semiBold(14.sp, 20.sp),
+                        color = Color.text(isDark),
                     )
                     Spacer(Modifier.height(40.dp))
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -186,10 +184,10 @@ private fun NetworkSelectionScreenContent(
                                                     .zIndex(if (isSelectedNetwork) 2f else 1f)
                                                     .shadow(
                                                         elevation = if (isSelectedNetwork) 24.dp else 0.dp,
-                                                        spotColor = MaterialTheme.colorScheme.inversePrimary,
+                                                        spotColor = Color.networkButtonShadow(isDark),
                                                     )
                                                     .clip(shape = RoundedCornerShape(12.dp))
-                                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                                    .background(Color.networkButtonBg(isDark))
                                                     .size(128.dp)
                                                     .padding(16.dp),
                                             verticalArrangement = Arrangement.SpaceBetween,
@@ -224,29 +222,26 @@ private fun NetworkSelectionScreenContent(
                                                             Modifier
                                                                 .shadow(
                                                                     elevation = if (isSelectedNetwork) 8.dp else 0.dp,
-                                                                    ambientColor = Green,
-                                                                    spotColor = Green,
+                                                                    ambientColor = Color.itemListSelectionIndicator(),
+                                                                    spotColor = Color.itemListSelectionIndicator(),
                                                                     shape = RoundedCornerShape(12.dp),
                                                                 )
                                                                 .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
                                                                 .clip(CircleShape)
-                                                                .background(Green)
+                                                                .background(Color.itemListSelectionIndicator())
                                                                 .shadow(
                                                                     elevation = 32.dp,
                                                                     shape = CircleShape,
-                                                                    ambientColor = Green,
-                                                                    spotColor = Green,
+                                                                    ambientColor = Color.itemListSelectionIndicator(),
+                                                                    spotColor = Color.itemListSelectionIndicator(),
                                                                 ),
                                                     )
                                                 }
                                             }
                                             Text(
                                                 text = network.display,
-                                                style = MaterialTheme.typography.headlineLarge,
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                fontFamily = lexendDecaFamily,
-                                                fontWeight = FontWeight.Normal,
-                                                fontSize = 14.sp,
+                                                style = Font.normal(14.sp),
+                                                color = Color.text(isDark),
                                             )
                                         }
                                     }
@@ -280,23 +275,22 @@ private fun NetworkSelectionScreenContent(
 
 @ThemePreviews
 @Composable
-fun NetworkSelectionScreenContentPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            NetworkSelectionScreenContent(
-                modifier = Modifier,
+fun NetworkSelectionScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        NetworkSelectionScreenContent(
+            modifier = Modifier,
+            state =
                 NetworkSelectionScreenState(
                     isLoading = false,
                     snackbarIsVisible = false,
                     networks = PreviewData.networks,
                     selectedNetwork = PreviewData.networks[1],
                 ),
-                onSnackbarRetry = {},
-                onSelectNetwork = {},
-                onComplete = {},
-            )
-        }
+            onSnackbarRetry = {},
+            onSelectNetwork = {},
+            onComplete = {},
+        )
     }
 }

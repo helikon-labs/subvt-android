@@ -2,6 +2,7 @@ package io.helikon.subvt.ui.screen.network.status.panel
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,18 +19,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.noRippleClickable
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 @Composable
 fun ValidatorCountPanel(
     modifier: Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     title: String,
     validatorCount: Int?,
     onClick: () -> Unit,
@@ -40,11 +41,11 @@ fun ValidatorCountPanel(
             modifier
                 .height(128.dp)
                 .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(dimensionResource(id = R.dimen.common_padding))
+                .background(Color.panelBg(isDark))
                 .noRippleClickable {
                     onClick()
-                },
+                }
+                .padding(dimensionResource(id = R.dimen.common_padding)),
     ) {
         Column {
             Row(
@@ -52,10 +53,8 @@ fun ValidatorCountPanel(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                    fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center,
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    color = Color.text(isDark),
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Image(
@@ -71,8 +70,8 @@ fun ValidatorCountPanel(
                     } else {
                         "$validatorCount"
                     },
-                style = MaterialTheme.typography.labelMedium,
-                fontSize = 28.sp,
+                style = Font.medium(28.sp),
+                color = Color.text(isDark),
                 textAlign = TextAlign.Center,
             )
         }
@@ -81,18 +80,16 @@ fun ValidatorCountPanel(
 
 @ThemePreviews
 @Composable
-fun ValidatorCountPanelPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
+fun ValidatorCountPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        ValidatorCountPanel(
+            modifier = Modifier,
+            title = stringResource(id = R.string.network_status_active_validators),
+            validatorCount = 123,
         ) {
-            ValidatorCountPanel(
-                modifier = Modifier,
-                title = stringResource(id = R.string.network_status_active_validators),
-                validatorCount = 123,
-            ) {
-                // no-op
-            }
+            // no-op
         }
     }
 }

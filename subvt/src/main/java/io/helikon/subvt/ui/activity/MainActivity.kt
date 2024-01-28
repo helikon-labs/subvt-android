@@ -1,31 +1,40 @@
 package io.helikon.subvt.ui.activity
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.helikon.subvt.data.repository.UserPreferencesRepository
 import io.helikon.subvt.ui.navigation.AppNavigationHost
 import io.helikon.subvt.ui.navigation.NavigationItem
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.theme.Color
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import android.graphics.Color as ComposeColor
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            statusBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColor.TRANSPARENT,
+                    ComposeColor.TRANSPARENT,
+                ),
+            navigationBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColor.TRANSPARENT,
+                    ComposeColor.TRANSPARENT,
+                ),
         )
         super.onCreate(savedInstanceState)
         val userPreferencesRepository = UserPreferencesRepository(application)
@@ -42,22 +51,27 @@ class MainActivity : ComponentActivity() {
                 }
             }
         setContent {
-            // create a navhost controller
-            val navController = rememberNavController()
-            SubVTTheme {
-                // a surface container using the 'background' color from the theme
-                Surface(
-                    color = MaterialTheme.colorScheme.surface,
-                ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxSize(),
-                    ) {
-                        AppNavigationHost(navController, startDestination)
-                    }
-                }
-            }
+            MainActivityContent(startDestination = startDestination)
+        }
+    }
+}
+
+@Composable
+fun MainActivityContent(
+    isDark: Boolean = isSystemInDarkTheme(),
+    startDestination: String,
+) {
+    // create a navhost controller
+    val navController = rememberNavController()
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+        ) {
+            AppNavigationHost(navController, startDestination)
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.helikon.subvt.ui.screen.introduction
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,14 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.component.SnackbarScaffold
 import io.helikon.subvt.ui.modifier.appear
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.delay
 
@@ -73,11 +74,12 @@ fun IntroductionScreen(
         else -> {}
     }
     IntroductionScreenContent(
-        modifier,
-        IntroductionScreenState(
-            isLoading = viewModel.createUserState == DataRequestState.Loading,
-            snackbarIsVisible = snackbarIsVisible,
-        ),
+        modifier = modifier,
+        state =
+            IntroductionScreenState(
+                isLoading = viewModel.createUserState == DataRequestState.Loading,
+                snackbarIsVisible = snackbarIsVisible,
+            ),
         onCreateUser = {
             viewModel.createUser(context)
         },
@@ -90,6 +92,7 @@ fun IntroductionScreen(
 @Composable
 private fun IntroductionScreenContent(
     modifier: Modifier = Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     state: IntroductionScreenState,
     onCreateUser: () -> Unit,
     onSnackbarClick: () -> Unit,
@@ -128,16 +131,16 @@ private fun IntroductionScreenContent(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_title_margin_top)))
             Text(
                 text = stringResource(R.string.introduction_title),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = Font.semiBold(24.sp),
+                color = Color.text(isDark),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.appear(1),
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_subtitle_margin_top)))
             Text(
                 text = stringResource(R.string.introduction_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = Font.light(14.sp, 20.sp),
+                color = Color.text(isDark),
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier
@@ -166,25 +169,24 @@ private fun IntroductionScreenContent(
 
 @ThemePreviews
 @Composable
-fun IntroductionScreenContentPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
-            IntroductionScreenContent(
-                modifier = Modifier,
+fun IntroductionScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        var snackbarIsVisible by rememberSaveable { mutableStateOf(false) }
+        IntroductionScreenContent(
+            modifier = Modifier,
+            state =
                 IntroductionScreenState(
                     isLoading = false,
                     snackbarIsVisible = snackbarIsVisible,
                 ),
-                onCreateUser = {
-                    snackbarIsVisible = true
-                },
-                onSnackbarClick = {
-                    snackbarIsVisible = false
-                },
-            )
-        }
+            onCreateUser = {
+                snackbarIsVisible = true
+            },
+            onSnackbarClick = {
+                snackbarIsVisible = false
+            },
+        )
     }
 }

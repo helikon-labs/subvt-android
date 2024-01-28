@@ -1,6 +1,7 @@
 package io.helikon.subvt.ui.screen.network.status.panel
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,15 +18,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
-import io.helikon.subvt.ui.theme.SubVTTheme
-import io.helikon.subvt.ui.theme.lexendDecaFamily
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import io.helikon.subvt.util.formatDecimal
 import java.math.BigInteger
@@ -34,6 +33,7 @@ import java.math.BigInteger
 @Composable
 fun ValidatorBackingsPanel(
     modifier: Modifier = Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     network: Network,
     minStake: BigInteger?,
     averageStake: BigInteger?,
@@ -43,15 +43,14 @@ fun ValidatorBackingsPanel(
         modifier =
             modifier
                 .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(Color.panelBg(isDark))
                 .padding(dimensionResource(id = R.dimen.common_padding)),
     ) {
         Text(
             text = stringResource(id = R.string.network_status_validator_backings),
-            style = MaterialTheme.typography.bodyMedium,
-            fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-            fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center,
+            style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+            color = Color.text(isDark),
         )
         Spacer(modifier = Modifier.height(12.dp))
         Row(
@@ -61,10 +60,9 @@ fun ValidatorBackingsPanel(
             Column {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_minimum),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                    fontWeight = FontWeight.Normal,
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
                     textAlign = TextAlign.Center,
+                    color = Color.text(isDark),
                 )
                 Text(
                     text =
@@ -86,27 +84,24 @@ fun ValidatorBackingsPanel(
                         } else {
                             "-"
                         },
-                    fontFamily = lexendDecaFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp,
                     textAlign = TextAlign.Center,
+                    style = Font.semiBold(20.sp),
+                    color = Color.text(isDark),
                 )
             }
             Text(
                 modifier = Modifier.alpha(0.4f),
                 text = "/",
-                fontFamily = lexendDecaFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
                 textAlign = TextAlign.Center,
+                style = Font.semiBold(20.sp),
+                color = Color.text(isDark),
             )
             Column {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_average),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                    fontWeight = FontWeight.Normal,
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
                     textAlign = TextAlign.Center,
+                    color = Color.text(isDark),
                 )
                 Text(
                     text =
@@ -128,27 +123,24 @@ fun ValidatorBackingsPanel(
                         } else {
                             "-"
                         },
-                    fontFamily = lexendDecaFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp,
                     textAlign = TextAlign.Center,
+                    style = Font.semiBold(20.sp),
+                    color = Color.text(isDark),
                 )
             }
             Text(
                 modifier = Modifier.alpha(0.4f),
                 text = "/",
-                fontFamily = lexendDecaFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
                 textAlign = TextAlign.Center,
+                style = Font.semiBold(20.sp),
+                color = Color.text(isDark),
             )
             Column {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_maximum),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-                    fontWeight = FontWeight.Normal,
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
                     textAlign = TextAlign.Center,
+                    color = Color.text(isDark),
                 )
                 Text(
                     text =
@@ -170,10 +162,9 @@ fun ValidatorBackingsPanel(
                         } else {
                             "-"
                         },
-                    fontFamily = lexendDecaFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp,
+                    color = Color.text(isDark),
                     textAlign = TextAlign.Center,
+                    style = Font.semiBold(20.sp),
                 )
             }
             Text(
@@ -184,10 +175,9 @@ fun ValidatorBackingsPanel(
                     } else {
                         "M${network.tokenTicker}"
                     },
-                fontFamily = lexendDecaFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
                 textAlign = TextAlign.Center,
+                style = Font.semiBold(20.sp),
+                color = Color.text(isDark),
             )
         }
     }
@@ -195,18 +185,16 @@ fun ValidatorBackingsPanel(
 
 @ThemePreviews
 @Composable
-fun ValidatorBackingsPanelPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            ValidatorBackingsPanel(
-                modifier = Modifier,
-                network = PreviewData.networks[0],
-                minStake = PreviewData.networkStatus.minStake,
-                averageStake = PreviewData.networkStatus.averageStake,
-                maxStake = PreviewData.networkStatus.maxStake,
-            )
-        }
+fun ValidatorBackingsPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        ValidatorBackingsPanel(
+            modifier = Modifier,
+            network = PreviewData.networks[0],
+            minStake = PreviewData.networkStatus.minStake,
+            averageStake = PreviewData.networkStatus.averageStake,
+            maxStake = PreviewData.networkStatus.maxStake,
+        )
     }
 }

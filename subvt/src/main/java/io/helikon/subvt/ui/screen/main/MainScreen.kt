@@ -1,8 +1,8 @@
 package io.helikon.subvt.ui.screen.main
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,7 +12,7 @@ import io.helikon.subvt.ui.screen.network.status.NetworkStatusScreen
 import io.helikon.subvt.ui.screen.notification.list.NotificationsScreen
 import io.helikon.subvt.ui.screen.report.network.NetworkReportsScreen
 import io.helikon.subvt.ui.screen.validator.my.MyValidatorsScreen
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 @Composable
@@ -64,12 +64,10 @@ private fun MainScreenContent(modifier: Modifier = Modifier) {
 
 @ThemePreviews
 @Composable
-fun MainScreenContentPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            MainScreenContent()
-        }
+fun MainScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        MainScreenContent()
     }
 }

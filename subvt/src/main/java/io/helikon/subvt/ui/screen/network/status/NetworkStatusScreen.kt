@@ -1,6 +1,7 @@
 package io.helikon.subvt.ui.screen.network.status
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,6 +35,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -47,13 +52,11 @@ import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraPointsPanel
 import io.helikon.subvt.ui.screen.network.status.panel.LastEraTotalRewardPanel
 import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
+import io.helikon.subvt.ui.screen.network.status.panel.NetworkSwitcherPanel
 import io.helikon.subvt.ui.screen.network.status.panel.ValidatorBackingsPanel
 import io.helikon.subvt.ui.screen.network.status.panel.ValidatorCountPanel
-import io.helikon.subvt.ui.theme.Gray
-import io.helikon.subvt.ui.theme.Green
-import io.helikon.subvt.ui.theme.Orange
-import io.helikon.subvt.ui.theme.Red
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlin.math.min
 
@@ -65,6 +68,7 @@ fun NetworkStatusScreen(
 ) {
     val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
     val networkStatus by viewModel.networkStatus.collectAsStateWithLifecycle()
+    val networks by viewModel.networks.observeAsState(listOf())
 
     DisposableEffect(lifecycleOwner) {
         // Create an observer that triggers our remembered callbacks
@@ -84,28 +88,57 @@ fun NetworkStatusScreen(
         }
     }
 
-    NetworkStatusScreenContent(modifier, viewModel.selectedNetwork, serviceStatus, networkStatus)
+    NetworkStatusScreenContent(
+        modifier = modifier,
+        networks = networks,
+        network = viewModel.selectedNetwork,
+        serviceStatus = serviceStatus,
+        networkStatus = networkStatus,
+        onChangeNetwork = { network ->
+            viewModel.changeNetwork(network)
+        },
+    )
 }
 
 @Composable
 fun NetworkStatusScreenContent(
     modifier: Modifier = Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
+    networks: List<Network>,
     network: Network,
     serviceStatus: RPCSubscriptionServiceStatus,
     networkStatus: NetworkStatus?,
+    onChangeNetwork: (Network) -> Unit,
 ) {
+    var networkSwitcherIsVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
     val scrollState = rememberScrollState()
     val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
     Box(modifier = modifier.fillMaxSize()) {
+        if (networkSwitcherIsVisible) {
+            NetworkSwitcherPanel(
+                modifier =
+                    Modifier
+                        .zIndex(15f)
+                        .fillMaxSize(),
+                serviceStatus = serviceStatus,
+                networks = networks,
+                selectedNetwork = network,
+                onChangeNetwork = onChangeNetwork,
+                onClose = {
+                    networkSwitcherIsVisible = false
+                },
+            )
+        }
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .background(
                         color =
-                            MaterialTheme
-                                .colorScheme
-                                .primaryContainer
+                            Color
+                                .panelBg(isDark)
                                 .copy(alpha = min(1f, scrolledRatio * 2)),
                         shape =
                             RoundedCornerShape(
@@ -133,7 +166,8 @@ fun NetworkStatusScreenContent(
                         Text(
                             modifier = Modifier.padding(0.dp),
                             text = stringResource(id = R.string.network_status_title),
-                            style = MaterialTheme.typography.headlineLarge,
+                            style = Font.semiBold(24.sp),
+                            color = Color.text(isDark),
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Box(
@@ -143,17 +177,23 @@ fun NetworkStatusScreenContent(
                                     .clip(CircleShape)
                                     .background(
                                         when (serviceStatus) {
-                                            is RPCSubscriptionServiceStatus.Idle -> Gray
-                                            is RPCSubscriptionServiceStatus.Connected -> Orange
-                                            is RPCSubscriptionServiceStatus.Error -> Red
-                                            is RPCSubscriptionServiceStatus.Subscribed -> Green
-                                            is RPCSubscriptionServiceStatus.Unsubscribed -> Orange
+                                            is RPCSubscriptionServiceStatus.Idle -> Color.statusIdle()
+                                            is RPCSubscriptionServiceStatus.Connected -> Color.statusWaiting()
+                                            is RPCSubscriptionServiceStatus.Error -> Color.statusError()
+                                            is RPCSubscriptionServiceStatus.Subscribed -> Color.statusActive()
+                                            is RPCSubscriptionServiceStatus.Unsubscribed -> Color.statusWaiting()
                                         },
                                     ),
                         )
                     }
                     Spacer(modifier = Modifier.weight(1.0f))
-                    NetworkSelectorButton(network)
+                    NetworkSelectorButton(
+                        network = network,
+                        isOpen = false,
+                        onClick = {
+                            networkSwitcherIsVisible = true
+                        },
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
             }
@@ -188,7 +228,7 @@ fun NetworkStatusScreenContent(
                 )
                 Text(
                     text = "",
-                    style = MaterialTheme.typography.headlineLarge,
+                    style = Font.semiBold(24.sp),
                 )
                 Spacer(
                     modifier =
@@ -278,17 +318,17 @@ fun NetworkStatusScreenContent(
 
 @ThemePreviews
 @Composable
-fun NetworkStatusScreenContentPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            NetworkStatusScreenContent(
-                modifier = Modifier,
-                network = PreviewData.networks[0],
-                serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
-                networkStatus = PreviewData.networkStatus,
-            )
-        }
+fun NetworkStatusScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        NetworkStatusScreenContent(
+            modifier = Modifier,
+            networks = PreviewData.networks,
+            network = PreviewData.networks[0],
+            serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
+            networkStatus = PreviewData.networkStatus,
+            onChangeNetwork = {},
+        )
     }
 }

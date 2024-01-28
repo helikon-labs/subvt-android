@@ -2,6 +2,7 @@ package io.helikon.subvt.ui.screen.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,17 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.noRippleClickable
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 data class Tab(
@@ -49,6 +48,7 @@ data class Tab(
 @Composable
 fun TabContainer(
     tab: Tab,
+    isDark: Boolean = isSystemInDarkTheme(),
     isSelected: Boolean,
     onSelect: () -> Unit,
 ) {
@@ -66,10 +66,15 @@ fun TabContainer(
         Text(
             modifier = Modifier.offset(0.dp, (-2).dp),
             text = tab.title,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (isSelected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.secondary,
-            fontWeight = FontWeight.Normal,
-            fontSize = 10.sp,
+            style = Font.normal(10.sp),
+            color =
+                if (isSelected) {
+                    Color.tabBarItemTextActive(isDark)
+                } else {
+                    Color.tabBarItemTextInactive(
+                        isDark,
+                    )
+                },
         )
     }
 }
@@ -77,6 +82,7 @@ fun TabContainer(
 @Composable
 fun TabLayout(
     modifier: Modifier = Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     tabs: Array<Tab>,
 ) {
     var selectedTabIndex by rememberSaveable {
@@ -93,7 +99,7 @@ fun TabLayout(
                         Modifier
                             .fillMaxSize()
                             .background(
-                                MaterialTheme.colorScheme.surface,
+                                Color.bg(isDark),
                             )
                             .zIndex(if (i == selectedTabIndex) 10f else 1f),
                 ) {
@@ -112,9 +118,9 @@ fun TabLayout(
                                 Brush.verticalGradient(
                                     colors =
                                         listOf(
-                                            Color.Transparent,
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                                            MaterialTheme.colorScheme.surface,
+                                            Color.transparent(),
+                                            Color.bg(isDark).copy(alpha = 0.85f),
+                                            Color.bg(isDark),
                                         ),
                                 ),
                         ),
@@ -136,7 +142,7 @@ fun TabLayout(
                     modifier =
                         Modifier
                             .clip(shape = RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .background(Color.tabBarBg(isDark))
                             .padding(
                                 dimensionResource(id = R.dimen.common_padding),
                                 12.dp,
@@ -158,47 +164,45 @@ fun TabLayout(
 
 @ThemePreviews
 @Composable
-fun TabLayoutPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            val tabs =
-                arrayOf(
-                    Tab(
-                        title = stringResource(id = R.string.network_tab_title),
-                        activeImageResourceId = R.drawable.tab_icon_network_active,
-                        inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
-                        content = {
-                            Text("network")
-                        },
-                    ),
-                    Tab(
-                        title = stringResource(id = R.string.my_validators_tab_title),
-                        activeImageResourceId = R.drawable.tab_icon_network_active,
-                        inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
-                        content = {
-                            Text("my vals")
-                        },
-                    ),
-                    Tab(
-                        title = stringResource(id = R.string.notifications_tab_title),
-                        activeImageResourceId = R.drawable.tab_icon_network_active,
-                        inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
-                        content = {
-                            Text("notifs")
-                        },
-                    ),
-                    Tab(
-                        title = stringResource(id = R.string.network_reports_tab_title),
-                        activeImageResourceId = R.drawable.tab_icon_network_active,
-                        inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
-                        content = {
-                            Text("network reports")
-                        },
-                    ),
-                )
-            TabLayout(tabs = tabs)
-        }
+fun TabLayoutPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        val tabs =
+            arrayOf(
+                Tab(
+                    title = stringResource(id = R.string.network_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        Text("network")
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.my_validators_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        Text("my vals")
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.notifications_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        Text("notifs")
+                    },
+                ),
+                Tab(
+                    title = stringResource(id = R.string.network_reports_tab_title),
+                    activeImageResourceId = R.drawable.tab_icon_network_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    content = {
+                        Text("network reports")
+                    },
+                ),
+            )
+        TabLayout(tabs = tabs)
     }
 }

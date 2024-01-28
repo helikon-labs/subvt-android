@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,20 +30,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
-import io.helikon.subvt.ui.theme.Blue
-import io.helikon.subvt.ui.theme.Gray
-import io.helikon.subvt.ui.theme.SubVTTheme
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
 
@@ -56,7 +54,7 @@ fun OnboardingScreen(
     onComplete: () -> Unit,
 ) {
     OnboardingScreenContent(
-        modifier,
+        modifier = modifier,
         onComplete = {
             viewModel.completeOnboarding()
             onComplete()
@@ -68,6 +66,7 @@ fun OnboardingScreen(
 @Composable
 private fun OnboardingScreenContent(
     modifier: Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     onComplete: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { PAGE_COUNT })
@@ -108,15 +107,14 @@ private fun OnboardingScreenContent(
                 ) {
                     Text(
                         text = (pageIndex + 1).toString(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = Font.semiBold(14.sp),
+                        color = Color.text(isDark),
                         textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.SemiBold,
                     )
                     Text(
                         text = "/".plus(PAGE_COUNT),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = Font.light(14.sp, 20.sp),
+                        color = Color.text(isDark),
                         textAlign = TextAlign.Left,
                     )
                 }
@@ -131,8 +129,8 @@ private fun OnboardingScreenContent(
                                 else -> R.string.onboarding_4_title
                             },
                         ),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = Font.semiBold(22.sp),
+                    color = Color.text(isDark),
                     modifier =
                         Modifier.padding(
                             dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
@@ -150,8 +148,8 @@ private fun OnboardingScreenContent(
                                 else -> R.string.onboarding_4_description
                             },
                         ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = Font.light(14.sp, 20.sp),
+                    color = Color.text(isDark),
                     modifier =
                         Modifier.padding(
                             dimensionResource(id = R.dimen.onboarding_content_padding_horizontal),
@@ -198,23 +196,28 @@ private fun OnboardingScreenContent(
             TextButton(
                 colors =
                     ButtonDefaults.buttonColors(
-                        Color.Transparent,
+                        Color.transparent(),
                     ),
-                modifier = Modifier.background(Color.Transparent),
+                modifier = Modifier.background(Color.transparent()),
                 onClick = onComplete,
                 interactionSource = NoRippleInteractionSource(),
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_skip),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold,
+                    style = Font.semiBold(16.sp),
+                    color = Color.text(isDark),
                 )
             }
             Row {
                 repeat(pagerState.pageCount) { iteration ->
                     val color =
-                        if (pagerState.currentPage == iteration) Blue else Gray
+                        if (pagerState.currentPage == iteration) {
+                            Color.actionButtonBg()
+                        } else {
+                            Color.onboardingPageIndicatorBg(
+                                isDark,
+                            )
+                        }
                     Box(
                         modifier =
                             Modifier
@@ -231,7 +234,7 @@ private fun OnboardingScreenContent(
             TextButton(
                 colors =
                     ButtonDefaults.buttonColors(
-                        Color.Transparent,
+                        Color.transparent(),
                     ),
                 onClick = {
                     if (pagerState.currentPage < (PAGE_COUNT - 1)) {
@@ -246,9 +249,8 @@ private fun OnboardingScreenContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_next),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Light,
+                    style = Font.light(16.sp),
+                    color = Color.text(isDark),
                 )
             }
         }
@@ -257,12 +259,10 @@ private fun OnboardingScreenContent(
 
 @ThemePreviews
 @Composable
-fun OnboardingScreenContentPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            OnboardingScreenContent(Modifier, onComplete = {})
-        }
+fun OnboardingScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        OnboardingScreenContent(Modifier, onComplete = {})
     }
 }

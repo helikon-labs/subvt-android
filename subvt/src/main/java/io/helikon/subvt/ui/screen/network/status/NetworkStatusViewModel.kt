@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.repository.NetworkStatusRepository
@@ -27,6 +28,7 @@ class NetworkStatusViewModel
         val serviceStatus = networkStatusRepository.serviceStatus
         var selectedNetwork by mutableStateOf(PreviewData.networks[0])
             private set
+        val networks = networkRepository.allNetworks
 
         fun subscribe() {
             viewModelScope.launch(Dispatchers.IO) {
@@ -46,6 +48,19 @@ class NetworkStatusViewModel
         fun unsubscribe() {
             viewModelScope.launch(Dispatchers.IO) {
                 networkStatusRepository.unsubscribe()
+            }
+        }
+
+        fun changeNetwork(network: Network) {
+            viewModelScope.launch(Dispatchers.IO) {
+                networkStatusRepository.unsubscribe()
+                userPreferencesRepository.setSelectedNetworkId(network.id)
+                selectedNetwork = network
+                selectedNetwork.networkStatusServiceHost?.let { host ->
+                    selectedNetwork.networkStatusServicePort?.let { port ->
+                        networkStatusRepository.subscribe(host, port)
+                    }
+                }
             }
         }
     }

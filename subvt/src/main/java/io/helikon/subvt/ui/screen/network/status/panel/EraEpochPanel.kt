@@ -1,6 +1,7 @@
 package io.helikon.subvt.ui.screen.network.status.panel
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
-import io.helikon.subvt.ui.theme.Blue
-import io.helikon.subvt.ui.theme.Green
-import io.helikon.subvt.ui.theme.SubVTTheme
-import io.helikon.subvt.ui.theme.lexendDecaFamily
+import io.helikon.subvt.ui.style.Font
+import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import io.helikon.subvt.util.Quadruple
 import java.text.SimpleDateFormat
@@ -44,6 +41,7 @@ private val TIME_FORMATTER = SimpleDateFormat("HH:mm", Locale.US)
 @Composable
 fun EraEpochPanel(
     modifier: Modifier = Modifier,
+    isDark: Boolean = isSystemInDarkTheme(),
     isEra: Boolean,
     index: Int?,
     startTimestamp: Long?,
@@ -110,23 +108,21 @@ fun EraEpochPanel(
     Column(
         modifier
             .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(Color.panelBg(isDark))
             .padding(dimensionResource(id = R.dimen.common_padding)),
     ) {
         Text(
             text = titleIndexed,
-            style = MaterialTheme.typography.bodyMedium,
-            fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-            fontWeight = FontWeight.Normal,
+            color = Color.text(isDark),
             textAlign = TextAlign.Center,
+            style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = dateText,
-            style = MaterialTheme.typography.bodyMedium,
-            fontSize = dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp,
-            fontWeight = FontWeight.Normal,
+            color = Color.text(isDark),
             textAlign = TextAlign.Center,
+            style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
         Row(
@@ -134,16 +130,21 @@ fun EraEpochPanel(
         ) {
             Text(
                 textAlign = TextAlign.Start,
-                modifier = Modifier.width(62.dp).alignByBaseline(),
+                modifier =
+                    Modifier
+                        .width(62.dp)
+                        .alignByBaseline(),
                 text = "$elapsedPercentage%",
-                fontFamily = lexendDecaFamily,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
+                style = Font.semiBold(20.sp),
+                color = Color.text(isDark),
             )
             Row(
                 modifier =
-                    Modifier.offset(0.dp, (-4).dp).height(6.dp).weight(1.0f)
-                        .background(Green),
+                    Modifier
+                        .offset(0.dp, (-4).dp)
+                        .height(6.dp)
+                        .weight(1.0f)
+                        .background(Color.statusActive()),
             ) {
                 var gradientWeight =
                     min(
@@ -158,21 +159,24 @@ fun EraEpochPanel(
                 if ((elapsedPercentage - gradientWeight) > 0) {
                     Box(
                         modifier =
-                            Modifier.fillMaxHeight()
+                            Modifier
+                                .fillMaxHeight()
                                 .weight((elapsedPercentage - gradientWeight).toFloat())
                                 .background(
-                                    Blue,
+                                    Color.progress(),
                                 ),
                     )
                 }
                 if (gradientWeight > 0) {
                     Box(
                         modifier =
-                            Modifier.fillMaxHeight().weight(gradientWeight * 2f)
+                            Modifier
+                                .fillMaxHeight()
+                                .weight(gradientWeight * 2f)
                                 .background(
                                     brush =
                                         Brush.horizontalGradient(
-                                            colors = listOf(Blue, Green),
+                                            colors = listOf(Color.progress(), Color.statusActive()),
                                         ),
                                 ),
                     )
@@ -180,10 +184,11 @@ fun EraEpochPanel(
                 if ((100 - elapsedPercentage - gradientWeight) > 0) {
                     Box(
                         modifier =
-                            Modifier.fillMaxHeight()
+                            Modifier
+                                .fillMaxHeight()
                                 .weight((100 - elapsedPercentage - gradientWeight).toFloat())
                                 .background(
-                                    Green,
+                                    Color.statusActive(),
                                 ),
                     )
                 }
@@ -195,11 +200,10 @@ fun EraEpochPanel(
             Spacer(modifier = Modifier.width(62.dp))
             Text(
                 text = remainingTimeText,
-                fontFamily = lexendDecaFamily,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Light,
-                textAlign = TextAlign.Start,
                 maxLines = 1,
+                textAlign = TextAlign.Start,
+                color = Color.remainingTime(isDark),
+                style = Font.light(10.sp),
             )
         }
     }
@@ -207,18 +211,16 @@ fun EraEpochPanel(
 
 @ThemePreviews
 @Composable
-fun EraEpochPanelPreview() {
-    SubVTTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            EraEpochPanel(
-                modifier = Modifier,
-                isEra = true,
-                index = 1234,
-                startTimestamp = Date().time - 3 * 60 * 60 * 1000,
-                endTimestamp = Date().time + 1 * 60 * 60 * 1000 + 32 * 60 * 1000,
-            )
-        }
+fun EraEpochPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
+    Surface(
+        color = Color.bg(isDark),
+    ) {
+        EraEpochPanel(
+            modifier = Modifier,
+            isEra = true,
+            index = 1234,
+            startTimestamp = Date().time - 3 * 60 * 60 * 1000,
+            endTimestamp = Date().time + 1 * 60 * 60 * 1000 + 32 * 60 * 1000,
+        )
     }
 }

@@ -68,7 +68,7 @@ abstract class PreviewData {
                 returnRatePerMillion = 144_800,
                 minStake = BigInteger("${6_999_000_000_000_000L}"),
                 maxStake = BigInteger("${70_195_000_000_000_000L}"),
-                averageStake = BigInteger("${7_677_123_000_000_000_000L}"),
+                averageStake = BigInteger("${7_677_000_000_000_000L}"),
                 medianStake = BigInteger("${12_876_000_000_000_000L}"),
                 eraRewardPoints = 1_386_680,
             )
