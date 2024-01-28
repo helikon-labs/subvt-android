@@ -19,8 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 @Composable

@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.theme
+package io.helikon.subvt.ui.style
 
 import androidx.compose.ui.graphics.Color as ComposeColor
 

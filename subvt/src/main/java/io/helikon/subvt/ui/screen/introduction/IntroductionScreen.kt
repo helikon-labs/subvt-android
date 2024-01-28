@@ -34,8 +34,8 @@ import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.component.SnackbarScaffold
 import io.helikon.subvt.ui.modifier.appear
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.delay
 

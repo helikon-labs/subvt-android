@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.noRippleClickable
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 data class Tab(
@@ -180,24 +180,24 @@ fun TabLayoutPreview(isDark: Boolean = isSystemInDarkTheme()) {
                 ),
                 Tab(
                     title = stringResource(id = R.string.my_validators_tab_title),
-                    activeImageResourceId = R.drawable.tab_icon_network_active,
-                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    activeImageResourceId = R.drawable.tab_icon_my_validators_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_my_validators_inactive,
                     content = {
                         Text("my vals")
                     },
                 ),
                 Tab(
                     title = stringResource(id = R.string.notifications_tab_title),
-                    activeImageResourceId = R.drawable.tab_icon_network_active,
-                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    activeImageResourceId = R.drawable.tab_icon_notifications_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_notifications_inactive,
                     content = {
                         Text("notifs")
                     },
                 ),
                 Tab(
                     title = stringResource(id = R.string.network_reports_tab_title),
-                    activeImageResourceId = R.drawable.tab_icon_network_active,
-                    inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
+                    activeImageResourceId = R.drawable.tab_icon_network_reports_active,
+                    inactiveImageResourceId = R.drawable.tab_icon_network_reports_inactive,
                     content = {
                         Text("network reports")
                     },

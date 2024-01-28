@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.helikon.subvt.data.repository.UserPreferencesRepository
 import io.helikon.subvt.ui.navigation.AppNavigationHost
 import io.helikon.subvt.ui.navigation.NavigationItem
-import io.helikon.subvt.ui.theme.Color
+import io.helikon.subvt.ui.style.Color
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import android.graphics.Color as ComposeColor

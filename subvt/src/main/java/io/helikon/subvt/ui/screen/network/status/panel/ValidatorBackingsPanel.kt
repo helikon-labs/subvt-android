@@ -19,13 +19,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import io.helikon.subvt.util.formatDecimal
 import java.math.BigInteger
@@ -55,7 +56,7 @@ fun ValidatorBackingsPanel(
         Spacer(modifier = Modifier.height(12.dp))
         Row(
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Column {
                 Text(
@@ -176,8 +177,10 @@ fun ValidatorBackingsPanel(
                         "M${network.tokenTicker}"
                     },
                 textAlign = TextAlign.Center,
-                style = Font.semiBold(20.sp),
+                style = Font.normal(20.sp),
                 color = Color.text(isDark),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

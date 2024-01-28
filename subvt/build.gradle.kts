@@ -106,6 +106,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.22.7")
+    implementation("com.github.helikon-labs:subvt-data-android:0.22.9")
+
     implementation("com.jakewharton.timber:timber:5.0.1")
 }

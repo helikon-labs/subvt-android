@@ -22,11 +22,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import io.helikon.subvt.util.Quadruple
 import java.text.SimpleDateFormat
@@ -121,8 +122,10 @@ fun EraEpochPanel(
         Text(
             text = dateText,
             color = Color.text(isDark),
-            textAlign = TextAlign.Center,
-            style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+            textAlign = TextAlign.Start,
+            style = Font.light(11.sp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
         Row(

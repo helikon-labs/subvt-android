@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +37,11 @@ import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.modifier.noRippleClickable
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun NetworkSwitcherPanel(
@@ -50,6 +53,7 @@ fun NetworkSwitcherPanel(
     onChangeNetwork: (Network) -> Unit,
     onClose: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     Box(
         modifier =
             modifier
@@ -118,10 +122,16 @@ fun NetworkSwitcherPanel(
                     Row(
                         modifier =
                             Modifier
-                                .height(49.dp)
-                                .padding(12.dp, 0.dp)
+                                .height(46.dp)
+                                .padding(8.dp, 0.dp)
                                 .noRippleClickable {
-                                    onChangeNetwork(network)
+                                    if (selectedNetwork.id != network.id) {
+                                        onChangeNetwork(network)
+                                        scope.launch {
+                                            delay(500L)
+                                            onClose()
+                                        }
+                                    }
                                 },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -141,7 +151,7 @@ fun NetworkSwitcherPanel(
                             modifier = Modifier.offset(0.dp, (-1).dp),
                             text = network.display,
                             color = Color.text(isDark),
-                            style = Font.normal(16.sp),
+                            style = Font.normal(14.sp),
                         )
                         Spacer(modifier = Modifier.weight(1.0f))
                         Box(

@@ -25,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,9 +56,10 @@ import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
 import io.helikon.subvt.ui.screen.network.status.panel.NetworkSwitcherPanel
 import io.helikon.subvt.ui.screen.network.status.panel.ValidatorBackingsPanel
 import io.helikon.subvt.ui.screen.network.status.panel.ValidatorCountPanel
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
+import kotlinx.coroutines.launch
 import kotlin.math.min
 
 @Composable
@@ -114,6 +116,7 @@ fun NetworkStatusScreenContent(
         mutableStateOf(false)
     }
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
     val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
     Box(modifier = modifier.fillMaxSize()) {
         if (networkSwitcherIsVisible) {
@@ -125,7 +128,12 @@ fun NetworkStatusScreenContent(
                 serviceStatus = serviceStatus,
                 networks = networks,
                 selectedNetwork = network,
-                onChangeNetwork = onChangeNetwork,
+                onChangeNetwork = {
+                    onChangeNetwork(it)
+                    scope.launch {
+                        scrollState.animateScrollTo(0)
+                    }
+                },
                 onClose = {
                     networkSwitcherIsVisible = false
                 },

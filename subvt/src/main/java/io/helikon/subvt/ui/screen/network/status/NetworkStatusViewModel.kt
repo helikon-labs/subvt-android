@@ -53,12 +53,13 @@ class NetworkStatusViewModel
 
         fun changeNetwork(network: Network) {
             viewModelScope.launch(Dispatchers.IO) {
-                networkStatusRepository.unsubscribe()
                 userPreferencesRepository.setSelectedNetworkId(network.id)
                 selectedNetwork = network
                 selectedNetwork.networkStatusServiceHost?.let { host ->
                     selectedNetwork.networkStatusServicePort?.let { port ->
-                        networkStatusRepository.subscribe(host, port)
+                        viewModelScope.launch(Dispatchers.IO) {
+                            networkStatusRepository.changeNetwork(host, port)
+                        }
                     }
                 }
             }

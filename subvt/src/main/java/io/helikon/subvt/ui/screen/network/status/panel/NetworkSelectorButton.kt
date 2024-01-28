@@ -23,8 +23,8 @@ import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.ui.modifier.noRippleClickable
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 
 @Composable

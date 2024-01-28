@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
+import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
-import io.helikon.subvt.ui.theme.Color
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
 

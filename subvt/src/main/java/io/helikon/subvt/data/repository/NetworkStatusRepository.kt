@@ -5,15 +5,32 @@ import io.helikon.subvt.data.model.app.NetworkStatusDiff
 import io.helikon.subvt.data.service.NetworkStatusService
 import io.helikon.subvt.data.service.RPCSubscriptionListener
 import io.helikon.subvt.data.service.RPCSubscriptionService
+import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkStatusDiff> {
     private var subscriptionId = -1L
-    private var service = NetworkStatusService(this)
+    private val service = NetworkStatusService(this)
     private val _networkStatus = MutableStateFlow<NetworkStatus?>(null)
-    val networkStatus: StateFlow<NetworkStatus?> = _networkStatus
     val serviceStatus = service.status
+    val networkStatus: StateFlow<NetworkStatus?> = _networkStatus
+
+    private var nextHost: String? = null
+    private var nextPort: Int? = null
+
+    suspend fun changeNetwork(
+        host: String,
+        port: Int,
+    ) {
+        if (service.status.value is RPCSubscriptionServiceStatus.Subscribed) {
+            nextHost = host
+            nextPort = port
+            this.service.unsubscribe()
+        } else {
+            this.subscribe(host, port)
+        }
+    }
 
     suspend fun subscribe(
         host: String,
@@ -35,7 +52,6 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
     ) {
         this.subscriptionId = subscriptionId
         this._networkStatus.value = data
-        // TODO update connection status
     }
 
     override suspend fun onUnsubscribed(
@@ -47,7 +63,13 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
         }
         this.subscriptionId = -1L
         this._networkStatus.value = null
-        // TODO update connection status
+        this.nextHost?.let { host ->
+            this.nextPort?.let { port ->
+                this.nextHost = null
+                this.nextPort = null
+                this.subscribe(host, port)
+            }
+        }
     }
 
     override suspend fun onUpdateReceived(
