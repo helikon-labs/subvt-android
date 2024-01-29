@@ -1,5 +1,6 @@
 package io.helikon.subvt.data.repository
 
+import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
 import io.helikon.subvt.data.model.app.NetworkStatusDiff
 import io.helikon.subvt.data.service.NetworkStatusService
@@ -15,28 +16,31 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
     private val _networkStatus = MutableStateFlow<NetworkStatus?>(null)
     val serviceStatus = service.status
     val networkStatus: StateFlow<NetworkStatus?> = _networkStatus
+    var onSubscribed: ((NetworkStatus) -> Unit)? = null
 
-    private var nextHost: String? = null
-    private var nextPort: Int? = null
+    private var network: Network? = null
+    private var nextNetwork: Network? = null
 
-    suspend fun changeNetwork(
-        host: String,
-        port: Int,
-    ) {
+    suspend fun changeNetwork(network: Network) {
         if (service.status.value is RPCSubscriptionServiceStatus.Subscribed) {
-            nextHost = host
-            nextPort = port
+            nextNetwork = network
             this.service.unsubscribe()
         } else {
-            this.subscribe(host, port)
+            this.subscribe(network)
         }
     }
 
-    suspend fun subscribe(
-        host: String,
-        port: Int,
-    ) {
-        this.service.subscribe(host, port, listOf())
+    suspend fun subscribe(network: Network) {
+        network.networkStatusServiceHost?.let { host ->
+            network.networkStatusServicePort?.let { port ->
+                this.network = network
+                this.service.subscribe(
+                    host,
+                    port,
+                    listOf(),
+                )
+            }
+        }
     }
 
     suspend fun unsubscribe() {
@@ -52,6 +56,7 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
     ) {
         this.subscriptionId = subscriptionId
         this._networkStatus.value = data
+        this.onSubscribed?.invoke(data)
     }
 
     override suspend fun onUnsubscribed(
@@ -63,12 +68,9 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
         }
         this.subscriptionId = -1L
         this._networkStatus.value = null
-        this.nextHost?.let { host ->
-            this.nextPort?.let { port ->
-                this.nextHost = null
-                this.nextPort = null
-                this.subscribe(host, port)
-            }
+        this.nextNetwork?.let { network ->
+            this.nextNetwork = null
+            this.subscribe(network)
         }
     }
 

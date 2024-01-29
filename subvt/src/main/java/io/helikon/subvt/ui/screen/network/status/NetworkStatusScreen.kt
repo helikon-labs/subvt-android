@@ -48,6 +48,7 @@ import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
+import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.screen.network.status.panel.BlockNumberPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraPointsPanel
@@ -96,6 +97,8 @@ fun NetworkStatusScreen(
         network = viewModel.selectedNetwork,
         serviceStatus = serviceStatus,
         networkStatus = networkStatus,
+        activeValidatorCountHistory = viewModel.activeValidatorCountList,
+        inactiveValidatorCountHistory = viewModel.inactiveValidatorCountList,
         onChangeNetwork = { network ->
             viewModel.changeNetwork(network)
         },
@@ -110,6 +113,8 @@ fun NetworkStatusScreenContent(
     network: Network,
     serviceStatus: RPCSubscriptionServiceStatus,
     networkStatus: NetworkStatus?,
+    activeValidatorCountHistory: List<Int>,
+    inactiveValidatorCountHistory: List<Int>,
     onChangeNetwork: (Network) -> Unit,
 ) {
     var networkSwitcherIsVisible by rememberSaveable {
@@ -252,27 +257,29 @@ fun NetworkStatusScreenContent(
                     ),
             ) {
                 ValidatorCountPanel(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).appear(0),
                     title = stringResource(id = R.string.network_status_active_validators),
+                    validatorCountHistory = activeValidatorCountHistory,
                     validatorCount = networkStatus?.activeValidatorCount,
                 ) {
                     // no-op
                 }
                 ValidatorCountPanel(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).appear(1),
                     title = stringResource(id = R.string.network_status_inactive_validators),
+                    validatorCountHistory = inactiveValidatorCountHistory,
                     validatorCount = networkStatus?.inactiveValidatorCount,
                 ) {
                     // no-op
                 }
             }
             BlockNumberPanel(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().appear(2),
                 title = stringResource(id = R.string.network_status_best_block_number),
                 blockNumber = networkStatus?.bestBlockNumber,
             )
             BlockNumberPanel(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().appear(3),
                 title = stringResource(id = R.string.network_status_best_block_number),
                 blockNumber = networkStatus?.finalizedBlockNumber,
             )
@@ -283,14 +290,14 @@ fun NetworkStatusScreenContent(
                     ),
             ) {
                 EraEpochPanel(
-                    modifier = Modifier.weight(1.0f),
+                    modifier = Modifier.weight(1.0f).appear(4),
                     isEra = true,
                     index = networkStatus?.activeEra?.index,
                     startTimestamp = networkStatus?.activeEra?.startTimestamp,
                     endTimestamp = networkStatus?.activeEra?.endTimestamp,
                 )
                 EraEpochPanel(
-                    modifier = Modifier.weight(1.0f),
+                    modifier = Modifier.weight(1.0f).appear(5),
                     isEra = false,
                     index = networkStatus?.currentEpoch?.index,
                     startTimestamp = networkStatus?.currentEpoch?.startTimestamp,
@@ -298,16 +305,16 @@ fun NetworkStatusScreenContent(
                 )
             }
             EraPointsPanel(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().appear(6),
                 eraPoints = networkStatus?.eraRewardPoints,
             )
             LastEraTotalRewardPanel(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().appear(7),
                 reward = networkStatus?.lastEraTotalReward,
                 network = network,
             )
             ValidatorBackingsPanel(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().appear(8),
                 network = network,
                 minStake = networkStatus?.minStake,
                 averageStake = networkStatus?.averageStake,
@@ -336,6 +343,8 @@ fun NetworkStatusScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
             network = PreviewData.networks[0],
             serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
             networkStatus = PreviewData.networkStatus,
+            activeValidatorCountHistory = listOf(),
+            inactiveValidatorCountHistory = listOf(),
             onChangeNetwork = {},
         )
     }

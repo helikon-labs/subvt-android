@@ -29,7 +29,7 @@ fun Modifier.appear(
 ): Modifier {
     var isLaunched by rememberSaveable { mutableStateOf(false) }
     val animDurationMs = integerResource(id = R.integer.appear_anim_duration_ms)
-    val animDelayMs = 250 * index
+    val animDelayMs = 100 * index
     val xOffsetAnim by animateDpAsState(
         if (isLaunched) {
             xEnd

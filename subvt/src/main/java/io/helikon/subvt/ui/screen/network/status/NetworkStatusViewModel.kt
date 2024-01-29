@@ -11,10 +11,14 @@ import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.repository.NetworkStatusRepository
 import io.helikon.subvt.data.repository.UserPreferencesRepository
+import io.helikon.subvt.data.service.ReportService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
+
+const val ERA_REPORT_COUNT = 15
 
 @HiltViewModel
 class NetworkStatusViewModel
@@ -30,6 +34,20 @@ class NetworkStatusViewModel
             private set
         val networks = networkRepository.allNetworks
 
+        var activeValidatorCountList by mutableStateOf(listOf<Int>())
+            private set
+        var inactiveValidatorCountList by mutableStateOf(listOf<Int>())
+            private set
+
+        init {
+            this.networkStatusRepository.onSubscribed = { status ->
+                this.getEraValidatorCounts(
+                    status.activeEra.index - ERA_REPORT_COUNT,
+                    status.activeEra.index,
+                )
+            }
+        }
+
         fun subscribe() {
             viewModelScope.launch(Dispatchers.IO) {
                 val networkId = userPreferencesRepository.selectedNetworkId.first()
@@ -37,11 +55,7 @@ class NetworkStatusViewModel
                     return@launch
                 }
                 selectedNetwork = networkRepository.findById(networkId)!!
-                selectedNetwork.networkStatusServiceHost?.let { host ->
-                    selectedNetwork.networkStatusServicePort?.let { port ->
-                        networkStatusRepository.subscribe(host, port)
-                    }
-                }
+                networkStatusRepository.subscribe(selectedNetwork)
             }
         }
 
@@ -52,13 +66,39 @@ class NetworkStatusViewModel
         }
 
         fun changeNetwork(network: Network) {
+            selectedNetwork = network
             viewModelScope.launch(Dispatchers.IO) {
                 userPreferencesRepository.setSelectedNetworkId(network.id)
-                selectedNetwork = network
-                selectedNetwork.networkStatusServiceHost?.let { host ->
-                    selectedNetwork.networkStatusServicePort?.let { port ->
-                        viewModelScope.launch(Dispatchers.IO) {
-                            networkStatusRepository.changeNetwork(host, port)
+                viewModelScope.launch(Dispatchers.IO) {
+                    networkStatusRepository.changeNetwork(network)
+                }
+            }
+        }
+
+        private fun getEraValidatorCounts(
+            startEraIndex: Int,
+            endEraIndex: Int,
+        ) {
+            selectedNetwork.reportServiceHost?.let { host ->
+                selectedNetwork.reportServicePort?.let { port ->
+                    viewModelScope.launch(Dispatchers.IO) {
+                        Timber.i("CH $host $port")
+                        val reportService =
+                            ReportService(
+                                "https://$host:$port/",
+                            )
+                        val result = reportService.getEraReport(startEraIndex, endEraIndex)
+                        result.getOrNull()?.let { reports ->
+                            activeValidatorCountList =
+                                reports.map { report ->
+                                    report.activeValidatorCount
+                                }
+                            inactiveValidatorCountList =
+                                reports.map { report ->
+                                    report.inactiveValidatorCount
+                                }
+                            Timber.i("ACTIVE :: $activeValidatorCountList")
+                            Timber.i("INACTIVE :: $inactiveValidatorCountList")
                         }
                     }
                 }
