@@ -11,6 +11,7 @@ import io.helikon.subvt.data.repository.AppServiceRepository
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.repository.NetworkStatusRepository
 import io.helikon.subvt.data.repository.UserPreferencesRepository
+import io.helikon.subvt.data.repository.ValidatorListRepository
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -32,4 +33,7 @@ class AppModule {
 
     @Provides
     fun provideNetworkStatusRepository(): NetworkStatusRepository = NetworkStatusRepository()
+
+    @Provides
+    fun provideValidatorListRepository(): ValidatorListRepository = ValidatorListRepository()
 }
