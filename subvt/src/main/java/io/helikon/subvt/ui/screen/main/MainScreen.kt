@@ -13,12 +13,18 @@ import io.helikon.subvt.ui.screen.report.network.NetworkReportsScreen
 import io.helikon.subvt.ui.screen.validator.my.MyValidatorsScreen
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-    MainScreenContent(modifier)
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    onValidatorListButtonClicked: () -> Unit,
+) {
+    MainScreenContent(modifier, onValidatorListButtonClicked)
 }
 
 @Composable
-private fun MainScreenContent(modifier: Modifier = Modifier) {
+private fun MainScreenContent(
+    modifier: Modifier = Modifier,
+    onValidatorListButtonClicked: () -> Unit,
+) {
     Box(
         modifier =
             modifier.fillMaxSize(),
@@ -33,7 +39,9 @@ private fun MainScreenContent(modifier: Modifier = Modifier) {
                     activeImageResourceId = R.drawable.tab_icon_network_active,
                     inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
                     content = {
-                        NetworkStatusScreen()
+                        NetworkStatusScreen(
+                            onValidatorListButtonClicked = onValidatorListButtonClicked,
+                        )
                     },
                 ),
                 Tab(

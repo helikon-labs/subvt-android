@@ -5,6 +5,7 @@ enum class Screen {
     ONBOARDING,
     NETWORK_SELECTION,
     MAIN,
+    VALIDATOR_LIST,
 }
 
 sealed class NavigationItem(val route: String) {
@@ -15,4 +16,6 @@ sealed class NavigationItem(val route: String) {
     data object NetworkSelection : NavigationItem(Screen.NETWORK_SELECTION.name)
 
     data object Main : NavigationItem(Screen.MAIN.name)
+
+    data object ValidatorList : NavigationItem(Screen.VALIDATOR_LIST.name)
 }

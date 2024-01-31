@@ -78,6 +78,7 @@ fun NetworkStatusScreen(
     modifier: Modifier = Modifier,
     viewModel: NetworkStatusViewModel = hiltViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    onValidatorListButtonClicked: () -> Unit,
 ) {
     val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
     val networkStatus by viewModel.networkStatus.collectAsStateWithLifecycle()
@@ -115,6 +116,7 @@ fun NetworkStatusScreen(
         onChangeNetwork = { network ->
             viewModel.changeNetwork(network)
         },
+        onValidatorListButtonClicked = onValidatorListButtonClicked,
     )
 }
 
@@ -124,6 +126,7 @@ fun NetworkStatusScreenContent(
     isDark: Boolean = isSystemInDarkTheme(),
     state: NetworkStatusScreenState,
     onChangeNetwork: (Network) -> Unit,
+    onValidatorListButtonClicked: () -> Unit,
 ) {
     var networkSwitcherIsVisible by rememberSaveable {
         mutableStateOf(false)
@@ -276,7 +279,7 @@ fun NetworkStatusScreenContent(
                     validatorCountHistory = state.activeValidatorCountHistory,
                     validatorCount = state.networkStatus?.activeValidatorCount,
                 ) {
-                    // no-op
+                    onValidatorListButtonClicked()
                 }
                 ValidatorCountPanel(
                     modifier = Modifier.weight(1f).appear(1),
@@ -284,7 +287,7 @@ fun NetworkStatusScreenContent(
                     validatorCountHistory = state.inactiveValidatorCountHistory,
                     validatorCount = state.networkStatus?.inactiveValidatorCount,
                 ) {
-                    // no-op
+                    onValidatorListButtonClicked()
                 }
             }
             BlockNumberPanel(
@@ -365,6 +368,7 @@ fun NetworkStatusScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     inactiveValidatorCountHistory = listOf(),
                 ),
             onChangeNetwork = {},
+            onValidatorListButtonClicked = {},
         )
     }
 }
