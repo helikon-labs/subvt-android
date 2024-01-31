@@ -24,7 +24,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -88,72 +90,71 @@ fun TabLayout(
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
-    Column(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        Box(modifier = modifier.fillMaxSize()) {
-            for (i in tabs.indices) {
-                val tab = tabs[i]
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(
-                                Color.bg(isDark),
-                            )
-                            .zIndex(if (i == selectedTabIndex) 10f else 1f),
-                ) {
-                    tab.content()
-                }
-            }
+    Box(modifier = modifier.fillMaxSize()) {
+        for (i in tabs.indices) {
+            val tab = tabs[i]
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .height(104.dp)
-                        .zIndex(12f)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            brush =
-                                Brush.verticalGradient(
-                                    colors =
-                                        listOf(
-                                            Color.transparent(),
-                                            Color.bg(isDark).copy(alpha = 0.85f),
-                                            Color.bg(isDark),
-                                        ),
-                                ),
-                        ),
-            )
-            Box(
-                modifier =
-                    Modifier
-                        .padding(
-                            vertical = 0.dp,
-                            horizontal = dimensionResource(id = R.dimen.common_padding),
-                        )
-                        .navigationBarsPadding()
-                        .align(Alignment.BottomCenter)
-                        .offset(x = 0.dp, y = -dimensionResource(id = R.dimen.common_padding))
-                        .zIndex(15f),
+                        .fillMaxSize()
+                        .alpha(if (i == selectedTabIndex) 1f else 0f)
+                        .zIndex(if (i == selectedTabIndex) 10f else 1f),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier =
-                        Modifier
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .background(Color.tabBarBg(isDark))
-                            .padding(
-                                dimensionResource(id = R.dimen.common_padding),
-                                12.dp,
-                            )
-                            .fillMaxWidth(),
-                ) {
-                    for (i in tabs.indices) {
-                        TabContainer(tabs[i], isSelected = selectedTabIndex == i) {
-                            if (selectedTabIndex != i) {
-                                selectedTabIndex = i
-                            }
+                tab.content()
+            }
+        }
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(104.dp)
+                    .zIndex(12f)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        brush =
+                            Brush.verticalGradient(
+                                colors =
+                                    listOf(
+                                        Color.transparent(),
+                                        Color.bg(isDark).copy(alpha = 0.85f),
+                                        Color.bg(isDark),
+                                    ),
+                            ),
+                    ),
+        )
+        Box(
+            modifier =
+                Modifier
+                    .padding(
+                        vertical = 0.dp,
+                        horizontal = dimensionResource(id = R.dimen.common_padding),
+                    )
+                    .navigationBarsPadding()
+                    .align(Alignment.BottomCenter)
+                    .offset(x = 0.dp, y = -dimensionResource(id = R.dimen.common_padding))
+                    .zIndex(15f),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier =
+                    Modifier
+                        .shadow(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            spotColor = Color.networkButtonShadow(true).copy(alpha = 0.5f),
+                        )
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .background(Color.tabBarBg(isDark))
+                        .padding(
+                            dimensionResource(id = R.dimen.common_padding),
+                            12.dp,
+                        )
+                        .fillMaxWidth(),
+            ) {
+                for (i in tabs.indices) {
+                    TabContainer(tabs[i], isSelected = selectedTabIndex == i) {
+                        if (selectedTabIndex != i) {
+                            selectedTabIndex = i
                         }
                     }
                 }

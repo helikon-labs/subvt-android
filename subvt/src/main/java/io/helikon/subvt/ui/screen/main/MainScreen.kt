@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.helikon.subvt.R
+import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.screen.network.status.NetworkStatusScreen
 import io.helikon.subvt.ui.screen.notification.list.NotificationsScreen
 import io.helikon.subvt.ui.screen.report.network.NetworkReportsScreen
@@ -18,7 +19,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
 @Composable
 private fun MainScreenContent(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier =
+            modifier.fillMaxSize(),
+    ) {
+        AnimatedBackground(
+            modifier = Modifier.fillMaxSize(),
+        )
         val tabs =
             arrayOf(
                 Tab(

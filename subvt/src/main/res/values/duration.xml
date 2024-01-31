@@ -6,4 +6,6 @@
     <integer name="snackbar_medium_display_duration_ms">2500</integer>
 
     <integer name="introduction_icon_volume_anim_delay_ms">250</integer>
+
+    <integer name="animated_background_anim_duration_ms">5000</integer>
 </resources>

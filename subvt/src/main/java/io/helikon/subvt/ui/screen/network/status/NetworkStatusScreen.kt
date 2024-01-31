@@ -166,7 +166,7 @@ fun NetworkStatusScreenContent(
                         color =
                             Color
                                 .panelBg(isDark)
-                                .copy(alpha = min(1f, scrolledRatio * 8)),
+                                .copy(alpha = min(1f, scrolledRatio * 4)),
                         shape = clipShape,
                     )
                     .fillMaxWidth()

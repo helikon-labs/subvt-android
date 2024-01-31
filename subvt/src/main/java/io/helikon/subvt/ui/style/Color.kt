@@ -37,9 +37,13 @@ object Color {
 
     fun bgMorphLeft(isDark: Boolean) = color(isDark, 0x7A2AFA4D, 0xFF3A6DFF)
 
+    fun bgMorphLeftInactive() = ComposeColor(0x7AA8A8A8)
+
     fun bgMorphMiddle(isDark: Boolean) = color(isDark, 0x26F5F5F5, 0x26F5F5F5)
 
     fun bgMorphRight(isDark: Boolean) = color(isDark, 0x7A3A6DFF, 0xFF2AFA4D)
+
+    fun bgMorphRightInactive() = ComposeColor(0x7A6D6D6D)
 
     fun bgMorphRightError(isDark: Boolean) = color(isDark, 0xFFFF002D, 0xFFFF002D)
 
@@ -49,7 +53,7 @@ object Color {
 
     fun black() = ComposeColor(0xFF000000)
 
-    fun panelBg(isDark: Boolean) = color(isDark, 0xB3EAEAEA, 0xB30E2938)
+    fun panelBg(isDark: Boolean) = color(isDark, 0xAAEAEAEA, 0x770E2938)
 
     fun enablePushNotifsButtonText(isDark: Boolean) = color(isDark, 0xFF3A6DFF, 0xFF00E927)
 
