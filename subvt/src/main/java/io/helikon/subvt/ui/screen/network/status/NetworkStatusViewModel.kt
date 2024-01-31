@@ -66,6 +66,8 @@ class NetworkStatusViewModel
 
         fun changeNetwork(network: Network) {
             selectedNetwork = network
+            activeValidatorCountList = listOf()
+            inactiveValidatorCountList = listOf()
             viewModelScope.launch(Dispatchers.IO) {
                 userPreferencesRepository.setSelectedNetworkId(network.id)
                 viewModelScope.launch(Dispatchers.IO) {
@@ -78,8 +80,6 @@ class NetworkStatusViewModel
             startEraIndex: Int,
             endEraIndex: Int,
         ) {
-            activeValidatorCountList = listOf()
-            inactiveValidatorCountList = listOf()
             selectedNetwork.reportServiceHost?.let { host ->
                 selectedNetwork.reportServicePort?.let { port ->
                     viewModelScope.launch(Dispatchers.IO) {

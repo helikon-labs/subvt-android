@@ -1,5 +1,6 @@
 package io.helikon.subvt.ui.screen.network.status.panel
 
+import android.os.Build
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -78,7 +79,7 @@ fun ValidatorCountChart(
         style =
             BezierCurveStyle.CurveStroke(
                 brush = brush,
-                stroke = Stroke(width = 8.dp.value),
+                stroke = Stroke(width = 6.dp.value),
             ),
         visibleRatio = visibleRatio,
     )
@@ -110,15 +111,17 @@ fun ValidatorCountPanel(
                         .fillMaxSize(),
                 validatorCountHistory = validatorCountHistory,
             )
-            ValidatorCountChart(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .offset(0.dp, 5.dp)
-                        .blur(5.dp)
-                        .alpha(0.4f),
-                validatorCountHistory = validatorCountHistory,
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ValidatorCountChart(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .offset(0.dp, 5.dp)
+                            .blur(5.dp)
+                            .alpha(0.4f),
+                    validatorCountHistory = validatorCountHistory,
+                )
+            }
         }
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.common_padding)),

@@ -67,7 +67,7 @@ class NetworkStatusRepository : RPCSubscriptionListener<NetworkStatus, NetworkSt
             return
         }
         this.subscriptionId = -1L
-        this._networkStatus.value = null
+        // this._networkStatus.value = null
         this.nextNetwork?.let { network ->
             this.nextNetwork = null
             this.subscribe(network)

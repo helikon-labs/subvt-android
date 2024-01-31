@@ -205,6 +205,7 @@ fun NetworkStatusScreenContent(
                                         when (state.serviceStatus) {
                                             is RPCSubscriptionServiceStatus.Idle -> Color.statusIdle()
                                             is RPCSubscriptionServiceStatus.Connected -> Color.statusWaiting()
+                                            is RPCSubscriptionServiceStatus.Connecting -> Color.statusWaiting()
                                             is RPCSubscriptionServiceStatus.Error -> Color.statusError()
                                             is RPCSubscriptionServiceStatus.Subscribed -> Color.statusActive()
                                             is RPCSubscriptionServiceStatus.Unsubscribed -> Color.statusWaiting()
