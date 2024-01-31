@@ -1,5 +1,6 @@
 package io.helikon.subvt.ui.activity
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -24,19 +25,25 @@ import android.graphics.Color as ComposeColor
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(
-            statusBarStyle =
-                SystemBarStyle.auto(
-                    ComposeColor.TRANSPARENT,
-                    ComposeColor.TRANSPARENT,
-                ),
-            navigationBarStyle =
-                SystemBarStyle.auto(
-                    ComposeColor.TRANSPARENT,
-                    ComposeColor.TRANSPARENT,
-                ),
-        )
         super.onCreate(savedInstanceState)
+        val systemBarStyle =
+            when (
+                val currentNightMode =
+                    resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            ) {
+                Configuration.UI_MODE_NIGHT_NO ->
+                    SystemBarStyle.light(
+                        ComposeColor.TRANSPARENT,
+                        ComposeColor.TRANSPARENT,
+                    )
+
+                Configuration.UI_MODE_NIGHT_YES -> SystemBarStyle.dark(ComposeColor.TRANSPARENT)
+                else -> error("Illegal State, current mode is $currentNightMode.")
+            }
+        enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle,
+        )
         val userPreferencesRepository = UserPreferencesRepository(application)
         val startDestination =
             runBlocking {
