@@ -1,6 +1,6 @@
 package io.helikon.subvt.ui.screen.network.status.panel
 
-import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -52,7 +52,7 @@ fun ValidatorCountChart(
     validatorCountHistory: List<Int>,
 ) {
     var isLaunched by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(true) {
+    LaunchedEffect(validatorCountHistory) {
         isLaunched = true
     }
     val visibleRatio by animateFloatAsState(
@@ -63,7 +63,7 @@ fun ValidatorCountChart(
                 0.0f
             },
         animationSpec =
-            tween(durationMillis = 750, easing = EaseInOutCubic),
+            tween(durationMillis = 250, easing = LinearEasing),
         label = "",
     )
     val mid = validatorCountHistory.average()

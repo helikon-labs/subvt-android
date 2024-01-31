@@ -106,7 +106,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.22.9")
+    implementation("com.github.helikon-labs:subvt-data-android:0.23.0")
+    implementation("com.github.zed-alpha.shadow-gadgets:compose:2.2.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
 }

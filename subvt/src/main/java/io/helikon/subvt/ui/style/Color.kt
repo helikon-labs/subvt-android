@@ -47,6 +47,8 @@ object Color {
 
     fun blue() = ComposeColor(0xFF3B6FFF)
 
+    fun black() = ComposeColor(0xFF000000)
+
     fun panelBg(isDark: Boolean) = color(isDark, 0xB3EAEAEA, 0xB30E2938)
 
     fun enablePushNotifsButtonText(isDark: Boolean) = color(isDark, 0xFF3A6DFF, 0xFF00E927)

@@ -36,4 +36,6 @@
     <dimen name="network_status_panel_title_font_size">12sp</dimen>
 
     <dimen name="status_indicator_circle_size">7dp</dimen>
+
+    <dimen name="network_status_block_wave_size">40dp</dimen>
 </resources>

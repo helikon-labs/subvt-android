@@ -4,13 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
@@ -29,6 +32,7 @@ fun BlockNumberPanel(
     isDark: Boolean = isSystemInDarkTheme(),
     title: String,
     blockNumber: Long?,
+    displayBlockWave: Boolean,
 ) {
     Box(
         modifier =
@@ -38,25 +42,34 @@ fun BlockNumberPanel(
                 .background(Color.panelBg(isDark))
                 .padding(dimensionResource(id = R.dimen.common_padding)),
     ) {
-        Column {
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                style = Font.normal(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
-                color = Color.text(isDark),
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text =
-                    if (blockNumber == null) {
-                        "-"
-                    } else {
-                        "$blockNumber"
-                    },
-                style = Font.semiBold(40.sp),
-                color = Color.text(isDark),
-                textAlign = TextAlign.Center,
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    style = Font.normal(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    color = Color.text(isDark),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text =
+                        if (blockNumber == null) {
+                            "-"
+                        } else {
+                            "$blockNumber"
+                        },
+                    style = Font.semiBold(40.sp),
+                    color = Color.text(isDark),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Spacer(modifier = Modifier.weight(1.0f))
+            if (displayBlockWave) {
+                BlockWave(isDark = isDark, blockNumber = blockNumber)
+            }
+            Spacer(modifier = Modifier.width(26.dp))
         }
     }
 }
@@ -71,6 +84,7 @@ fun BlockNumberPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
             modifier = Modifier,
             title = stringResource(id = R.string.network_status_best_block_number),
             blockNumber = 12_345_678,
+            displayBlockWave = true,
         )
     }
 }

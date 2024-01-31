@@ -43,6 +43,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zedalpha.shadowgadgets.compose.clippedShadow
 import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
@@ -62,6 +63,15 @@ import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
 import kotlin.math.min
+
+data class NetworkStatusScreenState(
+    val networks: List<Network>,
+    val network: Network,
+    val serviceStatus: RPCSubscriptionServiceStatus,
+    val networkStatus: NetworkStatus?,
+    val activeValidatorCountHistory: List<Int>,
+    val inactiveValidatorCountHistory: List<Int>,
+)
 
 @Composable
 fun NetworkStatusScreen(
@@ -93,12 +103,15 @@ fun NetworkStatusScreen(
 
     NetworkStatusScreenContent(
         modifier = modifier,
-        networks = networks,
-        network = viewModel.selectedNetwork,
-        serviceStatus = serviceStatus,
-        networkStatus = networkStatus,
-        activeValidatorCountHistory = viewModel.activeValidatorCountList,
-        inactiveValidatorCountHistory = viewModel.inactiveValidatorCountList,
+        state =
+            NetworkStatusScreenState(
+                networks = networks,
+                network = viewModel.selectedNetwork,
+                serviceStatus = serviceStatus,
+                networkStatus = networkStatus,
+                activeValidatorCountHistory = viewModel.activeValidatorCountList,
+                inactiveValidatorCountHistory = viewModel.inactiveValidatorCountList,
+            ),
         onChangeNetwork = { network ->
             viewModel.changeNetwork(network)
         },
@@ -109,12 +122,7 @@ fun NetworkStatusScreen(
 fun NetworkStatusScreenContent(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
-    networks: List<Network>,
-    network: Network,
-    serviceStatus: RPCSubscriptionServiceStatus,
-    networkStatus: NetworkStatus?,
-    activeValidatorCountHistory: List<Int>,
-    inactiveValidatorCountHistory: List<Int>,
+    state: NetworkStatusScreenState,
     onChangeNetwork: (Network) -> Unit,
 ) {
     var networkSwitcherIsVisible by rememberSaveable {
@@ -130,9 +138,9 @@ fun NetworkStatusScreenContent(
                     Modifier
                         .zIndex(15f)
                         .fillMaxSize(),
-                serviceStatus = serviceStatus,
-                networks = networks,
-                selectedNetwork = network,
+                serviceStatus = state.serviceStatus,
+                networks = state.networks,
+                selectedNetwork = state.network,
                 onChangeNetwork = {
                     onChangeNetwork(it)
                     scope.launch {
@@ -144,24 +152,29 @@ fun NetworkStatusScreenContent(
                 },
             )
         }
+        val clipShape =
+            RoundedCornerShape(
+                0.dp,
+                0.dp,
+                dimensionResource(id = R.dimen.common_panel_border_radius),
+                dimensionResource(id = R.dimen.common_panel_border_radius),
+            )
         Column(
             modifier =
                 Modifier
-                    .fillMaxWidth()
                     .background(
                         color =
                             Color
                                 .panelBg(isDark)
-                                .copy(alpha = min(1f, scrolledRatio * 2)),
-                        shape =
-                            RoundedCornerShape(
-                                0.dp,
-                                0.dp,
-                                dimensionResource(id = R.dimen.common_panel_border_radius),
-                                dimensionResource(id = R.dimen.common_panel_border_radius),
-                            ),
+                                .copy(alpha = min(1f, scrolledRatio * 8)),
+                        shape = clipShape,
                     )
-                    .zIndex(10f),
+                    .fillMaxWidth()
+                    .zIndex(10f)
+                    .clippedShadow(
+                        elevation = (10 * min(1f, scrolledRatio * 4)).dp,
+                        shape = clipShape,
+                    ),
         ) {
             Spacer(
                 modifier =
@@ -189,7 +202,7 @@ fun NetworkStatusScreenContent(
                                     .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
                                     .clip(CircleShape)
                                     .background(
-                                        when (serviceStatus) {
+                                        when (state.serviceStatus) {
                                             is RPCSubscriptionServiceStatus.Idle -> Color.statusIdle()
                                             is RPCSubscriptionServiceStatus.Connected -> Color.statusWaiting()
                                             is RPCSubscriptionServiceStatus.Error -> Color.statusError()
@@ -201,7 +214,7 @@ fun NetworkStatusScreenContent(
                     }
                     Spacer(modifier = Modifier.weight(1.0f))
                     NetworkSelectorButton(
-                        network = network,
+                        network = state.network,
                         isOpen = false,
                         onClick = {
                             networkSwitcherIsVisible = true
@@ -259,16 +272,16 @@ fun NetworkStatusScreenContent(
                 ValidatorCountPanel(
                     modifier = Modifier.weight(1f).appear(0),
                     title = stringResource(id = R.string.network_status_active_validators),
-                    validatorCountHistory = activeValidatorCountHistory,
-                    validatorCount = networkStatus?.activeValidatorCount,
+                    validatorCountHistory = state.activeValidatorCountHistory,
+                    validatorCount = state.networkStatus?.activeValidatorCount,
                 ) {
                     // no-op
                 }
                 ValidatorCountPanel(
                     modifier = Modifier.weight(1f).appear(1),
                     title = stringResource(id = R.string.network_status_inactive_validators),
-                    validatorCountHistory = inactiveValidatorCountHistory,
-                    validatorCount = networkStatus?.inactiveValidatorCount,
+                    validatorCountHistory = state.inactiveValidatorCountHistory,
+                    validatorCount = state.networkStatus?.inactiveValidatorCount,
                 ) {
                     // no-op
                 }
@@ -276,12 +289,14 @@ fun NetworkStatusScreenContent(
             BlockNumberPanel(
                 modifier = Modifier.fillMaxWidth().appear(2),
                 title = stringResource(id = R.string.network_status_best_block_number),
-                blockNumber = networkStatus?.bestBlockNumber,
+                blockNumber = state.networkStatus?.bestBlockNumber,
+                displayBlockWave = true,
             )
             BlockNumberPanel(
                 modifier = Modifier.fillMaxWidth().appear(3),
                 title = stringResource(id = R.string.network_status_best_block_number),
-                blockNumber = networkStatus?.finalizedBlockNumber,
+                blockNumber = state.networkStatus?.finalizedBlockNumber,
+                displayBlockWave = false,
             )
             Row(
                 horizontalArrangement =
@@ -292,33 +307,33 @@ fun NetworkStatusScreenContent(
                 EraEpochPanel(
                     modifier = Modifier.weight(1.0f).appear(4),
                     isEra = true,
-                    index = networkStatus?.activeEra?.index,
-                    startTimestamp = networkStatus?.activeEra?.startTimestamp,
-                    endTimestamp = networkStatus?.activeEra?.endTimestamp,
+                    index = state.networkStatus?.activeEra?.index,
+                    startTimestamp = state.networkStatus?.activeEra?.startTimestamp,
+                    endTimestamp = state.networkStatus?.activeEra?.endTimestamp,
                 )
                 EraEpochPanel(
                     modifier = Modifier.weight(1.0f).appear(5),
                     isEra = false,
-                    index = networkStatus?.currentEpoch?.index,
-                    startTimestamp = networkStatus?.currentEpoch?.startTimestamp,
-                    endTimestamp = networkStatus?.currentEpoch?.endTimestamp,
+                    index = state.networkStatus?.currentEpoch?.index,
+                    startTimestamp = state.networkStatus?.currentEpoch?.startTimestamp,
+                    endTimestamp = state.networkStatus?.currentEpoch?.endTimestamp,
                 )
             }
             EraPointsPanel(
                 modifier = Modifier.fillMaxWidth().appear(6),
-                eraPoints = networkStatus?.eraRewardPoints,
+                eraPoints = state.networkStatus?.eraRewardPoints,
             )
             LastEraTotalRewardPanel(
                 modifier = Modifier.fillMaxWidth().appear(7),
-                reward = networkStatus?.lastEraTotalReward,
-                network = network,
+                reward = state.networkStatus?.lastEraTotalReward,
+                network = state.network,
             )
             ValidatorBackingsPanel(
                 modifier = Modifier.fillMaxWidth().appear(8),
-                network = network,
-                minStake = networkStatus?.minStake,
-                averageStake = networkStatus?.averageStake,
-                maxStake = networkStatus?.maxStake,
+                network = state.network,
+                minStake = state.networkStatus?.minStake,
+                averageStake = state.networkStatus?.averageStake,
+                maxStake = state.networkStatus?.maxStake,
             )
 
             Spacer(
@@ -339,12 +354,15 @@ fun NetworkStatusScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
     ) {
         NetworkStatusScreenContent(
             modifier = Modifier,
-            networks = PreviewData.networks,
-            network = PreviewData.networks[0],
-            serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
-            networkStatus = PreviewData.networkStatus,
-            activeValidatorCountHistory = listOf(),
-            inactiveValidatorCountHistory = listOf(),
+            state =
+                NetworkStatusScreenState(
+                    networks = PreviewData.networks,
+                    network = PreviewData.networks[0],
+                    serviceStatus = RPCSubscriptionServiceStatus.Subscribed(0L),
+                    networkStatus = PreviewData.networkStatus,
+                    activeValidatorCountHistory = listOf(),
+                    inactiveValidatorCountHistory = listOf(),
+                ),
             onChangeNetwork = {},
         )
     }

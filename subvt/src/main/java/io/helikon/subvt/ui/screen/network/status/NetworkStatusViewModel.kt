@@ -15,7 +15,6 @@ import io.helikon.subvt.data.service.ReportService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 const val ERA_REPORT_COUNT = 15
@@ -79,10 +78,11 @@ class NetworkStatusViewModel
             startEraIndex: Int,
             endEraIndex: Int,
         ) {
+            activeValidatorCountList = listOf()
+            inactiveValidatorCountList = listOf()
             selectedNetwork.reportServiceHost?.let { host ->
                 selectedNetwork.reportServicePort?.let { port ->
                     viewModelScope.launch(Dispatchers.IO) {
-                        Timber.i("CH $host $port")
                         val reportService =
                             ReportService(
                                 "https://$host:$port/",
@@ -97,8 +97,6 @@ class NetworkStatusViewModel
                                 reports.map { report ->
                                     report.inactiveValidatorCount
                                 }
-                            Timber.i("ACTIVE :: $activeValidatorCountList")
-                            Timber.i("INACTIVE :: $inactiveValidatorCountList")
                         }
                     }
                 }

@@ -1,5 +1,8 @@
 package io.helikon.subvt.ui.screen.network.status.panel
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -15,6 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +56,21 @@ fun EraEpochPanel(
     startTimestamp: Long?,
     endTimestamp: Long?,
 ) {
+    var isLaunched by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(index) {
+        isLaunched = index != null
+    }
+    val progressVisibleRatio by animateFloatAsState(
+        targetValue =
+            if (isLaunched) {
+                1.0f
+            } else {
+                0.0f
+            },
+        animationSpec =
+            tween(durationMillis = 500, delayMillis = 750, easing = LinearEasing),
+        label = "",
+    )
     val title =
         stringResource(
             id =
@@ -137,7 +160,7 @@ fun EraEpochPanel(
                     Modifier
                         .width(62.dp)
                         .alignByBaseline(),
-                text = "$elapsedPercentage%",
+                text = "${(elapsedPercentage * progressVisibleRatio).toInt()}%",
                 style = Font.semiBold(20.sp),
                 color = Color.text(isDark),
             )
@@ -149,22 +172,23 @@ fun EraEpochPanel(
                         .weight(1.0f)
                         .background(Color.statusActive()),
             ) {
+                val animatedElapsedPercentage = (elapsedPercentage * progressVisibleRatio).toLong()
                 var gradientWeight =
                     min(
-                        elapsedPercentage,
+                        animatedElapsedPercentage,
                         5,
                     )
                 gradientWeight =
                     min(
                         gradientWeight,
-                        100 - elapsedPercentage,
+                        100 - animatedElapsedPercentage,
                     )
-                if ((elapsedPercentage - gradientWeight) > 0) {
+                if ((animatedElapsedPercentage - gradientWeight) > 0) {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxHeight()
-                                .weight((elapsedPercentage - gradientWeight).toFloat())
+                                .weight((animatedElapsedPercentage - gradientWeight).toFloat())
                                 .background(
                                     Color.progress(),
                                 ),
@@ -184,12 +208,12 @@ fun EraEpochPanel(
                                 ),
                     )
                 }
-                if ((100 - elapsedPercentage - gradientWeight) > 0) {
+                if ((100 - animatedElapsedPercentage - gradientWeight) > 0) {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxHeight()
-                                .weight((100 - elapsedPercentage - gradientWeight).toFloat())
+                                .weight((100 - animatedElapsedPercentage - gradientWeight).toFloat())
                                 .background(
                                     Color.statusActive(),
                                 ),
