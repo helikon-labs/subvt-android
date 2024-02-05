@@ -1,9 +1,11 @@
 package io.helikon.subvt.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,10 +28,10 @@ fun AppNavigationHost(
         navController,
         startDestination,
         enterTransition = {
-            fadeIn()
+            EnterTransition.None
         },
         exitTransition = {
-            fadeOut()
+            ExitTransition.None
         },
     ) {
         composable(route = NavigationItem.Introduction.route) {
@@ -47,7 +49,45 @@ fun AppNavigationHost(
                 navController.navigate((NavigationItem.Main.route))
             })
         }
-        composable(route = NavigationItem.Main.route) {
+        composable(
+            route = NavigationItem.Main.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec =
+                        tween(
+                            100,
+                            easing = EaseInOut,
+                        ),
+                ) +
+                    slideIntoContainer(
+                        animationSpec =
+                            tween(
+                                200,
+                                easing = EaseInOut,
+                            ),
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec =
+                        tween(
+                            100,
+                            easing = EaseInOut,
+                        ),
+                ) +
+                    slideOutOfContainer(
+                        animationSpec =
+                            tween(
+                                200,
+                                easing = EaseInOut,
+                            ),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    ) { fullOffset ->
+                        fullOffset / 2
+                    }
+            },
+        ) {
             MainScreen(onActiveValidatorListButtonClicked = {
                 navController.navigate((NavigationItem.ActiveValidatorList.route))
             }, onInactiveValidatorListButtonClicked = {
@@ -57,38 +97,24 @@ fun AppNavigationHost(
         composable(
             route = NavigationItem.ActiveValidatorList.route,
             enterTransition = {
-                fadeIn(
+                slideIntoContainer(
                     animationSpec =
                         tween(
-                            300,
-                            easing = LinearEasing,
+                            200,
+                            easing = EaseInOut,
                         ),
-                ) +
-                    slideIntoContainer(
-                        animationSpec =
-                            tween(
-                                300,
-                                easing = EaseIn,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                    )
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                )
             },
             exitTransition = {
-                fadeOut(
+                slideOutOfContainer(
                     animationSpec =
                         tween(
-                            300,
-                            easing = LinearEasing,
+                            200,
+                            easing = EaseInOut,
                         ),
-                ) +
-                    slideOutOfContainer(
-                        animationSpec =
-                            tween(
-                                300,
-                                easing = EaseOut,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    )
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                )
             },
         ) {
             ValidatorListScreen(onBack = {
@@ -97,39 +123,25 @@ fun AppNavigationHost(
         }
         composable(
             route = NavigationItem.InactiveValidatorList.route,
-            enterTransition = {
-                fadeIn(
+            popEnterTransition = {
+                slideIntoContainer(
                     animationSpec =
                         tween(
                             300,
-                            easing = LinearEasing,
+                            easing = EaseIn,
                         ),
-                ) +
-                    slideIntoContainer(
-                        animationSpec =
-                            tween(
-                                300,
-                                easing = EaseIn,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                    )
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                )
             },
-            exitTransition = {
-                fadeOut(
+            popExitTransition = {
+                slideOutOfContainer(
                     animationSpec =
                         tween(
                             300,
-                            easing = LinearEasing,
+                            easing = EaseOut,
                         ),
-                ) +
-                    slideOutOfContainer(
-                        animationSpec =
-                            tween(
-                                300,
-                                easing = EaseOut,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    )
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                )
             },
         ) {
             ValidatorListScreen(onBack = {
