@@ -44,9 +44,9 @@ class ValidatorListViewModel
 
         private val mutex = Mutex()
         private val _validators = mutableListOf<ValidatorSummary>()
-        var validators by mutableStateOf<List<ValidatorSummary>>(listOf())
+        var validators by mutableStateOf<List<ValidatorSummary>?>(null)
         var filter = TextFieldValue("")
-        var sortOption by mutableStateOf<ValidatorSortOption>(ValidatorSortOption.IDENTITY)
+        var sortOption by mutableStateOf(ValidatorSortOption.IDENTITY)
         var filterOptions by mutableStateOf<Set<ValidatorFilterOption>>(setOf())
 
         fun subscribe(isActive: Boolean) {

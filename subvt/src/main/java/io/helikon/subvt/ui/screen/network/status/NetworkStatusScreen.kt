@@ -1,6 +1,5 @@
 package io.helikon.subvt.ui.screen.network.status
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,7 +21,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -41,7 +38,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zedalpha.shadowgadgets.compose.clippedShadow
 import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
@@ -49,6 +45,7 @@ import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.appear
+import io.helikon.subvt.ui.modifier.scrollHeader
 import io.helikon.subvt.ui.screen.network.status.panel.BlockNumberPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraPointsPanel
@@ -61,7 +58,6 @@ import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
-import kotlin.math.min
 
 data class NetworkStatusScreenState(
     val networks: List<Network>,
@@ -129,22 +125,12 @@ fun NetworkStatusScreenContent(
     onActiveValidatorListButtonClicked: () -> Unit,
     onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
-    val borderRadius = dimensionResource(id = R.dimen.common_panel_border_radius)
     var networkSwitcherIsVisible by rememberSaveable {
         mutableStateOf(false)
     }
-    val clipShape =
-        remember {
-            RoundedCornerShape(
-                0.dp,
-                0.dp,
-                borderRadius,
-                borderRadius,
-            )
-        }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
+    val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
     Box(modifier = modifier.fillMaxSize()) {
         if (networkSwitcherIsVisible) {
             NetworkSwitcherPanel(
@@ -170,18 +156,9 @@ fun NetworkStatusScreenContent(
         Column(
             modifier =
                 Modifier
-                    .background(
-                        color =
-                            Color
-                                .panelBg(isDark)
-                                .copy(alpha = min(1f, scrolledRatio * 4)),
-                        shape = clipShape,
-                    )
-                    .fillMaxWidth()
-                    .zIndex(10f)
-                    .clippedShadow(
-                        elevation = (10 * min(1f, scrolledRatio * 4)).dp,
-                        shape = clipShape,
+                    .scrollHeader(
+                        isDark = isDark,
+                        scrolledRatio = scrolledRatio,
                     ),
         ) {
             Spacer(

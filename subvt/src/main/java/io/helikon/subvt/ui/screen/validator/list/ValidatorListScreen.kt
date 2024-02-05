@@ -23,11 +23,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,9 +37,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -56,7 +61,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zedalpha.shadowgadgets.compose.clippedShadow
 import io.helikon.subvt.R
 import io.helikon.subvt.data.extension.ValidatorFilterOption
 import io.helikon.subvt.data.extension.ValidatorSortOption
@@ -67,18 +71,19 @@ import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.noRippleClickable
+import io.helikon.subvt.ui.modifier.scrollHeader
 import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
 import kotlinx.coroutines.launch
-import kotlin.math.min
+import kotlin.math.abs
 
 data class ValidatorListScreenState(
     val serviceStatus: RPCSubscriptionServiceStatus,
     val network: Network,
     val isActiveValidatorList: Boolean,
-    val validators: List<ValidatorSummary>,
+    val validators: List<ValidatorSummary>?,
     val filter: TextFieldValue,
     val sortOption: ValidatorSortOption,
     val filterOptions: Set<ValidatorFilterOption>,
@@ -159,22 +164,19 @@ fun ValidatorListScreenContent(
                 },
             )
         }
-    val borderRadius = dimensionResource(id = R.dimen.common_panel_border_radius)
-    val clipShape =
-        remember {
-            RoundedCornerShape(
-                0.dp,
-                0.dp,
-                borderRadius,
-                borderRadius,
-            )
-        }
     val scrollState = rememberLazyListState()
-    val scrolledRatio = 0f // scrollState.value.toFloat() / scrollState.maxValue.toFloat()
+    var scrollOffset by rememberSaveable {
+        mutableFloatStateOf(0.0f)
+    }
+    val scrolledRatio = abs(scrollOffset) / 52.0f
     val focusManager = LocalFocusManager.current
     var filterSortViewIsVisible by rememberSaveable {
         mutableStateOf(false)
     }
+    val filterIsEnabled =
+        (state.serviceStatus is RPCSubscriptionServiceStatus.Subscribed) && state.validators != null
+    val progressIndicatorIsVisible =
+        state.validators == null && state.serviceStatus !is RPCSubscriptionServiceStatus.Error
     Box(
         modifier =
             modifier
@@ -184,6 +186,20 @@ fun ValidatorListScreenContent(
         AnimatedBackground(
             modifier = Modifier.fillMaxSize().zIndex(0.0f),
         )
+        if (progressIndicatorIsVisible) {
+            Box(
+                modifier = Modifier.fillMaxSize().zIndex(4.0f),
+            ) {
+                CircularProgressIndicator(
+                    modifier =
+                        Modifier
+                            .width(dimensionResource(id = R.dimen.common_progress_width))
+                            .align(Alignment.Center),
+                    color = Color.lightGray(),
+                    trackColor = Color.transparent(),
+                )
+            }
+        }
         if (filterSortViewIsVisible) {
             ValidatorListFilterSortView(
                 modifier = Modifier.zIndex(15.0f),
@@ -208,20 +224,11 @@ fun ValidatorListScreenContent(
         Column(
             modifier =
                 Modifier
-                    .background(
-                        color =
-                            Color
-                                .panelBg(isDark)
-                                .copy(alpha = min(1f, scrolledRatio * 4)),
-                        // .copy(alpha = 1f),
-                        shape = clipShape,
+                    .scrollHeader(
+                        isDark = isDark,
+                        scrolledRatio = scrolledRatio,
                     )
-                    .fillMaxWidth()
-                    .zIndex(10f)
-                    .clippedShadow(
-                        elevation = (10 * min(1f, scrolledRatio * 4)).dp,
-                        shape = clipShape,
-                    ),
+                    .zIndex(10.0f),
         ) {
             Spacer(
                 modifier =
@@ -275,7 +282,11 @@ fun ValidatorListScreenContent(
             // search & filter
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
+                modifier =
+                    Modifier.padding(
+                        dimensionResource(id = R.dimen.common_padding),
+                        0.dp,
+                    ),
             ) {
                 Row(
                     modifier =
@@ -285,7 +296,14 @@ fun ValidatorListScreenContent(
                                 color = Color.panelBg(isDark),
                                 shape = RoundedCornerShape(12.dp),
                             )
-                            .weight(1.0f),
+                            .weight(1.0f)
+                            .alpha(
+                                if (filterIsEnabled) {
+                                    1.0f
+                                } else {
+                                    0.5f
+                                },
+                            ),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.common_padding)))
@@ -311,6 +329,7 @@ fun ValidatorListScreenContent(
                             Font.normal(14.sp)
                                 .copy(color = Color.text(isDark), lineHeight = 36.sp),
                         onValueChange = onFilterChange,
+                        enabled = filterIsEnabled,
                     )
                     Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.common_panel_padding)))
                 }
@@ -319,12 +338,21 @@ fun ValidatorListScreenContent(
                     modifier =
                         Modifier
                             .noRippleClickable {
-                                filterSortViewIsVisible = true
+                                if (filterIsEnabled) {
+                                    filterSortViewIsVisible = true
+                                }
                             }
                             .size(36.dp)
                             .background(
                                 color = Color.panelBg(isDark),
                                 shape = RoundedCornerShape(12.dp),
+                            )
+                            .alpha(
+                                if (filterIsEnabled) {
+                                    1.0f
+                                } else {
+                                    0.5f
+                                },
                             ),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -340,7 +368,6 @@ fun ValidatorListScreenContent(
         LazyColumn(
             modifier =
                 Modifier
-                    .statusBarsPadding()
                     .fillMaxSize()
                     .zIndex(5.0f),
             state = scrollState,
@@ -348,15 +375,30 @@ fun ValidatorListScreenContent(
             contentPadding =
                 PaddingValues(
                     dimensionResource(id = R.dimen.common_padding),
-                    dimensionResource(id = R.dimen.validator_list_content_padding_top),
+                    0.dp,
                     dimensionResource(id = R.dimen.common_padding),
                     dimensionResource(id = R.dimen.common_padding),
                 ),
         ) {
             item {
-                Spacer(modifier = Modifier.statusBarsPadding())
+                Spacer(
+                    modifier =
+                        Modifier
+                            .onGloballyPositioned {
+                                scrollOffset = it.positionInParent().y
+                            }
+                            .padding(
+                                PaddingValues(
+                                    0.dp,
+                                    dimensionResource(id = R.dimen.validator_list_content_padding_top),
+                                    0.dp,
+                                    0.dp,
+                                ),
+                            )
+                            .statusBarsPadding(),
+                )
             }
-            items(state.validators) { validator ->
+            items(state.validators ?: listOf()) { validator ->
                 ValidatorSummaryView(
                     network = state.network,
                     displayNetworkIcon = false,

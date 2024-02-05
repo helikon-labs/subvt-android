@@ -53,7 +53,9 @@ object Color {
 
     fun black() = ComposeColor(0xFF000000)
 
-    fun panelBg(isDark: Boolean) = color(isDark, 0xAAEAEAEA, 0x770E2938)
+    fun panelBg(isDark: Boolean) = color(isDark, 0xBBEAEAEA, 0x770E2938)
+
+    fun headerSectionBg(isDark: Boolean) = color(isDark, 0xFFCBCBCB, 0xFF1D3847)
 
     fun enablePushNotifsButtonText(isDark: Boolean) = color(isDark, 0xFF3A6DFF, 0xFF00E927)
 
