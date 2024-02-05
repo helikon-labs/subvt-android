@@ -15,7 +15,7 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
         var enableAgain by remember { mutableStateOf(true) }
         LaunchedEffect(enableAgain, block = {
             if (enableAgain) return@LaunchedEffect
-            delay(timeMillis = 1000L)
+            delay(timeMillis = 500L)
             enableAgain = true
         })
         this.then(

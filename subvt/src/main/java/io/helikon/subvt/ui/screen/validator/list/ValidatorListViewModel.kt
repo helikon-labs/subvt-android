@@ -7,8 +7,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.helikon.subvt.data.extension.ValidatorFilterOption
+import io.helikon.subvt.data.extension.ValidatorSortOption
 import io.helikon.subvt.data.extension.filter
-import io.helikon.subvt.data.extension.validatorSummaryComparator
+import io.helikon.subvt.data.extension.hasIdentity
+import io.helikon.subvt.data.extension.validatorIdentityComparator
+import io.helikon.subvt.data.extension.validatorNominationComparator
+import io.helikon.subvt.data.extension.validatorStakeComparator
 import io.helikon.subvt.data.model.app.ValidatorListUpdate
 import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.data.model.substrate.AccountId
@@ -40,7 +45,9 @@ class ValidatorListViewModel
         private val mutex = Mutex()
         private val _validators = mutableListOf<ValidatorSummary>()
         var validators by mutableStateOf<List<ValidatorSummary>>(listOf())
-        var filter by mutableStateOf(TextFieldValue(""))
+        var filter = TextFieldValue("")
+        var sortOption by mutableStateOf<ValidatorSortOption>(ValidatorSortOption.IDENTITY)
+        var filterOptions by mutableStateOf<Set<ValidatorFilterOption>>(setOf())
 
         fun subscribe(isActive: Boolean) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -89,7 +96,7 @@ class ValidatorListViewModel
             this.subscriptionId = subscriptionId
             _validators.clear()
             _validators.addAll(data.insert)
-            sortAndFilter()
+            filterAndSort()
         }
 
         override suspend fun onUnsubscribed(
@@ -138,21 +145,68 @@ class ValidatorListViewModel
                     }
                 }
                 mutex.unlock()
-                sortAndFilter()
+                filterAndSort()
             }
         }
 
-        fun sortAndFilter() {
+        fun filterAndSort() {
+            val comparator =
+                when (sortOption) {
+                    ValidatorSortOption.IDENTITY -> validatorIdentityComparator
+                    ValidatorSortOption.NOMINATION_DESCENDING -> validatorNominationComparator
+                    ValidatorSortOption.STAKE_DESCENDING -> validatorStakeComparator
+                }
             viewModelScope.launch(Dispatchers.IO) {
                 mutex.lock()
-                _validators.sortWith(validatorSummaryComparator)
-                mutex.unlock()
                 validators =
                     _validators
+                        .asSequence()
                         .filter {
                             it.filter(filter.text)
                         }
-                        .sortedWith(validatorSummaryComparator)
+                        .filter {
+                            if (filterOptions.contains(ValidatorFilterOption.HAS_IDENTITY)) {
+                                it.hasIdentity()
+                            } else {
+                                true
+                            }
+                        }
+                        .filter {
+                            if (filterOptions.contains(ValidatorFilterOption.IS_PARA_VALIDATOR)) {
+                                it.isParaValidator
+                            } else {
+                                true
+                            }
+                        }
+                        .filter {
+                            if (filterOptions.contains(ValidatorFilterOption.IS_ONEKV)) {
+                                it.isEnrolledIn1KV
+                            } else {
+                                true
+                            }
+                        }
+                        .sortedWith(comparator)
+                        .toList()
+                mutex.unlock()
             }
+        }
+
+        fun changeSortOption(sortOption: ValidatorSortOption) {
+            if (this.sortOption != sortOption) {
+                this.sortOption = sortOption
+                filterAndSort()
+            }
+        }
+
+        fun toggleFilterOption(filterOption: ValidatorFilterOption) {
+            filterOptions =
+                if (filterOptions.contains(filterOption)) {
+                    filterOptions.filter {
+                        it != filterOption
+                    }.toSet()
+                } else {
+                    filterOptions + setOf(filterOption)
+                }
+            filterAndSort()
         }
     }

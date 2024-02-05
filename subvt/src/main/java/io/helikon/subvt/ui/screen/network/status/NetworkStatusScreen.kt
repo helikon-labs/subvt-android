@@ -187,7 +187,7 @@ fun NetworkStatusScreenContent(
             Spacer(
                 modifier =
                     Modifier
-                        .padding(0.dp, 24.dp)
+                        .padding(0.dp, dimensionResource(id = R.dimen.common_content_margin_top))
                         .statusBarsPadding(),
             )
             Row(

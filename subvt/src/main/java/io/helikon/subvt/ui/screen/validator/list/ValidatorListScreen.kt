@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -27,7 +28,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +58,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import io.helikon.subvt.R
+import io.helikon.subvt.data.extension.ValidatorFilterOption
+import io.helikon.subvt.data.extension.ValidatorSortOption
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.data.preview.PreviewData
@@ -65,6 +71,7 @@ import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
+import kotlinx.coroutines.launch
 import kotlin.math.min
 
 data class ValidatorListScreenState(
@@ -73,6 +80,8 @@ data class ValidatorListScreenState(
     val isActiveValidatorList: Boolean,
     val validators: List<ValidatorSummary>,
     val filter: TextFieldValue,
+    val sortOption: ValidatorSortOption,
+    val filterOptions: Set<ValidatorFilterOption>,
 )
 
 @Composable
@@ -111,11 +120,19 @@ fun ValidatorListScreen(
                 isActiveValidatorList = isActiveValidatorList,
                 validators = viewModel.validators,
                 filter = viewModel.filter,
+                sortOption = viewModel.sortOption,
+                filterOptions = viewModel.filterOptions,
             ),
         onBack = onBack,
         onFilterChange = { newFilter ->
             viewModel.filter = newFilter
-            viewModel.sortAndFilter()
+            viewModel.filterAndSort()
+        },
+        onSelectSortOption = { sortOption ->
+            viewModel.changeSortOption(sortOption)
+        },
+        onSelectFilterOption = { filterOption ->
+            viewModel.toggleFilterOption(filterOption)
         },
     )
 }
@@ -127,8 +144,11 @@ fun ValidatorListScreenContent(
     state: ValidatorListScreenState,
     onBack: () -> Unit,
     onFilterChange: (TextFieldValue) -> Unit,
+    onSelectSortOption: (ValidatorSortOption) -> Unit,
+    onSelectFilterOption: (ValidatorFilterOption) -> Unit,
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val title =
         remember {
             context.resources.getString(
@@ -152,6 +172,9 @@ fun ValidatorListScreenContent(
     val scrollState = rememberLazyListState()
     val scrolledRatio = 0f // scrollState.value.toFloat() / scrollState.maxValue.toFloat()
     val focusManager = LocalFocusManager.current
+    var filterSortViewIsVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
     Box(
         modifier =
             modifier
@@ -159,8 +182,29 @@ fun ValidatorListScreenContent(
                 .noRippleClickable { focusManager.clearFocus() },
     ) {
         AnimatedBackground(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().zIndex(0.0f),
         )
+        if (filterSortViewIsVisible) {
+            ValidatorListFilterSortView(
+                modifier = Modifier.zIndex(15.0f),
+                isActiveValidatorList = state.isActiveValidatorList,
+                sortOption = state.sortOption,
+                filterOptions = state.filterOptions,
+                onSelectSortOption = {
+                    onSelectSortOption(it)
+                    scope.launch {
+                        scrollState.animateScrollToItem(0)
+                    }
+                },
+                onSelectFilterOption = {
+                    onSelectFilterOption(it)
+                    scope.launch {
+                        scrollState.animateScrollToItem(0)
+                    }
+                },
+                onClose = { filterSortViewIsVisible = false },
+            )
+        }
         Column(
             modifier =
                 Modifier
@@ -169,6 +213,7 @@ fun ValidatorListScreenContent(
                             Color
                                 .panelBg(isDark)
                                 .copy(alpha = min(1f, scrolledRatio * 4)),
+                        // .copy(alpha = 1f),
                         shape = clipShape,
                     )
                     .fillMaxWidth()
@@ -181,19 +226,20 @@ fun ValidatorListScreenContent(
             Spacer(
                 modifier =
                     Modifier
-                        .padding(0.dp, 24.dp)
+                        .padding(0.dp, dimensionResource(id = R.dimen.common_content_margin_top))
                         .statusBarsPadding(),
             )
             Row(
                 modifier =
                     Modifier
+                        .height(dimensionResource(id = R.dimen.network_selector_button_height))
                         .padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier =
                             Modifier
-                                .size(36.dp)
+                                .size(dimensionResource(id = R.dimen.network_selector_button_height))
                                 .noRippleClickable {
                                     onBack()
                                 },
@@ -225,9 +271,11 @@ fun ValidatorListScreenContent(
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
+            // search & filter
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.common_padding)),
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
             ) {
                 Row(
                     modifier =
@@ -270,6 +318,9 @@ fun ValidatorListScreenContent(
                 Box(
                     modifier =
                         Modifier
+                            .noRippleClickable {
+                                filterSortViewIsVisible = true
+                            }
                             .size(36.dp)
                             .background(
                                 color = Color.panelBg(isDark),
@@ -284,22 +335,27 @@ fun ValidatorListScreenContent(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
         }
         LazyColumn(
             modifier =
                 Modifier
                     .statusBarsPadding()
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .zIndex(5.0f),
             state = scrollState,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
             contentPadding =
                 PaddingValues(
                     dimensionResource(id = R.dimen.common_padding),
-                    164.dp,
+                    dimensionResource(id = R.dimen.validator_list_content_padding_top),
                     dimensionResource(id = R.dimen.common_padding),
-                    64.dp,
+                    dimensionResource(id = R.dimen.common_padding),
                 ),
         ) {
+            item {
+                Spacer(modifier = Modifier.statusBarsPadding())
+            }
             items(state.validators) { validator ->
                 ValidatorSummaryView(
                     network = state.network,
@@ -307,6 +363,9 @@ fun ValidatorListScreenContent(
                     displayActiveStatus = false,
                     validator = validator,
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
         Box(
@@ -348,9 +407,13 @@ fun ValidatorListScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     isActiveValidatorList = true,
                     validators = listOf(PreviewData.validatorSummary),
                     filter = TextFieldValue(""),
+                    sortOption = ValidatorSortOption.IDENTITY,
+                    filterOptions = setOf(),
                 ),
             onBack = {},
             onFilterChange = {},
+            onSelectSortOption = {},
+            onSelectFilterOption = {},
         )
     }
 }

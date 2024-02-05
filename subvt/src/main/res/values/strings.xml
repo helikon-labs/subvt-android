@@ -58,4 +58,12 @@
     <string name="validator_list_inactive_title">Inactive Validators</string>
     <string name="validator_list_active">Active</string>
     <string name="validator_list_inactive">Inactive</string>
+    <string name="validator_list.sort_by">Sort by</string>
+    <string name="validator_list.sort_by.id_address">Identity/Address</string>
+    <string name="validator_list.sort_by.active_stake">Active stake</string>
+    <string name="validator_list.sort_by.nomination_total">Nomination total</string>
+    <string name="validator_list.filter">Filter</string>
+    <string name="validator_list.filter.identity">With identity</string>
+    <string name="validator_list.filter.onekv">Enrolled in 1KV</string>
+    <string name="validator_list.filter.paravalidator">Parachain validator</string>
 </resources>

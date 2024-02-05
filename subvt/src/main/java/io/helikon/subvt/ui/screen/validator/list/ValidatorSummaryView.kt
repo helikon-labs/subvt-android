@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -126,58 +128,58 @@ fun ValidatorSummaryView(
                 }
             }
             Text(
+                modifier = Modifier.weight(1.0f, fill = false).fillMaxWidth(),
                 text = validator.identityDisplay(),
-                style = Font.semiBold(18.sp),
+                style = Font.semiBold(17.sp),
                 color = Color.text(isDark),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(modifier = Modifier.weight(1.0f))
             if (validator.isEnrolledIn1KV) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.onekv_icon),
                     contentDescription = "",
                 )
             }
             if (validator.isParaValidator) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.para_validator_icon),
                     contentDescription = "",
                 )
             }
             if (validator.isActiveNextSession) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.active_next_session_icon),
                     contentDescription = "",
                 )
             }
             if (validator.heartbeatReceived == true) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.heartbeat_received_icon),
                     contentDescription = "",
                 )
             }
             if (validator.oversubscribed) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.oversubscribed_icon),
                     contentDescription = "",
                 )
             }
             if (validator.preferences.blocksNominations) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.blocks_nominations_icon),
                     contentDescription = "",
                 )
             }
             if (validator.slashCount > 0) {
                 Image(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.requiredSize(iconSize),
                     painter = painterResource(R.drawable.slashed_icon),
                     contentDescription = "",
                 )
