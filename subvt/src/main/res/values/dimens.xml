@@ -38,4 +38,7 @@
     <dimen name="status_indicator_circle_size">7dp</dimen>
 
     <dimen name="network_status_block_wave_size">40dp</dimen>
+    <dimen name="network_status_icon_size">22dp</dimen>
+    <dimen name="network_status_icon_spacing">6dp</dimen>
+    <dimen name="network_status_balance_margin_top">12dp</dimen>
 </resources>

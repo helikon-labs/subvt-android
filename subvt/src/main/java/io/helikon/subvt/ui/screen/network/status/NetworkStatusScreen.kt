@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
@@ -25,13 +23,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +47,7 @@ import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
+import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.screen.network.status.panel.BlockNumberPanel
 import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
@@ -78,10 +77,10 @@ fun NetworkStatusScreen(
     modifier: Modifier = Modifier,
     viewModel: NetworkStatusViewModel = hiltViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    onValidatorListButtonClicked: () -> Unit,
+    onActiveValidatorListButtonClicked: () -> Unit,
+    onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
     val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
-    val networkStatus by viewModel.networkStatus.collectAsStateWithLifecycle()
     val networks by viewModel.networks.observeAsState(listOf())
 
     DisposableEffect(lifecycleOwner) {
@@ -109,14 +108,15 @@ fun NetworkStatusScreen(
                 networks = networks,
                 network = viewModel.selectedNetwork,
                 serviceStatus = serviceStatus,
-                networkStatus = networkStatus,
+                networkStatus = viewModel.networkStatus,
                 activeValidatorCountHistory = viewModel.activeValidatorCountList,
                 inactiveValidatorCountHistory = viewModel.inactiveValidatorCountList,
             ),
         onChangeNetwork = { network ->
             viewModel.changeNetwork(network)
         },
-        onValidatorListButtonClicked = onValidatorListButtonClicked,
+        onActiveValidatorListButtonClicked = onActiveValidatorListButtonClicked,
+        onInactiveValidatorListButtonClicked = onInactiveValidatorListButtonClicked,
     )
 }
 
@@ -126,11 +126,22 @@ fun NetworkStatusScreenContent(
     isDark: Boolean = isSystemInDarkTheme(),
     state: NetworkStatusScreenState,
     onChangeNetwork: (Network) -> Unit,
-    onValidatorListButtonClicked: () -> Unit,
+    onActiveValidatorListButtonClicked: () -> Unit,
+    onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
+    val borderRadius = dimensionResource(id = R.dimen.common_panel_border_radius)
     var networkSwitcherIsVisible by rememberSaveable {
         mutableStateOf(false)
     }
+    val clipShape =
+        remember {
+            RoundedCornerShape(
+                0.dp,
+                0.dp,
+                borderRadius,
+                borderRadius,
+            )
+        }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
@@ -155,13 +166,7 @@ fun NetworkStatusScreenContent(
                 },
             )
         }
-        val clipShape =
-            RoundedCornerShape(
-                0.dp,
-                0.dp,
-                dimensionResource(id = R.dimen.common_panel_border_radius),
-                dimensionResource(id = R.dimen.common_panel_border_radius),
-            )
+
         Column(
             modifier =
                 Modifier
@@ -198,27 +203,13 @@ fun NetworkStatusScreenContent(
                             style = Font.semiBold(24.sp),
                             color = Color.text(isDark),
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Box(
-                            modifier =
-                                Modifier
-                                    .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
-                                    .clip(CircleShape)
-                                    .background(
-                                        when (state.serviceStatus) {
-                                            is RPCSubscriptionServiceStatus.Idle -> Color.statusIdle()
-                                            is RPCSubscriptionServiceStatus.Connected -> Color.statusWaiting()
-                                            is RPCSubscriptionServiceStatus.Connecting -> Color.statusWaiting()
-                                            is RPCSubscriptionServiceStatus.Error -> Color.statusError()
-                                            is RPCSubscriptionServiceStatus.Subscribed -> Color.statusActive()
-                                            is RPCSubscriptionServiceStatus.Unsubscribed -> Color.statusWaiting()
-                                        },
-                                    ),
-                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ServiceStatusIndicator(serviceStatus = state.serviceStatus)
                     }
                     Spacer(modifier = Modifier.weight(1.0f))
                     NetworkSelectorButton(
                         network = state.network,
+                        isClickable = true,
                         isOpen = false,
                         onClick = {
                             networkSwitcherIsVisible = true
@@ -274,30 +265,42 @@ fun NetworkStatusScreenContent(
                     ),
             ) {
                 ValidatorCountPanel(
-                    modifier = Modifier.weight(1f).appear(0),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .appear(0),
                     title = stringResource(id = R.string.network_status_active_validators),
                     validatorCountHistory = state.activeValidatorCountHistory,
                     validatorCount = state.networkStatus?.activeValidatorCount,
                 ) {
-                    onValidatorListButtonClicked()
+                    onActiveValidatorListButtonClicked()
                 }
                 ValidatorCountPanel(
-                    modifier = Modifier.weight(1f).appear(1),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .appear(1),
                     title = stringResource(id = R.string.network_status_inactive_validators),
                     validatorCountHistory = state.inactiveValidatorCountHistory,
                     validatorCount = state.networkStatus?.inactiveValidatorCount,
                 ) {
-                    onValidatorListButtonClicked()
+                    onInactiveValidatorListButtonClicked()
                 }
             }
             BlockNumberPanel(
-                modifier = Modifier.fillMaxWidth().appear(2),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .appear(2),
                 title = stringResource(id = R.string.network_status_best_block_number),
                 blockNumber = state.networkStatus?.bestBlockNumber,
                 displayBlockWave = true,
             )
             BlockNumberPanel(
-                modifier = Modifier.fillMaxWidth().appear(3),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .appear(3),
                 title = stringResource(id = R.string.network_status_best_block_number),
                 blockNumber = state.networkStatus?.finalizedBlockNumber,
                 displayBlockWave = false,
@@ -309,14 +312,20 @@ fun NetworkStatusScreenContent(
                     ),
             ) {
                 EraEpochPanel(
-                    modifier = Modifier.weight(1.0f).appear(4),
+                    modifier =
+                        Modifier
+                            .weight(1.0f)
+                            .appear(4),
                     isEra = true,
                     index = state.networkStatus?.activeEra?.index,
                     startTimestamp = state.networkStatus?.activeEra?.startTimestamp,
                     endTimestamp = state.networkStatus?.activeEra?.endTimestamp,
                 )
                 EraEpochPanel(
-                    modifier = Modifier.weight(1.0f).appear(5),
+                    modifier =
+                        Modifier
+                            .weight(1.0f)
+                            .appear(5),
                     isEra = false,
                     index = state.networkStatus?.currentEpoch?.index,
                     startTimestamp = state.networkStatus?.currentEpoch?.startTimestamp,
@@ -324,16 +333,25 @@ fun NetworkStatusScreenContent(
                 )
             }
             EraPointsPanel(
-                modifier = Modifier.fillMaxWidth().appear(6),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .appear(6),
                 eraPoints = state.networkStatus?.eraRewardPoints,
             )
             LastEraTotalRewardPanel(
-                modifier = Modifier.fillMaxWidth().appear(7),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .appear(7),
                 reward = state.networkStatus?.lastEraTotalReward,
                 network = state.network,
             )
             ValidatorBackingsPanel(
-                modifier = Modifier.fillMaxWidth().appear(8),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .appear(8),
                 network = state.network,
                 minStake = state.networkStatus?.minStake,
                 averageStake = state.networkStatus?.averageStake,
@@ -368,7 +386,8 @@ fun NetworkStatusScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     inactiveValidatorCountHistory = listOf(),
                 ),
             onChangeNetwork = {},
-            onValidatorListButtonClicked = {},
+            onActiveValidatorListButtonClicked = {},
+            onInactiveValidatorListButtonClicked = {},
         )
     }
 }

@@ -4,6 +4,8 @@
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>
 
+    <string name="description_back">Go back</string>
+
     <string name="snackbar_exclamation_icon_description">Exclamation Icon</string>
 
     <string name="introduction_title">Welcome to SubVT</string>
@@ -51,4 +53,9 @@
     <string name="notifications_tab_title">Notifications</string>
 
     <string name="network_reports_tab_title">Netw. Reports</string>
+
+    <string name="validator_list_active_title">Active Validators</string>
+    <string name="validator_list_inactive_title">Inactive Validators</string>
+    <string name="validator_list_active">Active</string>
+    <string name="validator_list_inactive">Inactive</string>
 </resources>

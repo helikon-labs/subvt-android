@@ -2,9 +2,14 @@ package io.helikon.subvt.data.preview
 
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NetworkStatus
+import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.data.model.substrate.AccountId
 import io.helikon.subvt.data.model.substrate.Epoch
 import io.helikon.subvt.data.model.substrate.Era
+import io.helikon.subvt.data.model.substrate.InactiveNominationsSummary
+import io.helikon.subvt.data.model.substrate.StakeSummary
+import io.helikon.subvt.data.model.substrate.ValidatorPreferences
+import io.helikon.subvt.data.model.substrate.ValidatorStakeSummary
 import java.math.BigInteger
 
 abstract class PreviewData {
@@ -71,6 +76,50 @@ abstract class PreviewData {
                 averageStake = BigInteger("${7_677_000_000_000_000L}"),
                 medianStake = BigInteger("${12_876_000_000_000_000L}"),
                 eraRewardPoints = 1_386_680,
+            )
+
+        val validatorSummary =
+            ValidatorSummary(
+                accountId = stashAccountId,
+                address = stashAccountId.getAddress(prefix = networks[0].ss58Prefix.toShort()),
+                controllerAccountId = controllerAccountId,
+                networkId = networks[0].id,
+                display = "Display",
+                parentDisplay = "Parent",
+                childDisplay = "Child",
+                confirmed = true,
+                preferences =
+                    ValidatorPreferences(
+                        commissionPerBillion = 0,
+                        blocksNominations = true,
+                    ),
+                selfStake =
+                    StakeSummary(
+                        stashAccountId = stashAccountId.getAddress(networks[0].ss58Prefix.toShort()),
+                        activeAmount = BigInteger("0"),
+                    ),
+                isActive = true,
+                isActiveNextSession = true,
+                inactiveNominations =
+                    InactiveNominationsSummary(
+                        nominationCount = 130,
+                        totalAmount = BigInteger("0"),
+                    ),
+                oversubscribed = true,
+                slashCount = 0,
+                isEnrolledIn1KV = true,
+                isParaValidator = true,
+                paraId = 1000,
+                returnRatePerBillion = 150000000,
+                blocksAuthored = 3,
+                rewardPoints = 1020,
+                heartbeatReceived = true,
+                validatorStake =
+                    ValidatorStakeSummary(
+                        selfStake = BigInteger("15937871000000"),
+                        totalStake = BigInteger("5031267908000000"),
+                        nominatorCount = 12,
+                    ),
             )
     }
 }

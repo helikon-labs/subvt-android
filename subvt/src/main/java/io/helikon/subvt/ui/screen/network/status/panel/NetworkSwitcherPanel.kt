@@ -36,6 +36,7 @@ import io.helikon.subvt.R
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
+import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
@@ -81,27 +82,13 @@ fun NetworkSwitcherPanel(
                         color = Color.text(isDark),
                         style = Font.semiBold(24.sp),
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(dimensionResource(id = R.dimen.status_indicator_circle_size))
-                                .clip(CircleShape)
-                                .background(
-                                    when (serviceStatus) {
-                                        is RPCSubscriptionServiceStatus.Idle -> Color.statusIdle()
-                                        is RPCSubscriptionServiceStatus.Connected -> Color.statusWaiting()
-                                        is RPCSubscriptionServiceStatus.Connecting -> Color.statusWaiting()
-                                        is RPCSubscriptionServiceStatus.Error -> Color.statusError()
-                                        is RPCSubscriptionServiceStatus.Subscribed -> Color.statusActive()
-                                        is RPCSubscriptionServiceStatus.Unsubscribed -> Color.statusWaiting()
-                                    },
-                                ),
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ServiceStatusIndicator(serviceStatus = serviceStatus)
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
                 NetworkSelectorButton(
                     network = selectedNetwork,
+                    isClickable = true,
                     isOpen = true,
                     onClick = onClose,
                 )
@@ -123,8 +110,8 @@ fun NetworkSwitcherPanel(
                     Row(
                         modifier =
                             Modifier
-                                .height(46.dp)
-                                .padding(8.dp, 0.dp)
+                                .height(42.dp)
+                                .padding(dimensionResource(id = R.dimen.common_padding), 0.dp)
                                 .noRippleClickable {
                                     if (selectedNetwork.id != network.id) {
                                         onChangeNetwork(network)
@@ -152,7 +139,7 @@ fun NetworkSwitcherPanel(
                             modifier = Modifier.offset(0.dp, (-1).dp),
                             text = network.display,
                             color = Color.text(isDark),
-                            style = Font.normal(14.sp),
+                            style = Font.normal(13.sp),
                         )
                         Spacer(modifier = Modifier.weight(1.0f))
                         Box(

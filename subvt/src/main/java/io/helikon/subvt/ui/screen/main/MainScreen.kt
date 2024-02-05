@@ -15,15 +15,21 @@ import io.helikon.subvt.ui.screen.validator.my.MyValidatorsScreen
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    onValidatorListButtonClicked: () -> Unit,
+    onActiveValidatorListButtonClicked: () -> Unit,
+    onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
-    MainScreenContent(modifier, onValidatorListButtonClicked)
+    MainScreenContent(
+        modifier,
+        onActiveValidatorListButtonClicked,
+        onInactiveValidatorListButtonClicked,
+    )
 }
 
 @Composable
 private fun MainScreenContent(
     modifier: Modifier = Modifier,
-    onValidatorListButtonClicked: () -> Unit,
+    onActiveValidatorListButtonClicked: () -> Unit,
+    onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
     Box(
         modifier =
@@ -40,7 +46,8 @@ private fun MainScreenContent(
                     inactiveImageResourceId = R.drawable.tab_icon_network_inactive,
                     content = {
                         NetworkStatusScreen(
-                            onValidatorListButtonClicked = onValidatorListButtonClicked,
+                            onActiveValidatorListButtonClicked = onActiveValidatorListButtonClicked,
+                            onInactiveValidatorListButtonClicked = onInactiveValidatorListButtonClicked,
                         )
                     },
                 ),

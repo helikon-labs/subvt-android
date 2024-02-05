@@ -31,8 +31,9 @@ import io.helikon.subvt.ui.util.ThemePreviews
 fun NetworkSelectorButton(
     isDark: Boolean = isSystemInDarkTheme(),
     network: Network,
-    isOpen: Boolean,
-    onClick: () -> Unit,
+    isClickable: Boolean,
+    isOpen: Boolean = false,
+    onClick: () -> Unit = {},
 ) {
     Row(
         modifier =
@@ -61,7 +62,7 @@ fun NetworkSelectorButton(
                         else -> R.drawable.polkadot_icon
                     },
                 ),
-            contentDescription = "",
+            contentDescription = network.display,
         )
         Text(
             modifier = Modifier.offset(0.dp, (-1).dp),
@@ -69,21 +70,23 @@ fun NetworkSelectorButton(
             color = Color.text(isDark),
             style = Font.normal(12.sp),
         )
-        Image(
-            modifier =
-                Modifier
-                    .size(18.dp)
-                    .rotate(
-                        if (isOpen) {
-                            180f
-                        } else {
-                            0f
-                        },
-                    ),
-            painter =
-                painterResource(R.drawable.chevron_down_small),
-            contentDescription = "",
-        )
+        if (isClickable) {
+            Image(
+                modifier =
+                    Modifier
+                        .size(18.dp)
+                        .rotate(
+                            if (isOpen) {
+                                180f
+                            } else {
+                                0f
+                            },
+                        ),
+                painter =
+                    painterResource(R.drawable.chevron_down_small),
+                contentDescription = "",
+            )
+        }
     }
 }
 
@@ -95,6 +98,7 @@ fun NetworkSelectorButtonPreview(isDark: Boolean = isSystemInDarkTheme()) {
     ) {
         NetworkSelectorButton(
             network = PreviewData.networks[0],
+            isClickable = true,
             isOpen = false,
             onClick = {},
         )

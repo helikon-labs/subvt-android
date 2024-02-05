@@ -9,9 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.helikon.subvt.data.db.SubVTDatabase
 import io.helikon.subvt.data.repository.AppServiceRepository
 import io.helikon.subvt.data.repository.NetworkRepository
-import io.helikon.subvt.data.repository.NetworkStatusRepository
 import io.helikon.subvt.data.repository.UserPreferencesRepository
-import io.helikon.subvt.data.repository.ValidatorListRepository
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -30,10 +28,4 @@ class AppModule {
     fun provideNetworkRepository(
         @ApplicationContext context: Context,
     ): NetworkRepository = NetworkRepository(SubVTDatabase.getInstance(context).networkDAO())
-
-    @Provides
-    fun provideNetworkStatusRepository(): NetworkStatusRepository = NetworkStatusRepository()
-
-    @Provides
-    fun provideValidatorListRepository(): ValidatorListRepository = ValidatorListRepository()
 }

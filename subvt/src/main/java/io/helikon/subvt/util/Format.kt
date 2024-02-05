@@ -29,3 +29,5 @@ fun formatDecimal(
     decimalsString = decimalsString.take(formatDecimalCount)
     return "$integerString.$decimalsString"
 }
+
+fun truncateAddress(address: String): String = address.take(5) + "..." + address.takeLast(5)

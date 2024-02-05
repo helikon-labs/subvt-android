@@ -67,15 +67,22 @@ fun ValidatorCountChart(
             tween(durationMillis = 250, easing = LinearEasing),
         label = "",
     )
-    val mid = validatorCountHistory.average()
-    val min = mid - COUNT_OFFSET
-    val max = mid + COUNT_OFFSET
+    val mid = validatorCountHistory.first()
+    val min = validatorCountHistory.min()
+    val max = validatorCountHistory.max()
+    var offsetMultiplier = 1
+    while ((mid - COUNT_OFFSET * offsetMultiplier) > min) {
+        ++offsetMultiplier
+    }
+    while ((mid + COUNT_OFFSET * offsetMultiplier) < max) {
+        ++offsetMultiplier
+    }
     val brush = Brush.horizontalGradient(listOf(Color.blue(), Color.green()))
     BezierCurve(
         modifier = modifier.alpha(visibleRatio),
         points = validatorCountHistory.map { it.toFloat() },
-        minPoint = min.toFloat(),
-        maxPoint = max.toFloat(),
+        minPoint = (mid - offsetMultiplier * COUNT_OFFSET).toFloat(),
+        maxPoint = (mid + offsetMultiplier * COUNT_OFFSET).toFloat(),
         style =
             BezierCurveStyle.CurveStroke(
                 brush = brush,

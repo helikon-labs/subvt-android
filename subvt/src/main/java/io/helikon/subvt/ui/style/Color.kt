@@ -59,6 +59,8 @@ object Color {
 
     fun green() = ComposeColor(0xFF02E62C)
 
+    fun red() = ComposeColor(0xFFFF002D)
+
     fun itemListSelectionIndicator() = ComposeColor(0xFF02E62C)
 
     fun itemListDivider(isDark: Boolean) = color(isDark, 0x260E2938, 0x26F5F5F5)
@@ -67,9 +69,9 @@ object Color {
 
     fun networkButtonShadow(isDark: Boolean) = color(isDark, 0xFF3A6DFF, 0xFF01080D)
 
-    fun networkSelectionOverlayBg(isDark: Boolean) = color(isDark, 0xE5F5F5F5, 0xE5041A25)
+    fun networkSelectionOverlayBg(isDark: Boolean) = color(isDark, 0xE3F5F5F5, 0xE3041A25)
 
-    fun networkSelectorClosedBg(isDark: Boolean) = color(isDark, 0x99F5F5F5, 0x59041A26)
+    fun networkSelectorClosedBg(isDark: Boolean) = panelBg(isDark)
 
     fun networkSelectorOpenBg(isDark: Boolean) = color(isDark, 0xFFEAEAEA, 0xFF143446)
 

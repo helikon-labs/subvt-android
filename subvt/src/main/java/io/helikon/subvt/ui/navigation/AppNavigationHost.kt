@@ -48,12 +48,14 @@ fun AppNavigationHost(
             })
         }
         composable(route = NavigationItem.Main.route) {
-            MainScreen(onValidatorListButtonClicked = {
-                navController.navigate((NavigationItem.ValidatorList.route))
+            MainScreen(onActiveValidatorListButtonClicked = {
+                navController.navigate((NavigationItem.ActiveValidatorList.route))
+            }, onInactiveValidatorListButtonClicked = {
+                navController.navigate((NavigationItem.InactiveValidatorList.route))
             })
         }
         composable(
-            route = NavigationItem.ValidatorList.route,
+            route = NavigationItem.ActiveValidatorList.route,
             enterTransition = {
                 fadeIn(
                     animationSpec =
@@ -89,7 +91,50 @@ fun AppNavigationHost(
                     )
             },
         ) {
-            ValidatorListScreen()
+            ValidatorListScreen(onBack = {
+                navController.popBackStack()
+            }, isActiveValidatorList = true)
+        }
+        composable(
+            route = NavigationItem.InactiveValidatorList.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec =
+                        tween(
+                            300,
+                            easing = LinearEasing,
+                        ),
+                ) +
+                    slideIntoContainer(
+                        animationSpec =
+                            tween(
+                                300,
+                                easing = EaseIn,
+                            ),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec =
+                        tween(
+                            300,
+                            easing = LinearEasing,
+                        ),
+                ) +
+                    slideOutOfContainer(
+                        animationSpec =
+                            tween(
+                                300,
+                                easing = EaseOut,
+                            ),
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    )
+            },
+        ) {
+            ValidatorListScreen(onBack = {
+                navController.popBackStack()
+            }, isActiveValidatorList = false)
         }
     }
 }

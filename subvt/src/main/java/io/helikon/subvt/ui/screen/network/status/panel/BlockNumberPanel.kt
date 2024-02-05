@@ -60,7 +60,7 @@ fun BlockNumberPanel(
                         } else {
                             "$blockNumber"
                         },
-                    style = Font.semiBold(40.sp),
+                    style = Font.semiBold(38.sp),
                     color = Color.text(isDark),
                     textAlign = TextAlign.Center,
                 )

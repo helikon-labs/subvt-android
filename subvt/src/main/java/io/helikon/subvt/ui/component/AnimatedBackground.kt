@@ -227,6 +227,34 @@ fun AnimatedBackground(
     isActive: Boolean = true,
     isError: Boolean = false,
 ) {
+    val brushLeft =
+        remember(isActive || isError) {
+            Brush.radialGradient(
+                listOf(
+                    if (isActive || isError) {
+                        Color.bgMorphLeft(isDark = isDark)
+                    } else {
+                        Color.bgMorphLeftInactive()
+                    },
+                    Color.transparent(),
+                ),
+            )
+        }
+    val brushRight =
+        remember(isError) {
+            Brush.radialGradient(
+                listOf(
+                    if (isError) {
+                        Color.bgMorphRightError(isDark = isDark)
+                    } else if (isActive) {
+                        Color.bgMorphRight(isDark = isDark)
+                    } else {
+                        Color.bgMorphRightInactive()
+                    },
+                    Color.transparent(),
+                ),
+            )
+        }
     val context = LocalContext.current
     val animDuration = context.resources.getInteger(R.integer.animated_background_anim_duration_ms)
     var step by remember {
@@ -365,19 +393,7 @@ fun AnimatedBackground(
                     .rotate(leftRotation.toFloat())
                     .scale(leftScaleX, leftScaleY)
                     .size(100.dp, 100.dp)
-                    .background(
-                        brush =
-                            Brush.radialGradient(
-                                listOf(
-                                    if (isActive || isError) {
-                                        Color.bgMorphLeft(isDark = isDark)
-                                    } else {
-                                        Color.bgMorphLeftInactive()
-                                    },
-                                    Color.transparent(),
-                                ),
-                            ),
-                    ),
+                    .background(brush = brushLeft),
         )
         Box(
             modifier =
@@ -387,21 +403,7 @@ fun AnimatedBackground(
                     .rotate(rightRotation.toFloat())
                     .scale(rightScaleX, rightScaleY)
                     .size(100.dp, 100.dp)
-                    .background(
-                        brush =
-                            Brush.radialGradient(
-                                listOf(
-                                    if (isError) {
-                                        Color.bgMorphRightError(isDark = isDark)
-                                    } else if (isActive) {
-                                        Color.bgMorphRight(isDark = isDark)
-                                    } else {
-                                        Color.bgMorphRightInactive()
-                                    },
-                                    Color.transparent(),
-                                ),
-                            ),
-                    ),
+                    .background(brush = brushRight),
         )
     }
 }
