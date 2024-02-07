@@ -194,7 +194,7 @@ fun ValidatorListFilterSortView(
                 )
                 // para validator
                 ValidatorListFilterSortOptionView(
-                    text = stringResource(id = R.string.validator_list_filter_paravalidator),
+                    text = stringResource(id = R.string.validator_list_filter_para_validator),
                     isChecked = filterOptions.contains(ValidatorFilterOption.IS_PARA_VALIDATOR),
                     onClick = {
                         onSelectFilterOption(ValidatorFilterOption.IS_PARA_VALIDATOR)

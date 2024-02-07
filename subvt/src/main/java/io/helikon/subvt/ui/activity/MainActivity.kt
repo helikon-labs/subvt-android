@@ -99,13 +99,13 @@ class MainActivity : ComponentActivity() {
         val startDestination =
             runBlocking {
                 if (userPreferencesRepository.selectedNetworkId.first() > 0) {
-                    NavigationItem.Main.route
+                    NavigationItem.Main.GENERIC_ROUTE
                 } else if (userPreferencesRepository.onboardingCompleted.first()) {
-                    NavigationItem.NetworkSelection.route
+                    NavigationItem.NetworkSelection.GENERIC_ROUTE
                 } else if (userPreferencesRepository.userCreated.first()) {
-                    NavigationItem.Onboarding.route
+                    NavigationItem.Onboarding.GENERIC_ROUTE
                 } else {
-                    NavigationItem.Introduction.route
+                    NavigationItem.Introduction.GENERIC_ROUTE
                 }
             }
         setContent {

@@ -47,14 +47,14 @@ import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.modifier.scrollHeader
-import io.helikon.subvt.ui.screen.network.status.panel.BlockNumberPanel
-import io.helikon.subvt.ui.screen.network.status.panel.EraEpochPanel
-import io.helikon.subvt.ui.screen.network.status.panel.EraPointsPanel
-import io.helikon.subvt.ui.screen.network.status.panel.LastEraTotalRewardPanel
-import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
-import io.helikon.subvt.ui.screen.network.status.panel.NetworkSwitcherPanel
-import io.helikon.subvt.ui.screen.network.status.panel.ValidatorBackingsPanel
-import io.helikon.subvt.ui.screen.network.status.panel.ValidatorCountPanel
+import io.helikon.subvt.ui.screen.network.status.view.BlockNumberView
+import io.helikon.subvt.ui.screen.network.status.view.EraEpochView
+import io.helikon.subvt.ui.screen.network.status.view.EraPointsView
+import io.helikon.subvt.ui.screen.network.status.view.LastEraTotalRewardView
+import io.helikon.subvt.ui.screen.network.status.view.NetworkSelectorButton
+import io.helikon.subvt.ui.screen.network.status.view.NetworkSwitcherView
+import io.helikon.subvt.ui.screen.network.status.view.ValidatorBackingsView
+import io.helikon.subvt.ui.screen.network.status.view.ValidatorCountPanel
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
@@ -134,7 +134,7 @@ fun NetworkStatusScreenContent(
     val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
     Box(modifier = modifier.clipToBounds().fillMaxSize()) {
         if (networkSwitcherIsVisible) {
-            NetworkSwitcherPanel(
+            NetworkSwitcherView(
                 modifier =
                     Modifier
                         .zIndex(15f)
@@ -265,7 +265,7 @@ fun NetworkStatusScreenContent(
                     onInactiveValidatorListButtonClicked()
                 }
             }
-            BlockNumberPanel(
+            BlockNumberView(
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -274,7 +274,7 @@ fun NetworkStatusScreenContent(
                 blockNumber = state.networkStatus?.bestBlockNumber,
                 displayBlockWave = true,
             )
-            BlockNumberPanel(
+            BlockNumberView(
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -289,7 +289,7 @@ fun NetworkStatusScreenContent(
                         dimensionResource(id = R.dimen.common_panel_padding),
                     ),
             ) {
-                EraEpochPanel(
+                EraEpochView(
                     modifier =
                         Modifier
                             .weight(1.0f)
@@ -299,7 +299,7 @@ fun NetworkStatusScreenContent(
                     startTimestamp = state.networkStatus?.activeEra?.startTimestamp,
                     endTimestamp = state.networkStatus?.activeEra?.endTimestamp,
                 )
-                EraEpochPanel(
+                EraEpochView(
                     modifier =
                         Modifier
                             .weight(1.0f)
@@ -310,14 +310,14 @@ fun NetworkStatusScreenContent(
                     endTimestamp = state.networkStatus?.currentEpoch?.endTimestamp,
                 )
             }
-            EraPointsPanel(
+            EraPointsView(
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .appear(6),
                 eraPoints = state.networkStatus?.eraRewardPoints,
             )
-            LastEraTotalRewardPanel(
+            LastEraTotalRewardView(
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -325,7 +325,7 @@ fun NetworkStatusScreenContent(
                 reward = state.networkStatus?.lastEraTotalReward,
                 network = state.network,
             )
-            ValidatorBackingsPanel(
+            ValidatorBackingsView(
                 modifier =
                     Modifier
                         .fillMaxWidth()

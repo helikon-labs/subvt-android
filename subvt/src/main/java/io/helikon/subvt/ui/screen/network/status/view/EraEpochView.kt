@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -48,7 +48,7 @@ private val DATE_FORMATTER = SimpleDateFormat("dd MMM '${SINGLE_QUOTE_ESCAPE}'yy
 private val TIME_FORMATTER = SimpleDateFormat("HH:mm", Locale.US)
 
 @Composable
-fun EraEpochPanel(
+fun EraEpochView(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
     isEra: Boolean,
@@ -242,7 +242,7 @@ fun EraEpochPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
     Surface(
         color = Color.bg(isDark),
     ) {
-        EraEpochPanel(
+        EraEpochView(
             modifier = Modifier,
             isEra = true,
             index = 1234,

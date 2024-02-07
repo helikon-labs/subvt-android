@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import android.os.Build
 import androidx.compose.animation.core.LinearEasing

@@ -73,7 +73,7 @@ import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.component.ServiceStatusIndicator
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.modifier.scrollHeader
-import io.helikon.subvt.ui.screen.network.status.panel.NetworkSelectorButton
+import io.helikon.subvt.ui.screen.network.status.view.NetworkSelectorButton
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
@@ -95,7 +95,7 @@ fun ValidatorListScreen(
     modifier: Modifier = Modifier,
     viewModel: ValidatorListViewModel = hiltViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    isActiveValidatorList: Boolean,
+    onSelectValidator: (Network, ValidatorSummary) -> Unit,
     onBack: () -> Unit,
 ) {
     val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
@@ -105,7 +105,7 @@ fun ValidatorListScreen(
         val observer =
             LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_START) {
-                    viewModel.subscribe(isActive = isActiveValidatorList)
+                    viewModel.subscribe()
                 } else if (event == Lifecycle.Event.ON_STOP) {
                     viewModel.unsubscribe()
                 }
@@ -123,7 +123,7 @@ fun ValidatorListScreen(
             ValidatorListScreenState(
                 serviceStatus = serviceStatus,
                 network = viewModel.selectedNetwork,
-                isActiveValidatorList = isActiveValidatorList,
+                isActiveValidatorList = viewModel.isActive,
                 validators = viewModel.validators,
                 filter = viewModel.filter,
                 sortOption = viewModel.sortOption,
@@ -140,6 +140,7 @@ fun ValidatorListScreen(
         onSelectFilterOption = { filterOption ->
             viewModel.toggleFilterOption(filterOption)
         },
+        onSelectValidator = onSelectValidator,
     )
 }
 
@@ -152,6 +153,7 @@ fun ValidatorListScreenContent(
     onFilterChange: (TextFieldValue) -> Unit,
     onSelectSortOption: (ValidatorSortOption) -> Unit,
     onSelectFilterOption: (ValidatorFilterOption) -> Unit,
+    onSelectValidator: (Network, ValidatorSummary) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -293,7 +295,7 @@ fun ValidatorListScreenContent(
                 Row(
                     modifier =
                         Modifier
-                            .height(36.dp)
+                            .height(dimensionResource(id = R.dimen.top_small_button_size))
                             .background(
                                 color = Color.panelBg(isDark),
                                 shape = RoundedCornerShape(12.dp),
@@ -344,7 +346,7 @@ fun ValidatorListScreenContent(
                                     filterSortViewIsVisible = true
                                 }
                             }
-                            .size(36.dp)
+                            .size(dimensionResource(id = R.dimen.top_small_button_size))
                             .background(
                                 color = Color.panelBg(isDark),
                                 shape = RoundedCornerShape(12.dp),
@@ -359,7 +361,7 @@ fun ValidatorListScreenContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
                         painter = painterResource(id = R.drawable.filter_icon),
                         contentDescription = "",
                     )
@@ -411,6 +413,9 @@ fun ValidatorListScreenContent(
                     displayNetworkIcon = false,
                     displayActiveStatus = false,
                     validator = validator,
+                    onClick = { network, selectedValidator ->
+                        onSelectValidator(network, selectedValidator)
+                    },
                 )
             }
             item {
@@ -463,6 +468,7 @@ fun ValidatorListScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
             onFilterChange = {},
             onSelectSortOption = {},
             onSelectFilterOption = {},
+            onSelectValidator = { _, _ -> },
         )
     }
 }

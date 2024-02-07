@@ -12,6 +12,7 @@ import io.helikon.subvt.ui.screen.introduction.IntroductionScreen
 import io.helikon.subvt.ui.screen.main.MainScreen
 import io.helikon.subvt.ui.screen.network.selection.NetworkSelectionScreen
 import io.helikon.subvt.ui.screen.onboarding.OnboardingScreen
+import io.helikon.subvt.ui.screen.validator.details.ValidatorDetailsScreen
 import io.helikon.subvt.ui.screen.validator.list.ValidatorListScreen
 
 @Composable
@@ -27,23 +28,23 @@ fun AppNavigationHost(
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None },
     ) {
-        composable(route = NavigationItem.Introduction.route) {
+        composable(route = NavigationItem.Introduction.GENERIC_ROUTE) {
             IntroductionScreen(onUserCreated = {
-                navController.navigate(NavigationItem.Onboarding.route)
+                navController.navigate(NavigationItem.Onboarding.GENERIC_ROUTE)
             })
         }
-        composable(route = NavigationItem.Onboarding.route) {
+        composable(route = NavigationItem.Onboarding.GENERIC_ROUTE) {
             OnboardingScreen(onComplete = {
-                navController.navigate((NavigationItem.NetworkSelection.route))
+                navController.navigate((NavigationItem.NetworkSelection.GENERIC_ROUTE))
             })
         }
-        composable(route = NavigationItem.NetworkSelection.route) {
+        composable(route = NavigationItem.NetworkSelection.GENERIC_ROUTE) {
             NetworkSelectionScreen(onComplete = {
-                navController.navigate((NavigationItem.Main.route))
+                navController.navigate((NavigationItem.Main.GENERIC_ROUTE))
             })
         }
         composable(
-            route = NavigationItem.Main.route,
+            route = NavigationItem.Main.GENERIC_ROUTE,
             enterTransition = { null },
             popEnterTransition = {
                 slideIntoContainer(
@@ -58,19 +59,24 @@ fun AppNavigationHost(
             popExitTransition = { null },
         ) {
             MainScreen(onActiveValidatorListButtonClicked = {
-                navController.navigate((NavigationItem.ActiveValidatorList.route))
+                navController.navigate((NavigationItem.ValidatorList(true).route))
             }, onInactiveValidatorListButtonClicked = {
-                navController.navigate((NavigationItem.InactiveValidatorList.route))
+                navController.navigate((NavigationItem.ValidatorList(false).route))
             })
         }
         composable(
-            route = NavigationItem.ActiveValidatorList.route,
+            route = NavigationItem.ValidatorList.GENERIC_ROUTE,
+            arguments = NavigationItem.ValidatorList.arguments,
             enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 )
             },
-            popEnterTransition = { null },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                )
+            },
             exitTransition = { null },
             popExitTransition = {
                 fadeOut(targetAlpha = 1.0f) +
@@ -79,12 +85,23 @@ fun AppNavigationHost(
                     )
             },
         ) {
-            ValidatorListScreen(onBack = {
-                navController.popBackStack()
-            }, isActiveValidatorList = true)
+            ValidatorListScreen(
+                onBack = {
+                    navController.popBackStack()
+                },
+                onSelectValidator = { network, validator ->
+                    navController.navigate(
+                        NavigationItem.ValidatorDetails(
+                            networkId = network.id,
+                            accountId = validator.accountId,
+                        ).route,
+                    )
+                },
+            )
         }
         composable(
-            route = NavigationItem.InactiveValidatorList.route,
+            route = NavigationItem.ValidatorDetails.GENERIC_ROUTE,
+            arguments = NavigationItem.ValidatorDetails.arguments,
             enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Start,
@@ -99,9 +116,9 @@ fun AppNavigationHost(
                     )
             },
         ) {
-            ValidatorListScreen(onBack = {
+            ValidatorDetailsScreen(onBack = {
                 navController.popBackStack()
-            }, isActiveValidatorList = false)
+            })
         }
     }
 }

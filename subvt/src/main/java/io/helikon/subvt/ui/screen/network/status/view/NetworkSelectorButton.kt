@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

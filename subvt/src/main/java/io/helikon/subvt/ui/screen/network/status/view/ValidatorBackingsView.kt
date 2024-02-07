@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -32,7 +32,7 @@ import io.helikon.subvt.util.formatDecimal
 import java.math.BigInteger
 
 @Composable
-fun ValidatorBackingsPanel(
+fun ValidatorBackingsView(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
     network: Network,
@@ -192,7 +192,7 @@ fun ValidatorBackingsPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
     Surface(
         color = Color.bg(isDark),
     ) {
-        ValidatorBackingsPanel(
+        ValidatorBackingsView(
             modifier = Modifier,
             network = PreviewData.networks[0],
             minStake = PreviewData.networkStatus.minStake,

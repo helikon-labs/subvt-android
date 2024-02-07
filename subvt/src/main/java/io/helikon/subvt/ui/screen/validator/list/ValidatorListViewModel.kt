@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ import io.helikon.subvt.data.repository.UserPreferencesRepository
 import io.helikon.subvt.data.service.RPCSubscriptionListener
 import io.helikon.subvt.data.service.RPCSubscriptionService
 import io.helikon.subvt.data.service.ValidatorListService
+import io.helikon.subvt.ui.navigation.NavigationItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -33,9 +35,11 @@ import javax.inject.Inject
 class ValidatorListViewModel
     @Inject
     constructor(
+        savedStateHandle: SavedStateHandle,
         private val userPreferencesRepository: UserPreferencesRepository,
         private val networkRepository: NetworkRepository,
     ) : ViewModel(), RPCSubscriptionListener<ValidatorListUpdate, ValidatorListUpdate> {
+        val isActive = NavigationItem.ValidatorList.getIsActive(savedStateHandle)
         private val service = ValidatorListService(this)
         private var subscriptionId = -1L
         val serviceStatus = service.status
@@ -45,11 +49,12 @@ class ValidatorListViewModel
         private val mutex = Mutex()
         private val _validators = mutableListOf<ValidatorSummary>()
         var validators by mutableStateOf<List<ValidatorSummary>?>(null)
+            private set
         var filter = TextFieldValue("")
         var sortOption by mutableStateOf(ValidatorSortOption.IDENTITY)
         var filterOptions by mutableStateOf<Set<ValidatorFilterOption>>(setOf())
 
-        fun subscribe(isActive: Boolean) {
+        fun subscribe() {
             viewModelScope.launch(Dispatchers.IO) {
                 val networkId = userPreferencesRepository.selectedNetworkId.first()
                 if (networkId < 1) {

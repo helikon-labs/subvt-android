@@ -28,6 +28,7 @@ import io.helikon.subvt.data.extension.identityDisplay
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.data.preview.PreviewData
+import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
@@ -64,6 +65,7 @@ fun ValidatorSummaryView(
     displayNetworkIcon: Boolean,
     displayActiveStatus: Boolean,
     validator: ValidatorSummary,
+    onClick: (Network, ValidatorSummary) -> Unit,
 ) {
     val iconSize = dimensionResource(id = R.dimen.network_status_icon_size)
     val borderRadius = dimensionResource(id = R.dimen.common_panel_border_radius)
@@ -74,6 +76,9 @@ fun ValidatorSummaryView(
     Column(
         modifier =
             modifier
+                .noRippleClickable {
+                    onClick(network, validator)
+                }
                 .background(
                     color = Color.panelBg(isDark),
                     shape = clipShape,
@@ -227,6 +232,7 @@ fun ValidatorSummaryViewPreview(isDark: Boolean = isSystemInDarkTheme()) {
             displayNetworkIcon = true,
             displayActiveStatus = true,
             validator = PreviewData.validatorSummary,
+            onClick = { _, _ -> },
         )
     }
 }

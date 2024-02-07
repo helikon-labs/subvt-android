@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,7 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun NetworkSwitcherPanel(
+fun NetworkSwitcherView(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
     serviceStatus: RPCSubscriptionServiceStatus,
@@ -171,7 +171,7 @@ fun NetworkSwitcherPanelPreview(isDark: Boolean = isSystemInDarkTheme()) {
     Surface(
         color = Color.bg(isDark),
     ) {
-        NetworkSwitcherPanel(
+        NetworkSwitcherView(
             modifier = Modifier,
             networks = PreviewData.networks,
             selectedNetwork = PreviewData.networks[0],

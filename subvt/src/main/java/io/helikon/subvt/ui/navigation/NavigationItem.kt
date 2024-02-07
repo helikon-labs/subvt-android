@@ -1,24 +1,60 @@
 package io.helikon.subvt.ui.navigation
 
-enum class Screen {
-    INTRODUCTION,
-    ONBOARDING,
-    NETWORK_SELECTION,
-    MAIN,
-    ACTIVE_VALIDATOR_LIST,
-    INACTIVE_VALIDATOR_LIST,
-}
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import io.helikon.subvt.data.model.substrate.AccountId
 
-sealed class NavigationItem(val route: String) {
-    data object Introduction : NavigationItem(Screen.INTRODUCTION.name)
+sealed class NavigationItem {
+    object Introduction {
+        const val GENERIC_ROUTE = "introduction"
+    }
 
-    data object Onboarding : NavigationItem(Screen.ONBOARDING.name)
+    object Onboarding {
+        const val GENERIC_ROUTE = "onboarding"
+    }
 
-    data object NetworkSelection : NavigationItem(Screen.NETWORK_SELECTION.name)
+    object NetworkSelection {
+        const val GENERIC_ROUTE = "network_selection"
+    }
 
-    data object Main : NavigationItem(Screen.MAIN.name)
+    object Main {
+        const val GENERIC_ROUTE = "main"
+    }
 
-    data object ActiveValidatorList : NavigationItem(Screen.ACTIVE_VALIDATOR_LIST.name)
+    data class ValidatorList(val isActive: Boolean) {
+        companion object {
+            const val GENERIC_ROUTE =
+                "validator_list/is_active/{is_active}"
+            val arguments =
+                listOf(
+                    navArgument("is_active") { type = NavType.BoolType },
+                )
 
-    data object InactiveValidatorList : NavigationItem(Screen.INACTIVE_VALIDATOR_LIST.name)
+            fun getIsActive(savedStateHandle: SavedStateHandle): Boolean = checkNotNull(savedStateHandle["is_active"])
+        }
+
+        val route = "validator_list/is_active/$isActive"
+    }
+
+    data class ValidatorDetails(
+        val networkId: Long,
+        val accountId: AccountId,
+    ) {
+        companion object {
+            const val GENERIC_ROUTE =
+                "validator_details/network/{network_id}/validator/{account_id_hex}"
+            val arguments =
+                listOf(
+                    navArgument("network_id") { type = NavType.LongType },
+                    navArgument("account_id_hex") { type = NavType.StringType },
+                )
+
+            fun getNetworkId(savedStateHandle: SavedStateHandle): Long = checkNotNull(savedStateHandle["network_id"])
+
+            fun getAccountId(savedStateHandle: SavedStateHandle) = AccountId(checkNotNull<String>(savedStateHandle["account_id_hex"]))
+        }
+
+        val route = "validator_details/network/$networkId/validator/$accountId"
+    }
 }

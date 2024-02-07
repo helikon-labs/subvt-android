@@ -1,4 +1,4 @@
-package io.helikon.subvt.ui.screen.network.status.panel
+package io.helikon.subvt.ui.screen.network.status.view
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -30,7 +30,7 @@ import io.helikon.subvt.ui.util.ThemePreviews
 import kotlin.math.sin
 
 @Composable
-fun BlockWave(
+fun BlockWaveView(
     modifier: Modifier = Modifier,
     isDark: Boolean,
     blockNumber: Long?,
@@ -93,7 +93,7 @@ fun BlockWavePreview(isDark: Boolean = isSystemInDarkTheme()) {
     Surface(
         color = Color.bg(isDark),
     ) {
-        BlockWave(
+        BlockWaveView(
             isDark = isSystemInDarkTheme(),
             blockNumber = 12_345_678,
         )

@@ -66,5 +66,8 @@
     <string name="validator_list.filter">Filter</string>
     <string name="validator_list.filter.identity">With identity</string>
     <string name="validator_list.filter.onekv">Enrolled in 1KV</string>
-    <string name="validator_list.filter.paravalidator">Parachain validator</string>
+    <string name="validator_list.filter.para_validator">Parachain validator</string>
+
+    <string name="validator_details.rewards_icon">$</string>
+    <string name="validator_details.para_validation_icon">PV</string>
 </resources>
