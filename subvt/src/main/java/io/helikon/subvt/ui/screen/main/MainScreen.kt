@@ -3,7 +3,9 @@ package io.helikon.subvt.ui.screen.main
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.stringResource
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.component.AnimatedBackground
@@ -18,6 +20,8 @@ fun MainScreen(
     onActiveValidatorListButtonClicked: () -> Unit,
     onInactiveValidatorListButtonClicked: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+    }
     MainScreenContent(
         modifier,
         onActiveValidatorListButtonClicked,
@@ -33,7 +37,9 @@ private fun MainScreenContent(
 ) {
     Box(
         modifier =
-            modifier.fillMaxSize(),
+            modifier
+                .clipToBounds()
+                .fillMaxSize(),
     ) {
         AnimatedBackground(
             modifier = Modifier.fillMaxSize(),

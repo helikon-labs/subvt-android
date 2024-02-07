@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
@@ -180,6 +181,7 @@ fun ValidatorListScreenContent(
     Box(
         modifier =
             modifier
+                .clipToBounds()
                 .fillMaxSize()
                 .noRippleClickable { focusManager.clearFocus() },
     ) {
@@ -398,7 +400,12 @@ fun ValidatorListScreenContent(
                             .statusBarsPadding(),
                 )
             }
-            items(state.validators ?: listOf()) { validator ->
+            items(
+                state.validators ?: listOf(),
+                key = {
+                    it.accountId.getBytes()
+                },
+            ) { validator ->
                 ValidatorSummaryView(
                     network = state.network,
                     displayNetworkIcon = false,

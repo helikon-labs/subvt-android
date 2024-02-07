@@ -3,11 +3,6 @@ package io.helikon.subvt.ui.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -27,12 +22,10 @@ fun AppNavigationHost(
     NavHost(
         navController,
         startDestination,
-        enterTransition = {
-            EnterTransition.None
-        },
-        exitTransition = {
-            ExitTransition.None
-        },
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None },
     ) {
         composable(route = NavigationItem.Introduction.route) {
             IntroductionScreen(onUserCreated = {
@@ -51,42 +44,18 @@ fun AppNavigationHost(
         }
         composable(
             route = NavigationItem.Main.route,
-            enterTransition = {
-                fadeIn(
-                    animationSpec =
-                        tween(
-                            100,
-                            easing = EaseInOut,
-                        ),
-                ) +
-                    slideIntoContainer(
-                        animationSpec =
-                            tween(
-                                200,
-                                easing = EaseInOut,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    )
+            enterTransition = { null },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                )
             },
             exitTransition = {
-                fadeOut(
-                    animationSpec =
-                        tween(
-                            100,
-                            easing = EaseInOut,
-                        ),
-                ) +
-                    slideOutOfContainer(
-                        animationSpec =
-                            tween(
-                                200,
-                                easing = EaseInOut,
-                            ),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                    ) { fullOffset ->
-                        fullOffset / 2
-                    }
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                )
             },
+            popExitTransition = { null },
         ) {
             MainScreen(onActiveValidatorListButtonClicked = {
                 navController.navigate((NavigationItem.ActiveValidatorList.route))
@@ -98,23 +67,16 @@ fun AppNavigationHost(
             route = NavigationItem.ActiveValidatorList.route,
             enterTransition = {
                 slideIntoContainer(
-                    animationSpec =
-                        tween(
-                            200,
-                            easing = EaseInOut,
-                        ),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 )
             },
-            exitTransition = {
-                slideOutOfContainer(
-                    animationSpec =
-                        tween(
-                            200,
-                            easing = EaseInOut,
-                        ),
-                    towards = AnimatedContentTransitionScope.SlideDirection.End,
-                )
+            popEnterTransition = { null },
+            exitTransition = { null },
+            popExitTransition = {
+                fadeOut(targetAlpha = 1.0f) +
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    )
             },
         ) {
             ValidatorListScreen(onBack = {
@@ -123,25 +85,18 @@ fun AppNavigationHost(
         }
         composable(
             route = NavigationItem.InactiveValidatorList.route,
-            popEnterTransition = {
+            enterTransition = {
                 slideIntoContainer(
-                    animationSpec =
-                        tween(
-                            300,
-                            easing = EaseIn,
-                        ),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 )
             },
+            popEnterTransition = { null },
+            exitTransition = { null },
             popExitTransition = {
-                slideOutOfContainer(
-                    animationSpec =
-                        tween(
-                            300,
-                            easing = EaseOut,
-                        ),
-                    towards = AnimatedContentTransitionScope.SlideDirection.End,
-                )
+                fadeOut(targetAlpha = 1.0f) +
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    )
             },
         ) {
             ValidatorListScreen(onBack = {

@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -131,7 +132,7 @@ fun NetworkStatusScreenContent(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.clipToBounds().fillMaxSize()) {
         if (networkSwitcherIsVisible) {
             NetworkSwitcherPanel(
                 modifier =

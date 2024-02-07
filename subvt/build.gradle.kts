@@ -8,6 +8,7 @@ plugins {
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 val propertiesFile = rootProject.file("subvt.properties")
@@ -41,6 +42,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -68,7 +70,6 @@ dependencies {
     val roomVersion = "2.6.1"
     val daggerHiltVersion = "2.50"
     val hiltVersion = "1.1.0"
-
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     // jetpack/compose
@@ -83,6 +84,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")
     // test
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -107,7 +115,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.23.2")
+    implementation("com.github.helikon-labs:subvt-data-android:0.24.0")
     implementation("com.github.zed-alpha.shadow-gadgets:compose:2.2.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")

@@ -5,6 +5,7 @@ import io.helikon.subvt.BuildConfig
 import io.helikon.subvt.data.model.app.Network
 import io.helikon.subvt.data.model.app.User
 import io.helikon.subvt.data.service.AppService
+import kotlinx.collections.immutable.ImmutableList
 import javax.inject.Inject
 
 class AppServiceRepository
@@ -27,7 +28,7 @@ class AppServiceRepository
             return appService.createUser()
         }
 
-        suspend fun getNetworks(): Result<List<Network>?> {
+        suspend fun getNetworks(): Result<ImmutableList<Network>?> {
             init()
             return appService.getNetworks()
         }

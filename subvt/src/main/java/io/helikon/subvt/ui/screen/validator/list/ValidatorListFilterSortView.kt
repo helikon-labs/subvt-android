@@ -125,6 +125,7 @@ fun ValidatorListFilterSortView(
             Column(
                 modifier =
                     Modifier
+                        .noRippleClickable { /* no-op */ }
                         .background(
                             color = Color.networkSelectorOpenBg(isDark),
                             shape = RoundedCornerShape(12.dp),
