@@ -60,14 +60,18 @@
     <string name="validator_list_active">Active</string>
     <string name="validator_list_inactive">Inactive</string>
     <string name="validator_list.sort_by">Sort by</string>
-    <string name="validator_list.sort_by.id_address">Identity/Address</string>
-    <string name="validator_list.sort_by.active_stake">Active stake</string>
-    <string name="validator_list.sort_by.nomination_total">Nomination total</string>
-    <string name="validator_list.filter">Filter</string>
-    <string name="validator_list.filter.identity">With identity</string>
-    <string name="validator_list.filter.onekv">Enrolled in 1KV</string>
-    <string name="validator_list.filter.para_validator">Parachain validator</string>
+    <string name="validator_list_sort_by.id_address">Identity/Address</string>
+    <string name="validator_list_sort_by.active_stake">Active stake</string>
+    <string name="validator_list_sort_by.nomination_total">Nomination total</string>
+    <string name="validator_list_filter">Filter</string>
+    <string name="validator_list_filter.identity">With identity</string>
+    <string name="validator_list_filter.onekv">Enrolled in 1KV</string>
+    <string name="validator_list_filter.para_validator">Parachain validator</string>
 
-    <string name="validator_details.rewards_icon">$</string>
-    <string name="validator_details.para_validation_icon">PV</string>
+    <string name="validator_details_rewards_icon">$</string>
+    <string name="validator_details_para_validation_icon">PV</string>
+    <string name="validator_details_nomination_total">Nomination Total</string>
+    <string name="validator_details_self_stake">Self Stake</string>
+    <string name="validator_details_active_stake">Active Stake</string>
+    <string name="validator_details_inactive_nominations">Inactive Nominations</string>
 </resources>

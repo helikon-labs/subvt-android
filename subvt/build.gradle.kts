@@ -46,11 +46,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
@@ -113,6 +113,9 @@ dependencies {
     ksp("androidx.hilt:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltVersion")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // 3D
+    implementation("io.github.sceneview:sceneview:2.0.3")
 
     // other
     implementation("com.github.helikon-labs:subvt-data-android:0.24.1")

@@ -1,6 +1,8 @@
 package io.helikon.subvt.ui.screen.validator.details
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,8 +36,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -46,13 +45,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.helikon.subvt.R
-import io.helikon.subvt.data.extension.hasIdentity
-import io.helikon.subvt.data.extension.hasParentIdentity
-import io.helikon.subvt.data.extension.identityConfirmed
-import io.helikon.subvt.data.extension.identityDisplay
 import io.helikon.subvt.data.extension.inactiveNominationTotal
 import io.helikon.subvt.data.extension.nominationTotal
-import io.helikon.subvt.data.extension.parentIdentityConfirmed
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.ValidatorDetails
 import io.helikon.subvt.data.preview.PreviewData
@@ -61,10 +55,12 @@ import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.modifier.scrollHeader
 import io.helikon.subvt.ui.screen.network.status.view.NetworkSelectorButton
+import io.helikon.subvt.ui.screen.validator.details.view.BalanceView
+import io.helikon.subvt.ui.screen.validator.details.view.IdenticonView
+import io.helikon.subvt.ui.screen.validator.details.view.IdentityView
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
-import io.helikon.subvt.util.formatDecimal
 
 data class ValidatorDetailsScreenState(
     val serviceStatus: RPCSubscriptionServiceStatus,
@@ -111,6 +107,7 @@ fun ValidatorDetailsScreen(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ValidatorDetailsScreenContent(
     modifier: Modifier = Modifier,
@@ -278,6 +275,7 @@ fun ValidatorDetailsScreenContent(
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
         }
+
         Column(
             modifier =
                 Modifier
@@ -308,219 +306,39 @@ fun ValidatorDetailsScreenContent(
                         .statusBarsPadding(),
             )
             // content begins here
-            Box(
+            IdenticonView(
                 modifier =
-                    Modifier.alpha(0.25f).background(color = Color.blue()).fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val identityIcon =
-                    when {
-                        state.validator?.parentIdentityConfirmed() == true -> R.drawable.parent_identity_confirmed_icon
-                        state.validator?.identityConfirmed() == true -> R.drawable.identity_confirmed_icon
-                        state.validator?.hasParentIdentity() == true -> R.drawable.parent_identity_not_confirmed_icon
-                        state.validator?.hasIdentity() == true -> R.drawable.identity_not_confirmed_icon
-                        else -> null
-                    }
-                identityIcon?.let {
-                    Image(
-                        modifier = Modifier.requiredSize(24.dp),
-                        painter = painterResource(id = it),
-                        contentDescription = "",
-                    )
-                }
-                Spacer(modifier = Modifier.requiredWidth(dimensionResource(id = R.dimen.common_panel_padding)))
-                Text(
-                    textAlign = TextAlign.Center,
-                    text = state.validator?.identityDisplay() ?: "-",
-                    style = Font.normal(26.sp),
-                    color = Color.text(isDark),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Column(
-                modifier =
-                    Modifier
-                        .background(
-                            color = Color.panelBg(isDark),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)),
-                        )
-                        .padding(dimensionResource(id = R.dimen.common_padding))
-                        .fillMaxWidth(),
-            ) {
-                Text(
-                    text = "Nomination Total",
-                    style = Font.light(12.sp),
-                    color = Color.text(isDark),
-                )
-                Spacer(
-                    modifier = Modifier.height(dimensionResource(id = R.dimen.common_data_panel_content_margin_top)),
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-                ) {
-                    Text(
-                        text =
-                            if (state.validator != null && state.network != null) {
-                                formatDecimal(
-                                    state.validator.nominationTotal(),
-                                    state.network.tokenDecimalCount,
-                                )
-                            } else {
-                                "-"
-                            },
-                        style = Font.semiBold(28.sp),
-                        color = Color.text(isDark),
-                    )
-                    if (state.network != null) {
-                        Text(
-                            text = state.network.tokenTicker,
-                            style = Font.normal(28.sp),
-                            color = Color.text(isDark).copy(alpha = 0.6f),
-                        )
-                    }
-                }
-            }
-            Column(
-                modifier =
-                    Modifier
-                        .background(
-                            color = Color.panelBg(isDark),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)),
-                        )
-                        .padding(dimensionResource(id = R.dimen.common_padding))
-                        .fillMaxWidth(),
-            ) {
-                Text(
-                    text = "Self Stake",
-                    style = Font.light(12.sp),
-                    color = Color.text(isDark),
-                )
-                Spacer(
-                    modifier = Modifier.height(dimensionResource(id = R.dimen.common_data_panel_content_margin_top)),
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-                ) {
-                    Text(
-                        text =
-                            if (state.validator != null && state.network != null) {
-                                formatDecimal(
-                                    state.validator.selfStake.activeAmount,
-                                    state.network.tokenDecimalCount,
-                                )
-                            } else {
-                                "-"
-                            },
-                        style = Font.semiBold(28.sp),
-                        color = Color.text(isDark),
-                    )
-                    if (state.network != null) {
-                        Text(
-                            text = state.network.tokenTicker,
-                            style = Font.normal(28.sp),
-                            color = Color.text(isDark).copy(alpha = 0.6f),
-                        )
-                    }
-                }
-            }
-            Column(
-                modifier =
-                    Modifier
-                        .background(
-                            color = Color.panelBg(isDark),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)),
-                        )
-                        .padding(dimensionResource(id = R.dimen.common_padding))
-                        .fillMaxWidth(),
-            ) {
-                Text(
-                    text = "Active Stake",
-                    style = Font.light(12.sp),
-                    color = Color.text(isDark),
-                )
-                Spacer(
-                    modifier = Modifier.height(dimensionResource(id = R.dimen.common_data_panel_content_margin_top)),
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-                ) {
-                    Text(
-                        text =
-                            if (state.validator?.validatorStake != null && state.network != null) {
-                                formatDecimal(
-                                    state.validator.validatorStake!!.totalStake,
-                                    state.network.tokenDecimalCount,
-                                )
-                            } else {
-                                "-"
-                            },
-                        style = Font.semiBold(28.sp),
-                        color = Color.text(isDark),
-                    )
-                    if (state.network != null) {
-                        Text(
-                            text = state.network.tokenTicker,
-                            style = Font.normal(28.sp),
-                            color = Color.text(isDark).copy(alpha = 0.6f),
-                        )
-                    }
-                }
-            }
-            Column(
-                modifier =
-                    Modifier
-                        .background(
-                            color = Color.panelBg(isDark),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)),
-                        )
-                        .padding(dimensionResource(id = R.dimen.common_padding))
-                        .fillMaxWidth(),
-            ) {
-                Text(
-                    text = "Inactive Nominations",
-                    style = Font.light(12.sp),
-                    color = Color.text(isDark),
-                )
-                Spacer(
-                    modifier = Modifier.height(dimensionResource(id = R.dimen.common_data_panel_content_margin_top)),
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-                ) {
-                    val inactiveNominationTotal = state.validator?.inactiveNominationTotal()
-                    Text(
-                        text =
-                            if (inactiveNominationTotal != null && state.network != null) {
-                                formatDecimal(
-                                    inactiveNominationTotal,
-                                    state.network.tokenDecimalCount,
-                                )
-                            } else {
-                                "-"
-                            },
-                        style = Font.semiBold(28.sp),
-                        color = Color.text(isDark),
-                    )
-                    if (state.network != null) {
-                        Text(
-                            text = state.network.tokenTicker,
-                            style = Font.normal(28.sp),
-                            color = Color.text(isDark).copy(alpha = 0.6f),
-                        )
-                    }
-                }
-            }
+            IdentityView(validator = state.validator)
+            BalanceView(
+                titleResourceId = R.string.validator_details_nomination_total,
+                network = state.network,
+                balance = state.validator?.nominationTotal(),
+            )
+            BalanceView(
+                titleResourceId = R.string.validator_details_self_stake,
+                network = state.network,
+                balance = state.validator?.selfStake?.activeAmount,
+            )
+            BalanceView(
+                titleResourceId = R.string.validator_details_active_stake,
+                network = state.network,
+                balance = state.validator?.validatorStake?.totalStake,
+            )
+            BalanceView(
+                titleResourceId = R.string.validator_details_inactive_nominations,
+                network = state.network,
+                balance = state.validator?.inactiveNominationTotal(),
+            )
             Spacer(modifier = Modifier.navigationBarsPadding())
+        }
+
+        CompositionLocalProvider(
+            LocalOverscrollConfiguration provides null,
+        ) {
         }
         Box(
             modifier =
