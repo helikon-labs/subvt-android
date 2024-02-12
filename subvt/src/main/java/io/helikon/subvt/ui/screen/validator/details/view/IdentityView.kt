@@ -58,7 +58,7 @@ fun IdentityView(
         Text(
             textAlign = TextAlign.Center,
             text = validator?.identityDisplay() ?: "-",
-            style = Font.normal(26.sp),
+            style = Font.normal(24.sp),
             color = Color.text(isDark),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

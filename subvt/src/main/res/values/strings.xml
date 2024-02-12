@@ -7,6 +7,13 @@
 
     <string name="description_back">Go back</string>
 
+    <string name="reward_destination_controller">Controller</string>
+    <string name="reward_destination_staked">Staked</string>
+    <string name="reward_destination_stash">Stash</string>
+    <string name="reward_destination_none">None</string>
+
+    <string name="percentage">%1$s\%%</string>
+
     <string name="snackbar_exclamation_icon_description">Exclamation Icon</string>
 
     <string name="introduction_title">Welcome to SubVT</string>
@@ -74,4 +81,31 @@
     <string name="validator_details_self_stake">Self Stake</string>
     <string name="validator_details_active_stake">Active Stake</string>
     <string name="validator_details_inactive_nominations">Inactive Nominations</string>
+    <string name="validator_details_account_age">Account Age</string>
+    <string name="validator_details_period_years">%1$dy</string>
+    <string name="validator_details_period_months">%1$dmo</string>
+    <string name="validator_details_period_weeks">%1$dw</string>
+    <string name="validator_details_period_days">%1$dd</string>
+    <string name="validator_details_offline_faults">Offline Faults</string>
+    <string name="validator_details_reward_destination">Reward Destination</string>
+    <string name="validator_details_commission">Commission</string>
+    <string name="validator_details_apr">APR</string>
+    <string name="validator_details_era_blocks">Era Blocks</string>
+    <string name="validator_details_era_points">Era Points</string>
+    <string name="validator_details_onekv">1KV</string>
+    <string name="validator_details_onekv_rank">Rank</string>
+    <string name="validator_details_onekv_location">Location</string>
+    <string name="validator_details_onekv_validity">Validity</string>
+
+    <string name="validator_details.onekv_valid">Valid</string>
+    <string name="validator_details.onekv_invalid">Invalid</string>
+    <string name="validator_details.tooltip_onekv">Enrolled in 1KV</string>
+    <string name="validator_details.tooltip_paravalidator">Parachain Validator</string>
+    <string name="validator_details.tooltip_active_next_session">Active Next Session</string>
+    <string name="validator_details.tooltip_heartbeat_received">Heartbeat Received</string>
+    <string name="validator_details.tooltip_oversubscribed">Oversubscribed</string>
+    <string name="validator_details.tooltip_blocks_nominations">Blocks Nominations</string>
+    <string name="validator_details.tooltip_slashed">Slashed</string>
+    <string name="validator_details_validator_added">Added</string>
+    <string name="validator_details_validator_removed">Removed</string>
 </resources>

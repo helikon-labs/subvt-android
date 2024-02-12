@@ -419,14 +419,22 @@ fun ValidatorListScreenContent(
                 )
             }
             item {
-                Spacer(modifier = Modifier.navigationBarsPadding())
+                Spacer(
+                    modifier =
+                        Modifier.navigationBarsPadding().padding(
+                            0.dp,
+                            0.dp,
+                            0.dp,
+                            dimensionResource(id = R.dimen.common_scrollable_content_margin_bottom),
+                        ),
+                )
             }
         }
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(104.dp)
+                    .height(dimensionResource(id = R.dimen.common_bottom_gradient_height))
                     .zIndex(7.0f)
                     .align(Alignment.BottomCenter)
                     .background(

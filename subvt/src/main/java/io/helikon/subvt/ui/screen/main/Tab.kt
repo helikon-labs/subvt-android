@@ -107,7 +107,7 @@ fun TabLayout(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(104.dp)
+                    .height(dimensionResource(id = R.dimen.common_bottom_gradient_height))
                     .zIndex(12f)
                     .align(Alignment.BottomCenter)
                     .background(

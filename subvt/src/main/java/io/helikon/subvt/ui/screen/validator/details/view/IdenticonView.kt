@@ -22,7 +22,7 @@ fun IdenticonView(modifier: Modifier = Modifier) {
     val modelLoader = rememberModelLoader(engine)
     val cameraNode =
         rememberCameraNode(engine) {
-            position = Position(z = 2.75f)
+            position = Position(z = 3.0f)
         }
     val centerNode = rememberNode(engine).addChildNode(cameraNode)
     val environmentLoader = rememberEnvironmentLoader(engine)
@@ -65,7 +65,6 @@ fun IdenticonView(modifier: Modifier = Modifier) {
         environmentLoader = environmentLoader,
         onViewCreated = {
             this.setZOrderOnTop(true)
-            this.setBackgroundColor(android.graphics.Color.TRANSPARENT)
             this.holder.setFormat(PixelFormat.TRANSPARENT)
             this.uiHelper.isOpaque = false
             this.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
