@@ -117,6 +117,9 @@ dependencies {
     // 3D
     implementation("io.github.sceneview:sceneview:2.0.3")
 
+    // crypto
+    implementation("org.bouncycastle:bcprov-jdk15on:1.67")
+
     // other
     implementation("com.github.helikon-labs:subvt-data-android:0.24.1")
     implementation("com.github.zed-alpha.shadow-gadgets:compose:2.2.0")

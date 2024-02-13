@@ -311,12 +311,15 @@ fun ValidatorDetailsScreenContent(
                         .statusBarsPadding(),
             )
             // content begins here
-            IdenticonView(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
-            )
+            state.validator?.let { validator ->
+                IdenticonView(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
+                    accountId = validator.account.id,
+                )
+            }
             IdentityView(validator = state.validator)
             // Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding) / 2))
             BalanceView(

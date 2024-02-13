@@ -1,7 +1,5 @@
 package io.helikon.subvt.ui.screen.validator.details.view
 
-import android.graphics.PixelFormat
-import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -14,10 +12,18 @@ import io.github.sceneview.rememberEnvironment
 import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberModelLoader
 import io.github.sceneview.rememberNode
-import io.helikon.subvt.ui.style.Color
+import io.helikon.subvt.data.model.substrate.AccountId
+import io.helikon.subvt.ui.util.getIdenticonColors
+import timber.log.Timber
+
+private val sphereOrdering =
+    arrayOf(0, 5, 2, 3, 11, 14, 15, 12, 13, 8, 7, 18, 10, 17, 9, 1, 16, 4, 6)
 
 @Composable
-fun IdenticonView(modifier: Modifier = Modifier) {
+fun IdenticonView(
+    modifier: Modifier = Modifier,
+    accountId: AccountId,
+) {
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
     val cameraNode =
@@ -37,7 +43,7 @@ fun IdenticonView(modifier: Modifier = Modifier) {
     val modelNode =
         rememberNode {
             ModelNode(
-                modelInstance = modelLoader.createModelInstance("model/cube_16.glb"),
+                modelInstance = modelLoader.createModelInstance("model/cube.glb"),
                 scaleToUnits = 1.0f,
             )
         }
@@ -45,36 +51,51 @@ fun IdenticonView(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) {
         cameraNode.setProjection(fovInDegrees = 25.0)
 
-        // modelNode.renderableNodes[1].materialInstances[0].material.setDefaultParameter("baseColorIndex", android.graphics.Color.RED)
-        modelNode.renderableNodes[0].materialInstance.setParameter(
-            "baseColorFactor",
-            1.0f,
-            1.0f,
-            0.0f,
-            0.0f,
-        )
-        // modelNode.renderableNodes[0].materialInstances[0].setParameter("metallicFactor", 0.5f)
-        modelNode.renderableNodes[0].materialInstance.setParameter("roughnessFactor", 0.85f)
+        Timber.d(modelNode.renderableNodes[0].name)
+        Timber.d(modelNode.renderableNodes[1].name)
+        Timber.d(modelNode.renderableNodes[2].name)
+
+        val identiconColors = getIdenticonColors(accountId)
+
+        for (i in 0..<19) {
+            val color = identiconColors[i]
+            val sphereIndex = sphereOrdering[i]
+            val material =
+                modelNode.renderableNodes.find {
+                    it.name == "Sphere.%03d".format(sphereIndex + 1)
+                }!!.materialInstance
+            material.setParameter(
+                "baseColorFactor",
+                color.red,
+                color.green,
+                color.blue,
+                0.0f,
+            )
+            material.setParameter("metallicFactor", 0.1f)
+            material.setParameter("roughnessFactor", 1.0f)
+        }
     }
 
     Scene(
-        modifier = modifier.background(color = Color.transparent()),
+        modifier = modifier,
         engine = engine,
         modelLoader = modelLoader,
         cameraNode = cameraNode,
         environmentLoader = environmentLoader,
         onViewCreated = {
             this.setZOrderOnTop(true)
+
+            /*
             this.holder.setFormat(PixelFormat.TRANSPARENT)
             this.uiHelper.isOpaque = false
             this.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
+
             this.scene.skybox = null
 
             val options = this.renderer.clearOptions
             options.clear = true
             this.renderer.clearOptions = options
 
-            /*
             this.view.dynamicResolutionOptions =
                 View.DynamicResolutionOptions().apply {
                     enabled = true
