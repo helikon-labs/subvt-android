@@ -3,7 +3,8 @@
     <dimen name="common_padding">16dp</dimen>
     <dimen name="common_panel_padding">8dp</dimen>
     <dimen name="common_panel_border_radius">16dp</dimen>
-    <dimen name="common_progress_width">36dp</dimen>
+    <dimen name="common_progress_size">36dp</dimen>
+    <dimen name="common_small_progress_size">14dp</dimen>
     <dimen name="common_content_margin_top">24dp</dimen>
     <dimen name="common_data_panel_content_margin_top">12dp</dimen>
     <dimen name="common_bottom_gradient_height">104dp</dimen>

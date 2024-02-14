@@ -9,8 +9,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -30,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import io.helikon.subvt.R
 import io.helikon.subvt.ui.modifier.NoRippleInteractionSource
 import io.helikon.subvt.ui.modifier.noRippleClickable
@@ -51,16 +55,21 @@ fun SnackbarScaffold(
         modifier.fillMaxSize(),
     ) {
         content()
-        Snackbar(
-            text = snackbarText,
+        Column(
             modifier =
                 Modifier
-                    .align(Alignment.BottomCenter),
-            isDark = isDark,
-            isVisible = snackbarIsVisible,
-            onSnackbarClick,
-            onSnackbarRetry,
-        )
+                    .align(Alignment.BottomCenter)
+                    .zIndex(15.0f),
+        ) {
+            Snackbar(
+                text = snackbarText,
+                isDark = isDark,
+                isVisible = snackbarIsVisible,
+                onClick = onSnackbarClick,
+                onRetry = onSnackbarRetry,
+            )
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        }
     }
 }
 

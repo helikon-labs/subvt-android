@@ -1,16 +1,19 @@
 package io.helikon.subvt.ui.screen.network.selection
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.helikon.subvt.BuildConfig
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.data.model.Network
-import io.helikon.subvt.data.repository.AppServiceRepository
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.repository.UserPreferencesRepository
+import io.helikon.subvt.data.service.AppService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,13 +23,18 @@ import javax.inject.Inject
 class NetworkSelectionViewModel
     @Inject
     constructor(
+        @ApplicationContext context: Context,
         private val userPreferencesRepository: UserPreferencesRepository,
-        private val appServiceRepository: AppServiceRepository,
         private val networkRepository: NetworkRepository,
     ) : ViewModel() {
         var getNetworksState by mutableStateOf<DataRequestState<List<Network>>>(DataRequestState.Idle)
             private set
         val networks = networkRepository.allNetworks
+        private val appService =
+            AppService(
+                context,
+                "https://${BuildConfig.API_HOST}:${BuildConfig.APP_SERVICE_PORT}/",
+            )
 
         fun getNetworks() {
             val networks =
@@ -44,7 +52,7 @@ class NetworkSelectionViewModel
             viewModelScope.launch(Dispatchers.IO) {
                 val response =
                     try {
-                        appServiceRepository.getNetworks()
+                        appService.getNetworks()
                     } catch (error: Throwable) {
                         getNetworksState = DataRequestState.Error(error)
                         return@launch

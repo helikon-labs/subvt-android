@@ -117,7 +117,7 @@ private fun NetworkSelectionScreenContent(
                 CircularProgressIndicator(
                     modifier =
                         Modifier
-                            .width(dimensionResource(id = R.dimen.common_progress_width))
+                            .size(dimensionResource(id = R.dimen.common_progress_size))
                             .align(Alignment.Center),
                     color = Color.lightGray(),
                     trackColor = Color.transparent(),

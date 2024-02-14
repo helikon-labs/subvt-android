@@ -108,4 +108,5 @@
     <string name="validator_details.tooltip_slashed">Slashed</string>
     <string name="validator_details_validator_added">Added</string>
     <string name="validator_details_validator_removed">Removed</string>
+    <string name="validator_details_my_validators_fetch_error">Data error. Please check your connection.</string>
 </resources>

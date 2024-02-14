@@ -3,6 +3,7 @@ package io.helikon.subvt.ui.component
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -68,7 +69,7 @@ fun ActionButton(
         }
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.width(dimensionResource(id = R.dimen.action_button_progress_width)),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.action_button_progress_width)),
                 color = Color.actionButtonText(),
                 trackColor = Color.transparent(),
             )
