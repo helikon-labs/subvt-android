@@ -1,5 +1,7 @@
 package io.helikon.subvt.ui.screen.validator.details.view
 
+import android.graphics.PixelFormat
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -29,9 +31,8 @@ fun IdenticonView(
     val environment =
         rememberEnvironment(engine) {
             environmentLoader.createHDREnvironment(
-                assetFileLocation = "environment/cube_environment.hdr",
-                // indirectLightSpecularFilter = false,
-                // createSkybox = false,
+                assetFileLocation = "environment/cube_environment_1k.hdr",
+                createSkybox = false,
             )!!
         }
 
@@ -72,23 +73,25 @@ fun IdenticonView(
     }
 
     Scene(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         engine = engine,
         modelLoader = modelLoader,
         cameraNode = cameraNode,
         // cameraManipulator = null,
         onViewCreated = {
-            this.setZOrderOnTop(true)
+            // this.setZOrderOnTop(false)
 
-            /*
-            this.holder.setFormat(PixelFormat.TRANSPARENT)
-            this.uiHelper.isOpaque = false
+            this.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            this.holder.setFormat(PixelFormat.TRANSLUCENT)
+            this.uiHelper.isOpaque = true
             this.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
-
             this.scene.skybox = null
 
+            /*
             val options = this.renderer.clearOptions
             options.clear = true
+            // options.discard = true
+            options.clearColor = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
             this.renderer.clearOptions = options
 
             this.view.dynamicResolutionOptions =
