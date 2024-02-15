@@ -1,21 +1,26 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+-dontwarn com.google.j2objc.annotations.RetainedWith
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# spongycastle
+-keep class org.spongycastle.**
+-dontwarn org.spongycastle.jce.provider.X509LDAPCertStoreSpi
+-dontwarn org.spongycastle.x509.util.LDAPStoreHelper
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# immutable collections
+-keep,allowobfuscation,allowshrinking class kotlinx.collections.immutable.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# guava
+-keep class com.google.common.reflect.** { *; }
+-dontwarn com.google.j2objc.annotations.Weak
+
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+# subvt data
+-keep class io.helikon.subvt.data.model.** { *; }
+-keep class io.helikon.subvt.data.serde.** { *; }
+-keep class io.helikon.subvt.data.service.** { *; }
+
+# retrofit
+-keep class retrofit2.** { *; }

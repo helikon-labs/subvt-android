@@ -169,6 +169,7 @@ fun ValidatorDetailsScreenContent(
             scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
         }
     SnackbarScaffold(
+        zIndex = 15.0f,
         snackbarText = stringResource(id = R.string.validator_details_my_validators_fetch_error),
         snackbarIsVisible = state.snackbarIsVisible,
         onSnackbarClick = null,

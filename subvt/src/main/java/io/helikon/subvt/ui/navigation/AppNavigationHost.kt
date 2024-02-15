@@ -3,6 +3,7 @@ package io.helikon.subvt.ui.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -23,8 +24,8 @@ fun AppNavigationHost(
     NavHost(
         navController,
         startDestination,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None },
     ) {
@@ -77,7 +78,11 @@ fun AppNavigationHost(
                     towards = AnimatedContentTransitionScope.SlideDirection.End,
                 )
             },
-            exitTransition = { null },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                )
+            },
             popExitTransition = {
                 fadeOut(targetAlpha = 1.0f) +
                     slideOutOfContainer(
@@ -110,10 +115,7 @@ fun AppNavigationHost(
             popEnterTransition = { null },
             exitTransition = { null },
             popExitTransition = {
-                fadeOut(targetAlpha = 1.0f) +
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    )
+                null
             },
         ) {
             ValidatorDetailsScreen(onBack = {

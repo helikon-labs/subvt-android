@@ -14,7 +14,6 @@ import io.github.sceneview.rememberModelLoader
 import io.github.sceneview.rememberNode
 import io.helikon.subvt.data.model.substrate.AccountId
 import io.helikon.subvt.ui.util.getIdenticonColors
-import timber.log.Timber
 
 private val sphereOrdering =
     arrayOf(0, 5, 2, 3, 11, 14, 15, 12, 13, 8, 7, 18, 10, 17, 9, 1, 16, 4, 6)
@@ -26,11 +25,6 @@ fun IdenticonView(
 ) {
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
-    val cameraNode =
-        rememberCameraNode(engine) {
-            position = Position(z = 3.0f)
-        }
-    val centerNode = rememberNode(engine).addChildNode(cameraNode)
     val environmentLoader = rememberEnvironmentLoader(engine)
     val environment =
         rememberEnvironment(engine) {
@@ -39,6 +33,11 @@ fun IdenticonView(
                 // indirectLightSpecularFilter = false,
                 // createSkybox = false,
             )!!
+        }
+
+    val cameraNode =
+        rememberCameraNode(engine).apply {
+            position = Position(z = 3.0f)
         }
     val modelNode =
         rememberNode {
@@ -50,10 +49,6 @@ fun IdenticonView(
 
     LaunchedEffect(Unit) {
         cameraNode.setProjection(fovInDegrees = 25.0)
-
-        Timber.d(modelNode.renderableNodes[0].name)
-        Timber.d(modelNode.renderableNodes[1].name)
-        Timber.d(modelNode.renderableNodes[2].name)
 
         val identiconColors = getIdenticonColors(accountId)
 
@@ -81,7 +76,7 @@ fun IdenticonView(
         engine = engine,
         modelLoader = modelLoader,
         cameraNode = cameraNode,
-        environmentLoader = environmentLoader,
+        // cameraManipulator = null,
         onViewCreated = {
             this.setZOrderOnTop(true)
 
@@ -103,10 +98,13 @@ fun IdenticonView(
                 }
              */
         },
-        childNodes = listOf(centerNode, modelNode),
+        childNodes = listOf(modelNode),
         environment = environment,
+        /*
         onFrame = {
             // cameraNode.setProjection(fovInDegrees = 25.0)
         },
+
+         */
     )
 }

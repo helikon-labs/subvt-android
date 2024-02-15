@@ -37,7 +37,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -70,6 +70,7 @@ dependencies {
     val roomVersion = "2.6.1"
     val daggerHiltVersion = "2.50"
     val hiltVersion = "1.1.0"
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     // jetpack/compose
@@ -84,9 +85,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
-
-    // de/serialization
-    implementation("com.google.code.gson:gson:2.10.1")
 
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
@@ -108,7 +106,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     // live data
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
     // Dependency Injection
     implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
     ksp("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
@@ -123,9 +121,12 @@ dependencies {
     // crypto
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")
 
-    // other
-    implementation("com.github.helikon-labs:subvt-data-android:0.24.1")
+    // data
+    implementation("com.github.helikon-labs:subvt-data-android:0.24.5")
+
+    // shadow fix
     implementation("com.github.zed-alpha.shadow-gadgets:compose:2.2.0")
 
+    // logging
     implementation("com.jakewharton.timber:timber:5.0.1")
 }

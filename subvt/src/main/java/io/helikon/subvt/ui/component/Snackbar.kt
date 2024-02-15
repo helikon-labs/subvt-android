@@ -45,21 +45,20 @@ import io.helikon.subvt.ui.util.ThemePreviews
 fun SnackbarScaffold(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
+    zIndex: Float = 0.0f,
     snackbarText: String = "",
     snackbarIsVisible: Boolean = false,
     onSnackbarClick: (() -> Unit)? = null,
     onSnackbarRetry: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    Box(
-        modifier.fillMaxSize(),
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         content()
         Column(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .zIndex(15.0f),
+                    .zIndex(zIndex),
         ) {
             Snackbar(
                 text = snackbarText,
