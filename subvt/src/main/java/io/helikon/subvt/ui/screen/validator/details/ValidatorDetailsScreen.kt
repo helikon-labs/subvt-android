@@ -105,21 +105,20 @@ fun ValidatorDetailsScreen(
         viewModel.getMyValidators()
     }
     DisposableEffect(lifecycleOwner) {
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
-        val observer =
+        val lifecyceObserver =
             LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_START) {
                     viewModel.subscribe()
+                    viewModel.startSensor()
                 } else if (event == Lifecycle.Event.ON_STOP) {
                     viewModel.unsubscribe()
+                    viewModel.stopSensor()
                 }
             }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        // viewModel.isMyValidator.value = false
+        lifecycleOwner.lifecycle.addObserver(lifecyceObserver)
 
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+            lifecycleOwner.lifecycle.removeObserver(lifecyceObserver)
         }
     }
     LaunchedEffect(Unit) {

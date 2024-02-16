@@ -1,6 +1,10 @@
 package io.helikon.subvt.ui.screen.validator.details
 
 import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +31,7 @@ import io.helikon.subvt.ui.navigation.NavigationItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +41,9 @@ class ValidatorDetailsViewModel
         savedStateHandle: SavedStateHandle,
         @ApplicationContext context: Context,
         private val networkRepository: NetworkRepository,
-    ) : ViewModel(), RPCSubscriptionListener<ValidatorDetails, ValidatorDetailsDiff> {
+    ) : ViewModel(),
+        RPCSubscriptionListener<ValidatorDetails, ValidatorDetailsDiff>,
+        SensorEventListener {
         private val networkId = NavigationItem.ValidatorDetails.getNetworkId(savedStateHandle)
         private val accountId = NavigationItem.ValidatorDetails.getAccountId(savedStateHandle)
 
@@ -57,14 +64,70 @@ class ValidatorDetailsViewModel
         private val _appServiceStatus = mutableStateOf<DataRequestState<Nothing>>(DataRequestState.Idle)
         val appServiceStatus: State<DataRequestState<Nothing>> = _appServiceStatus
 
-        private val feedbackDuration = context.resources.getInteger(R.integer.snackbar_short_display_duration_ms)
+        private val feedbackDuration =
+            context.resources.getInteger(R.integer.snackbar_short_display_duration_ms)
         private val _feedbackIsValidatorAdded = mutableStateOf<Boolean?>(null)
         val feedbackIsValidatorAdded: State<Boolean?> = _feedbackIsValidatorAdded
+
+        private val sensorManager: SensorManager
+        private val sensor: Sensor?
+        private val rotation =
+            floatArrayOf(
+                1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f, 0.0f,
+            )
+        private val orientation = floatArrayOf(0.0f, 0.0f, 0.0f)
 
         var network by mutableStateOf<Network?>(null)
             private set
         var validator by mutableStateOf<ValidatorDetails?>(null)
             private set
+
+        init {
+            sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+            if (sensor == null) {
+                Timber.e("Rotation vector sensor not found.")
+            }
+        }
+
+        fun startSensor() {
+            sensorManager.registerListener(this, sensor, 10_000)
+        }
+
+        fun stopSensor() {
+            sensorManager.unregisterListener(this, sensor)
+        }
+
+        override fun onAccuracyChanged(
+            sensor: Sensor?,
+            accuracy: Int,
+        ) {
+            // no-op
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            if (event?.sensor?.type == Sensor.TYPE_ROTATION_VECTOR) {
+                SensorManager.getRotationMatrixFromVector(
+                    rotation,
+                    event.values,
+                )
+                SensorManager.getOrientation(
+                    rotation,
+                    orientation,
+                )
+                // Timber.d("(${orientation[0]},${orientation[1]},${orientation[2]})")
+                val yaw = ((orientation[0] * 180 / Math.PI) + 90).toInt()
+                // yaw += reset[0]
+                val pitch = ((-orientation[2] * 180 / Math.PI) - 90).toInt()
+                // pitch += reset[1]
+                val roll = (-orientation[1] * 180 / Math.PI).toInt()
+                // roll += reset[2]
+                Timber.d("($yaw,$pitch,$roll)")
+            }
+        }
 
         fun subscribe() {
             viewModelScope.launch(Dispatchers.IO) {
