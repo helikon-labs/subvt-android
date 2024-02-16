@@ -1,10 +1,9 @@
 package io.helikon.subvt.ui.screen.validator.details.view
 
 import android.graphics.PixelFormat
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import io.github.sceneview.Scene
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
@@ -32,7 +31,7 @@ fun IdenticonView(
         rememberEnvironment(engine) {
             environmentLoader.createHDREnvironment(
                 assetFileLocation = "environment/cube_environment_1k.hdr",
-                createSkybox = false,
+                // createSkybox = false,
             )!!
         }
 
@@ -48,66 +47,55 @@ fun IdenticonView(
             )
         }
 
-    LaunchedEffect(Unit) {
-        cameraNode.setProjection(fovInDegrees = 25.0)
-
-        val identiconColors = getIdenticonColors(accountId)
-
-        for (i in 0..<19) {
-            val color = identiconColors[i]
-            val sphereIndex = sphereOrdering[i]
-            val material =
-                modelNode.renderableNodes.find {
-                    it.name == "Sphere.%03d".format(sphereIndex + 1)
-                }!!.materialInstance
-            material.setParameter(
-                "baseColorFactor",
-                color.red,
-                color.green,
-                color.blue,
-                0.0f,
-            )
-            material.setParameter("metallicFactor", 0.1f)
-            material.setParameter("roughnessFactor", 1.0f)
-        }
-    }
-
     Scene(
-        modifier = modifier.fillMaxSize(),
+        modifier =
+            modifier
+                // alpha is zero to make the background transparent
+                .alpha(0.0f),
         engine = engine,
         modelLoader = modelLoader,
+        isOpaque = false,
         cameraNode = cameraNode,
         // cameraManipulator = null,
         onViewCreated = {
-            // this.setZOrderOnTop(false)
-
+            this.setZOrderOnTop(true)
+            // this.setZOrderMediaOverlay(true)
             this.setBackgroundColor(android.graphics.Color.TRANSPARENT)
             this.holder.setFormat(PixelFormat.TRANSLUCENT)
+
             this.uiHelper.isOpaque = true
             this.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
             this.scene.skybox = null
 
-            /*
-            val options = this.renderer.clearOptions
-            options.clear = true
-            // options.discard = true
-            options.clearColor = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
-            this.renderer.clearOptions = options
-
-            this.view.dynamicResolutionOptions =
-                View.DynamicResolutionOptions().apply {
-                    enabled = true
-                    quality = View.QualityLevel.LOW
+            this.renderer.clearOptions =
+                this.renderer.clearOptions.apply {
+                    clear = true
                 }
-             */
+
+            val identiconColors = getIdenticonColors(accountId)
+
+            for (i in 0..<19) {
+                val color = identiconColors[i]
+                val sphereIndex = sphereOrdering[i]
+                val material =
+                    modelNode.renderableNodes.find {
+                        it.name == "Sphere.%03d".format(sphereIndex + 1)
+                    }!!.materialInstance
+                material.setParameter(
+                    "baseColorFactor",
+                    color.red,
+                    color.green,
+                    color.blue,
+                    0.0f,
+                )
+                material.setParameter("metallicFactor", 0.1f)
+                material.setParameter("roughnessFactor", 1.0f)
+            }
         },
         childNodes = listOf(modelNode),
         environment = environment,
-        /*
         onFrame = {
-            // cameraNode.setProjection(fovInDegrees = 25.0)
+            cameraNode.setProjection(fovInDegrees = 25.0)
         },
-
-         */
     )
 }
