@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.SubVT" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:windowSplashScreenBackground">@color/background</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/background</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen_icon</item>
-        <item name="android:background">@color/background</item>
+        <!--item name="android:background">@color/background</item-->
     </style>
 </resources>

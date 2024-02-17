@@ -36,7 +36,8 @@ fun Modifier.scrollHeader(
                 color =
                     Color
                         .headerSectionBg(isDark)
-                        .copy(alpha = min(0.97f, scrolledRatio)),
+                        // is slightly transparent
+                        .copy(alpha = min(0.93f, scrolledRatio)),
                 shape = clipShape,
             )
                 .fillMaxWidth()

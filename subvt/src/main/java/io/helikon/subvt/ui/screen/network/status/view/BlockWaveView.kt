@@ -41,7 +41,7 @@ fun BlockWaveView(
     LaunchedEffect(blockNumber) {
         progress.snapTo(0.0f)
         frequency = (Math.random() * 0.5 + 0.85).toFloat()
-        speed = (Math.random() * 130 + 200).toInt()
+        speed = -(Math.random() * 130 + 200).toInt()
         progress.animateTo(
             1.0f,
             animationSpec =
@@ -55,7 +55,7 @@ fun BlockWaveView(
     val height = progress.value + heightFluctuation
     val offset = (progress.value * speed).toInt()
     val amplitude =
-        sin(Math.PI * height).toFloat() * 0.035f / (frequency * frequency / 1.2f)
+        sin(Math.PI * height).toFloat() * 0.04f / (frequency * frequency / 1.2f)
     val points = mutableListOf<Float>()
     for (i in offset..(120 + offset)) {
         points.add(sin(Math.PI * 2 * frequency / 120 * i).toFloat() * amplitude + height)

@@ -171,7 +171,11 @@ fun ValidatorListScreenContent(
     var scrollOffset by rememberSaveable {
         mutableFloatStateOf(0.0f)
     }
-    val scrolledRatio = abs(scrollOffset) / 52.0f
+    val headerFullAlphaScrollAmount =
+        remember {
+            context.resources.getDimension(R.dimen.common_header_full_alpha_scroll_amount)
+        }
+    val scrolledRatio = abs(scrollOffset) / headerFullAlphaScrollAmount
     val focusManager = LocalFocusManager.current
     var filterSortViewIsVisible by rememberSaveable {
         mutableStateOf(false)
@@ -199,6 +203,7 @@ fun ValidatorListScreenContent(
                         Modifier
                             .size(dimensionResource(id = R.dimen.common_progress_size))
                             .align(Alignment.Center),
+                    strokeWidth = dimensionResource(id = R.dimen.common_progress_stroke_width),
                     color = Color.lightGray(),
                     trackColor = Color.transparent(),
                 )

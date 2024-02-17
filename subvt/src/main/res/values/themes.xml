@@ -2,9 +2,10 @@
 <resources>
 
     <style name="Theme.SubVT" parent="android:Theme.Material.Wallpaper.NoTitleBar">
-        <!--item name="windowSplashScreenBackground">@color/background</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_icon</item-->
-        <item name="android:background">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <!--item name="android:windowSplashScreenBackground">@color/background</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen_icon</item-->
+        <!--item name="android:background">@color/background</item-->
     </style>
 </resources>

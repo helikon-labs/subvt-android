@@ -46,10 +46,7 @@ fun IdenticonView(
         }
 
     Scene(
-        modifier =
-        modifier,
-        // alpha is zero to make the background transparent
-        // .alpha(0.0f),
+        modifier = modifier,
         engine = engine,
         modelLoader = modelLoader,
         isOpaque = false,
@@ -64,15 +61,6 @@ fun IdenticonView(
                 this.renderer.clearOptions.apply {
                     clear = true
                 }
-
-            // this.setZOrderOnTop(true)
-            // this.setZOrderMediaOverlay(true)
-
-            /*
-            this.uiHelper.isOpaque = true
-            this.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
-            this.scene.skybox = null
-             */
 
             val identiconColors = getIdenticonColors(accountId)
 

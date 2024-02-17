@@ -160,12 +160,12 @@ fun ValidatorDetailsScreenContent(
     onBack: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    val scrolledRatio =
-        if (scrollState.maxValue == 0) {
-            0.0f
-        } else {
-            scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
+    val context = LocalContext.current
+    val headerFullAlphaScrollAmount =
+        remember {
+            context.resources.getDimension(R.dimen.common_header_full_alpha_scroll_amount)
         }
+    val scrolledRatio = scrollState.value.toFloat() / headerFullAlphaScrollAmount
     SnackbarScaffold(
         zIndex = 15.0f,
         snackbarText = stringResource(id = R.string.validator_details_my_validators_fetch_error),
@@ -254,7 +254,7 @@ fun ValidatorDetailsScreenContent(
                                     Modifier
                                         .size(dimensionResource(id = R.dimen.common_small_progress_size))
                                         .align(Alignment.Center),
-                                strokeWidth = 1.dp,
+                                strokeWidth = dimensionResource(id = R.dimen.common_small_progress_stroke_width),
                                 color = Color.text(isDark).copy(alpha = 0.85f),
                                 trackColor = Color.transparent(),
                             )

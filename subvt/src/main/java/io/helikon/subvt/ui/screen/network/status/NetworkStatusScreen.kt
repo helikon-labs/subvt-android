@@ -21,6 +21,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -131,8 +133,18 @@ fun NetworkStatusScreenContent(
     }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val scrolledRatio = scrollState.value.toFloat() / scrollState.maxValue.toFloat() * 4.0f
-    Box(modifier = modifier.clipToBounds().fillMaxSize()) {
+    val context = LocalContext.current
+    val headerFullAlphaScrollAmount =
+        remember {
+            context.resources.getDimension(R.dimen.common_header_full_alpha_scroll_amount)
+        }
+    val scrolledRatio = scrollState.value.toFloat() / headerFullAlphaScrollAmount
+    Box(
+        modifier =
+            modifier
+                .clipToBounds()
+                .fillMaxSize(),
+    ) {
         if (networkSwitcherIsVisible) {
             NetworkSwitcherView(
                 modifier =

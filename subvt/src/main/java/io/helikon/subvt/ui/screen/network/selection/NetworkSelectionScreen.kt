@@ -119,6 +119,7 @@ private fun NetworkSelectionScreenContent(
                         Modifier
                             .size(dimensionResource(id = R.dimen.common_progress_size))
                             .align(Alignment.Center),
+                    strokeWidth = dimensionResource(id = R.dimen.common_progress_stroke_width),
                     color = Color.lightGray(),
                     trackColor = Color.transparent(),
                 )
