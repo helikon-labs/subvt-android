@@ -57,7 +57,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = "1.5.9"
     }
     packaging {
         resources {
@@ -116,7 +116,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // 3D
-    implementation("io.github.sceneview:sceneview:2.0.3")
+    // implementation("io.github.sceneview:sceneview:2.0.3")
+    implementation(project(":sceneview-android:sceneview"))
 
     // crypto
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")

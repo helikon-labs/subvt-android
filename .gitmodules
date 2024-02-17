@@ -1,0 +1,4 @@
+[submodule "sceneview-android"]
+	path = sceneview-android
+	url = https://github.com/helikon-labs/sceneview-android.git
+	branch = helikon-texture-view-v2.0.3
