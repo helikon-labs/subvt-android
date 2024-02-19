@@ -61,7 +61,9 @@ fun NominatorListView(
         modifier =
             modifier
                 .noRippleClickable {
-                    isOpen = !isOpen
+                    if (!nominations.isNullOrEmpty()) {
+                        isOpen = !isOpen
+                    }
                 }
                 .background(
                     color = Color.panelBg(isDark),
@@ -80,7 +82,9 @@ fun NominatorListView(
                 style = Font.light(12.sp),
                 color = Color.text(isDark),
             )
-            Image(painter = painterResource(id = arrowDrawable), contentDescription = "")
+            if (!nominations.isNullOrEmpty()) {
+                Image(painter = painterResource(id = arrowDrawable), contentDescription = "")
+            }
         }
         Spacer(
             modifier = Modifier.height(dimensionResource(id = R.dimen.common_data_panel_content_margin_top)),

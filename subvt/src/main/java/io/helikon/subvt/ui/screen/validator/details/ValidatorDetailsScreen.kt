@@ -60,6 +60,8 @@ import io.helikon.subvt.data.extension.inactiveNominations
 import io.helikon.subvt.data.extension.nominationTotal
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.ValidatorDetails
+import io.helikon.subvt.data.model.onekv.OneKVNominatorSummary
+import io.helikon.subvt.data.model.substrate.AccountId
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.component.AnimatedBackground
@@ -85,8 +87,10 @@ data class ValidatorDetailsScreenState(
     val validatorDetailsServiceStatus: RPCSubscriptionServiceStatus,
     val appServiceStatus: DataRequestState<Nothing>,
     val network: Network?,
+    val accountId: AccountId,
     val validator: ValidatorDetails?,
     val isMyValidator: Boolean,
+    val oneKVNominators: List<OneKVNominatorSummary>,
     val feedbackIsValidatorAdded: Boolean?,
     val snackbarIsVisible: Boolean,
 )
@@ -132,8 +136,10 @@ fun ValidatorDetailsScreen(
                 validatorDetailsServiceStatus = serviceStatus,
                 appServiceStatus = viewModel.appServiceStatus.value,
                 network = viewModel.network,
+                accountId = viewModel.accountId,
                 validator = viewModel.validator,
                 isMyValidator = viewModel.isMyValidator.value,
+                oneKVNominators = viewModel.oneKVNominators,
                 feedbackIsValidatorAdded = viewModel.feedbackIsValidatorAdded.value,
                 snackbarIsVisible = snackbarIsVisible,
             ),
@@ -365,15 +371,13 @@ fun ValidatorDetailsScreenContent(
                             .statusBarsPadding(),
                 )
                 // content begins here
-                state.validator?.let { validator ->
-                    IdenticonView(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
-                        accountId = validator.account.id,
-                    )
-                }
+                IdenticonView(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
+                    accountId = state.accountId,
+                )
                 IdentityView(validator = state.validator)
                 // Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding) / 2))
                 BalanceView(
@@ -394,8 +398,14 @@ fun ValidatorDetailsScreenContent(
                             count = validatorStake.nominators.size,
                             total = validatorStake.totalStake,
                             nominations =
-                                validatorStake.nominators.map {
-                                    Triple(it.account.address, false, it.stake)
+                                validatorStake.nominators.map { nominator ->
+                                    Triple(
+                                        nominator.account.address,
+                                        state.oneKVNominators.count { oneKVNominator ->
+                                            oneKVNominator.stashAccountId == nominator.account.id
+                                        } > 0,
+                                        nominator.stake,
+                                    )
                                 }.sortedByDescending {
                                     it.third
                                 },
@@ -408,8 +418,14 @@ fun ValidatorDetailsScreenContent(
                     count = state.validator?.inactiveNominations()?.size,
                     total = state.validator?.inactiveNominationTotal(),
                     nominations =
-                        state.validator?.inactiveNominations()?.map {
-                            Triple(it.stashAccount.address, false, it.stake.activeAmount)
+                        state.validator?.inactiveNominations()?.map { nomination ->
+                            Triple(
+                                nomination.stashAccount.address,
+                                state.oneKVNominators.count { oneKVNominator ->
+                                    oneKVNominator.stashAccountId == nomination.stashAccount.id
+                                } > 0,
+                                nomination.stake.activeAmount,
+                            )
                         }?.sortedByDescending {
                             it.third
                         },
@@ -628,8 +644,10 @@ fun ValidatorDetailsScreenPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     validatorDetailsServiceStatus = RPCSubscriptionServiceStatus.Connecting,
                     appServiceStatus = DataRequestState.Idle,
                     network = PreviewData.networks[0],
+                    accountId = PreviewData.stashAccountId,
                     validator = null,
                     isMyValidator = false,
+                    oneKVNominators = listOf(),
                     feedbackIsValidatorAdded = true,
                     snackbarIsVisible = true,
                 ),

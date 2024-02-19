@@ -22,10 +22,12 @@ import io.helikon.subvt.data.model.app.NewUserValidator
 import io.helikon.subvt.data.model.app.UserValidator
 import io.helikon.subvt.data.model.app.ValidatorDetails
 import io.helikon.subvt.data.model.app.ValidatorDetailsDiff
+import io.helikon.subvt.data.model.onekv.OneKVNominatorSummary
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.service.AppService
 import io.helikon.subvt.data.service.RPCSubscriptionListener
 import io.helikon.subvt.data.service.RPCSubscriptionService
+import io.helikon.subvt.data.service.ReportService
 import io.helikon.subvt.data.service.ValidatorDetailsService
 import io.helikon.subvt.ui.navigation.NavigationItem
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +47,7 @@ class ValidatorDetailsViewModel
         RPCSubscriptionListener<ValidatorDetails, ValidatorDetailsDiff>,
         SensorEventListener {
         private val networkId = NavigationItem.ValidatorDetails.getNetworkId(savedStateHandle)
-        private val accountId = NavigationItem.ValidatorDetails.getAccountId(savedStateHandle)
+        val accountId = NavigationItem.ValidatorDetails.getAccountId(savedStateHandle)
 
         private val validatorDetailsService = ValidatorDetailsService(this)
         private var subscriptionId = -1L
@@ -84,6 +86,8 @@ class ValidatorDetailsViewModel
             private set
         var validator by mutableStateOf<ValidatorDetails?>(null)
             private set
+        var oneKVNominators by mutableStateOf<List<OneKVNominatorSummary>>(listOf())
+            private set
 
         init {
             sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -118,14 +122,13 @@ class ValidatorDetailsViewModel
                     rotation,
                     orientation,
                 )
-                // Timber.d("(${orientation[0]},${orientation[1]},${orientation[2]})")
                 val yaw = ((orientation[0] * 180 / Math.PI) + 90).toInt()
                 // yaw += reset[0]
                 val pitch = ((-orientation[2] * 180 / Math.PI) - 90).toInt()
                 // pitch += reset[1]
                 val roll = (-orientation[1] * 180 / Math.PI).toInt()
                 // roll += reset[2]
-                Timber.d("($yaw,$pitch,$roll)")
+                // Timber.d("($yaw,$pitch,$roll)")
             }
         }
 
@@ -133,6 +136,8 @@ class ValidatorDetailsViewModel
             viewModelScope.launch(Dispatchers.IO) {
                 networkRepository.findById(networkId)?.let { network ->
                     this@ValidatorDetailsViewModel.network = network
+                    // get onekv nominators
+                    getOneKVNominators()
                     network.validatorDetailsServiceHost?.let { host ->
                         network.validatorDetailsServicePort?.let { port ->
                             validatorDetailsService.subscribe(
@@ -141,6 +146,18 @@ class ValidatorDetailsViewModel
                                 listOf(accountId.toString()),
                             )
                         }
+                    }
+                }
+            }
+        }
+
+        private suspend fun getOneKVNominators() {
+            this.network?.reportServiceHost?.let { host ->
+                this.network?.reportServicePort?.let { port ->
+                    val reportService = ReportService("https://$host:$port")
+                    val result = reportService.getOneKVNominatorSummaries()
+                    result.getOrNull()?.let {
+                        this.oneKVNominators = it
                     }
                 }
             }
