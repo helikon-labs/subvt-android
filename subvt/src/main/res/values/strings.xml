@@ -106,7 +106,9 @@
     <string name="validator_details.tooltip_oversubscribed">Oversubscribed</string>
     <string name="validator_details.tooltip_blocks_nominations">Blocks Nominations</string>
     <string name="validator_details.tooltip_slashed">Slashed</string>
-    <string name="validator_details_validator_added">Added</string>
-    <string name="validator_details_validator_removed">Removed</string>
-    <string name="validator_details_my_validators_fetch_error">Data error. Please check your connection.</string>
+    <string name="validator_details_validator_added">Validator added.</string>
+    <string name="validator_details_validator_add_error">Error while adding validator.</string>
+    <string name="validator_details_validator_removed">Validator removed.</string>
+    <string name="validator_details_validator_remove_error">Error while removing validator.</string>
+    <string name="validator_details_my_validators_fetch_error">Data request error. Please check your connection.</string>
 </resources>

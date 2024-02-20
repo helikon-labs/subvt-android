@@ -42,12 +42,19 @@ import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
 
+enum class SnackbarType {
+    INFO,
+    SUCCESS,
+    ERROR,
+}
+
 @Composable
 fun SnackbarScaffold(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
     zIndex: Float = 0.0f,
-    snackbarText: String = "",
+    type: SnackbarType,
+    text: String = "",
     snackbarIsVisible: Boolean = false,
     onSnackbarClick: (() -> Unit)? = null,
     onSnackbarRetry: (() -> Unit)? = null,
@@ -62,7 +69,8 @@ fun SnackbarScaffold(
                     .zIndex(zIndex),
         ) {
             Snackbar(
-                text = snackbarText,
+                type = type,
+                text = text,
                 isDark = isDark,
                 isVisible = snackbarIsVisible,
                 onClick = onSnackbarClick,
@@ -75,6 +83,7 @@ fun SnackbarScaffold(
 
 @Composable
 fun Snackbar(
+    type: SnackbarType,
     text: String,
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
@@ -132,18 +141,30 @@ fun Snackbar(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.snackbar_item_spacing)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
-                modifier = Modifier.size(dimensionResource(id = R.dimen.snackbar_icon_size)),
-                painter = painterResource(id = R.drawable.snackbar_exclamation_icon),
-                contentDescription = stringResource(id = R.string.snackbar_exclamation_icon_description),
-            )
+            when (type) {
+                SnackbarType.SUCCESS -> {
+                    Image(
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.snackbar_icon_size)),
+                        painter = painterResource(id = R.drawable.identity_confirmed_icon),
+                        contentDescription = stringResource(id = R.string.snackbar_exclamation_icon_description),
+                    )
+                }
+                SnackbarType.ERROR -> {
+                    Image(
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.snackbar_icon_size)),
+                        painter = painterResource(id = R.drawable.snackbar_exclamation_icon),
+                        contentDescription = stringResource(id = R.string.snackbar_exclamation_icon_description),
+                    )
+                }
+                else -> {}
+            }
             Text(
                 text,
                 modifier = Modifier.weight(1f),
                 style = Font.light(14.sp, 20.sp),
                 color = Color.text(isDark),
             )
-            if (onRetry != null) {
+            if (type == SnackbarType.ERROR && onRetry != null) {
                 TextButton(
                     modifier = Modifier.wrapContentSize(),
                     colors =
@@ -168,6 +189,7 @@ fun Snackbar(
 @Composable
 fun SnackbarPreview() {
     Snackbar(
+        type = SnackbarType.SUCCESS,
         isVisible = true,
         text = stringResource(id = R.string.introduction_user_create_error),
         onRetry = {},

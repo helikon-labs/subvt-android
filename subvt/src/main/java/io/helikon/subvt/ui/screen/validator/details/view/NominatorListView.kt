@@ -78,7 +78,13 @@ fun NominatorListView(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(id = titleResourceId) + count?.let { " ($it)" },
+                text =
+                    stringResource(id = titleResourceId) +
+                        if (count != null) {
+                            " ($count)"
+                        } else {
+                            ""
+                        },
                 style = Font.light(12.sp),
                 color = Color.text(isDark),
             )

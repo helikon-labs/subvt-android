@@ -1,10 +1,5 @@
 package io.helikon.subvt.ui.screen.validator.details
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -31,14 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -66,6 +60,8 @@ import io.helikon.subvt.data.model.substrate.AccountId
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.data.service.RPCSubscriptionServiceStatus
 import io.helikon.subvt.ui.component.AnimatedBackground
+import io.helikon.subvt.ui.component.SnackbarScaffold
+import io.helikon.subvt.ui.component.SnackbarType
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.modifier.scrollHeader
 import io.helikon.subvt.ui.screen.network.status.view.NetworkSelectorButton
@@ -91,9 +87,12 @@ data class ValidatorDetailsScreenState(
     val network: Network?,
     val accountId: AccountId,
     val validator: ValidatorDetails?,
+    val showIdenticon: Boolean = true,
     val isMyValidator: Boolean,
     val oneKVNominators: List<OneKVNominatorSummary>,
-    val feedbackIsVisible: Boolean,
+    val snackbarIsVisible: Boolean,
+    val snackbarType: SnackbarType,
+    val snackbarTextResourceId: Int,
 )
 
 @Composable
@@ -104,8 +103,15 @@ fun ValidatorDetailsScreen(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val snackbarDuration =
+        remember {
+            context.resources.getInteger(R.integer.snackbar_medium_display_duration_ms).toLong()
+        }
     val serviceStatus by viewModel.validatorDetailsServiceStatus.collectAsStateWithLifecycle()
-    var feedbackIsVisible by remember { mutableStateOf(false) }
+    var snackbarIsVisible by remember { mutableStateOf(false) }
+    var snackbarType by remember { mutableStateOf(SnackbarType.INFO) }
+    var snackbarTextResourceId by remember { mutableIntStateOf(R.string.validator_details_validator_added) }
     DisposableEffect(lifecycleOwner) {
         val lifecyceObserver =
             LifecycleEventObserver { _, event ->
@@ -126,11 +132,36 @@ fun ValidatorDetailsScreen(
     LaunchedEffect(Unit) {
         viewModel.getMyValidators()
     }
+    LaunchedEffect(viewModel.myValidatorsStatus.value) {
+        if (viewModel.myValidatorsStatus.value is DataRequestState.Error) {
+            snackbarType = SnackbarType.ERROR
+            snackbarTextResourceId = R.string.validator_details_my_validators_fetch_error
+            snackbarIsVisible = true
+        }
+    }
     LaunchedEffect(viewModel.addRemoveValidatorStatus.value) {
         if (viewModel.addRemoveValidatorStatus.value is DataRequestState.Success) {
-            feedbackIsVisible = true
-            delay(1000L)
-            feedbackIsVisible = false
+            snackbarType = SnackbarType.SUCCESS
+            snackbarTextResourceId =
+                if (viewModel.isMyValidator.value) {
+                    R.string.validator_details_validator_added
+                } else {
+                    R.string.validator_details_validator_removed
+                }
+            snackbarIsVisible = true
+            delay(snackbarDuration)
+            snackbarIsVisible = false
+        } else if (viewModel.addRemoveValidatorStatus.value is DataRequestState.Error) {
+            snackbarType = SnackbarType.ERROR
+            snackbarTextResourceId =
+                if (viewModel.isMyValidator.value) {
+                    R.string.validator_details_validator_remove_error
+                } else {
+                    R.string.validator_details_validator_add_error
+                }
+            snackbarIsVisible = true
+            delay(snackbarDuration)
+            snackbarIsVisible = false
         }
     }
     ValidatorDetailsScreenContent(
@@ -146,11 +177,30 @@ fun ValidatorDetailsScreen(
                 validator = viewModel.validator,
                 isMyValidator = viewModel.isMyValidator.value,
                 oneKVNominators = viewModel.oneKVNominators,
-                feedbackIsVisible = feedbackIsVisible,
+                snackbarIsVisible = snackbarIsVisible,
+                snackbarType = snackbarType,
+                snackbarTextResourceId = snackbarTextResourceId,
             ),
-        onReloadMyValidators = { viewModel.getMyValidators() },
         onAddValidator = { viewModel.addValidator() },
         onRemoveValidator = { viewModel.removeValidator() },
+        onSnackbarRetry =
+            when (viewModel.myValidatorsStatus.value) {
+                is DataRequestState.Loading -> {
+                    {
+                    }
+                }
+
+                is DataRequestState.Error -> {
+                    {
+                        snackbarIsVisible = false
+                        viewModel.getMyValidators()
+                    }
+                }
+
+                else -> {
+                    null
+                }
+            },
         onBack = onBack,
     )
 }
@@ -160,9 +210,9 @@ fun ValidatorDetailsScreenContent(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
     state: ValidatorDetailsScreenState,
-    onReloadMyValidators: () -> Unit,
     onAddValidator: () -> Unit,
     onRemoveValidator: () -> Unit,
+    onSnackbarRetry: (() -> Unit)?,
     onBack: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -172,470 +222,397 @@ fun ValidatorDetailsScreenContent(
             context.resources.getDimension(R.dimen.common_header_full_alpha_scroll_amount)
         }
     val scrolledRatio = scrollState.value.toFloat() / headerFullAlphaScrollAmount
-    Box(
-        modifier =
-            modifier
-                .clipToBounds()
-                .fillMaxSize(),
+    SnackbarScaffold(
+        modifier = modifier.clipToBounds(),
+        zIndex = 15.0f,
+        type = state.snackbarType,
+        text = stringResource(id = state.snackbarTextResourceId),
+        snackbarIsVisible = state.snackbarIsVisible,
+        onSnackbarRetry = onSnackbarRetry,
     ) {
-        AnimatedBackground(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .zIndex(0.0f),
-        )
-        Column(
-            modifier =
-                Modifier
-                    .scrollHeader(
-                        isDark = isDark,
-                        scrolledRatio = scrolledRatio,
-                    )
-                    .zIndex(20.0f),
-        ) {
-            Spacer(
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedBackground(
                 modifier =
                     Modifier
-                        .padding(0.dp, dimensionResource(id = R.dimen.common_content_margin_top))
-                        .statusBarsPadding(),
+                        .fillMaxSize()
+                        .zIndex(0.0f),
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
                 modifier =
                     Modifier
-                        .height(dimensionResource(id = R.dimen.network_selector_button_height))
-                        .padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
+                        .scrollHeader(
+                            isDark = isDark,
+                            scrolledRatio = scrolledRatio,
+                        )
+                        .zIndex(20.0f),
             ) {
-                Box(
+                Spacer(
                     modifier =
                         Modifier
-                            .size(dimensionResource(id = R.dimen.network_selector_button_height))
-                            .noRippleClickable {
-                                onBack()
-                            },
-                    contentAlignment = Alignment.CenterStart,
+                            .padding(0.dp, dimensionResource(id = R.dimen.common_content_margin_top))
+                            .statusBarsPadding(),
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier =
+                        Modifier
+                            .height(dimensionResource(id = R.dimen.network_selector_button_height))
+                            .padding(dimensionResource(id = R.dimen.common_padding), 0.dp),
                 ) {
-                    Image(
-                        painterResource(id = R.drawable.arrow_back),
-                        contentDescription = stringResource(id = R.string.description_back),
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1.0f))
-                state.network?.let { network ->
-                    NetworkSelectorButton(
-                        network = network,
-                        isClickable = false,
-                    )
-                }
-                Box(
-                    modifier =
-                        Modifier
-                            .noRippleClickable {
-                                if (state.myValidatorsStatus is DataRequestState.Error) {
-                                    onReloadMyValidators()
-                                } else if (state.myValidatorsStatus is DataRequestState.Success) {
-                                    if (state.addRemoveValidatorStatus !is DataRequestState.Loading) {
-                                        if (state.isMyValidator) {
-                                            onRemoveValidator()
-                                        } else {
-                                            onAddValidator()
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(dimensionResource(id = R.dimen.network_selector_button_height))
+                                .noRippleClickable {
+                                    onBack()
+                                },
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.arrow_back),
+                            contentDescription = stringResource(id = R.string.description_back),
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    state.network?.let { network ->
+                        NetworkSelectorButton(
+                            network = network,
+                            isClickable = false,
+                        )
+                    }
+                    if (state.myValidatorsStatus !is DataRequestState.Error) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .noRippleClickable {
+                                        if (state.addRemoveValidatorStatus !is DataRequestState.Loading) {
+                                            if (state.isMyValidator) {
+                                                onRemoveValidator()
+                                            } else {
+                                                onAddValidator()
+                                            }
                                         }
                                     }
+                                    .size(dimensionResource(id = R.dimen.top_small_button_size))
+                                    .background(
+                                        color = Color.panelBg(isDark),
+                                        shape = RoundedCornerShape(12.dp),
+                                    ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            when (state.myValidatorsStatus) {
+                                is DataRequestState.Idle, DataRequestState.Loading -> {
+                                    CircularProgressIndicator(
+                                        modifier =
+                                            Modifier
+                                                .size(dimensionResource(id = R.dimen.common_small_progress_size))
+                                                .align(Alignment.Center),
+                                        strokeWidth = dimensionResource(id = R.dimen.common_small_progress_stroke_width),
+                                        color = Color.text(isDark).copy(alpha = 0.85f),
+                                        trackColor = Color.transparent(),
+                                    )
+                                }
+
+                                else -> {
+                                    Image(
+                                        modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
+                                        painter =
+                                            painterResource(
+                                                id =
+                                                    if (state.isMyValidator) {
+                                                        R.drawable.remove_validator_icon
+                                                    } else {
+                                                        R.drawable.add_validator_icon
+                                                    },
+                                            ),
+                                        contentDescription = "",
+                                    )
                                 }
                             }
-                            .size(dimensionResource(id = R.dimen.top_small_button_size))
-                            .background(
-                                color = Color.panelBg(isDark),
-                                shape = RoundedCornerShape(12.dp),
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    when (state.myValidatorsStatus) {
-                        is DataRequestState.Idle, DataRequestState.Loading -> {
-                            CircularProgressIndicator(
-                                modifier =
-                                    Modifier
-                                        .size(dimensionResource(id = R.dimen.common_small_progress_size))
-                                        .align(Alignment.Center),
-                                strokeWidth = dimensionResource(id = R.dimen.common_small_progress_stroke_width),
-                                color = Color.text(isDark).copy(alpha = 0.85f),
-                                trackColor = Color.transparent(),
-                            )
-                        }
-
-                        is DataRequestState.Error -> {
-                            Image(
-                                modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
-                                painter =
-                                    painterResource(id = R.drawable.snackbar_exclamation_icon),
-                                contentDescription = "",
-                            )
-                        }
-
-                        else -> {
-                            Image(
-                                modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
-                                painter =
-                                    painterResource(
-                                        id =
-                                            if (state.isMyValidator) {
-                                                R.drawable.remove_validator_icon
-                                            } else {
-                                                R.drawable.add_validator_icon
-                                            },
-                                    ),
-                                contentDescription = "",
-                            )
                         }
                     }
+                    Box(
+                        modifier =
+                            Modifier
+                                .noRippleClickable {
+                                    // no-op
+                                }
+                                .size(dimensionResource(id = R.dimen.top_small_button_size))
+                                .background(
+                                    color = Color.panelBg(isDark),
+                                    shape = RoundedCornerShape(12.dp),
+                                ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.validator_details_rewards_icon),
+                            style = Font.light(16.sp),
+                            color = Color.text(isDark),
+                        )
+                    }
+                    Box(
+                        modifier =
+                            Modifier
+                                .noRippleClickable {
+                                    // no-op
+                                }
+                                .size(dimensionResource(id = R.dimen.top_small_button_size))
+                                .background(
+                                    color = Color.panelBg(isDark),
+                                    shape = RoundedCornerShape(12.dp),
+                                ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.validator_details_para_validation_icon),
+                            style = Font.light(14.sp),
+                            color = Color.text(isDark),
+                        )
+                    }
+                    Box(
+                        modifier =
+                            Modifier
+                                .noRippleClickable {
+                                    // no-op
+                                }
+                                .size(dimensionResource(id = R.dimen.top_small_button_size))
+                                .background(
+                                    color = Color.panelBg(isDark),
+                                    shape = RoundedCornerShape(12.dp),
+                                ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
+                            painter = painterResource(id = R.drawable.validator_reports_icon),
+                            contentDescription = "",
+                        )
+                    }
                 }
-                Box(
-                    modifier =
-                        Modifier
-                            .noRippleClickable {
-                                // no-op
-                            }
-                            .size(dimensionResource(id = R.dimen.top_small_button_size))
-                            .background(
-                                color = Color.panelBg(isDark),
-                                shape = RoundedCornerShape(12.dp),
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.validator_details_rewards_icon),
-                        style = Font.light(16.sp),
-                        color = Color.text(isDark),
-                    )
-                }
-                Box(
-                    modifier =
-                        Modifier
-                            .noRippleClickable {
-                                // no-op
-                            }
-                            .size(dimensionResource(id = R.dimen.top_small_button_size))
-                            .background(
-                                color = Color.panelBg(isDark),
-                                shape = RoundedCornerShape(12.dp),
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.validator_details_para_validation_icon),
-                        style = Font.light(14.sp),
-                        color = Color.text(isDark),
-                    )
-                }
-                Box(
-                    modifier =
-                        Modifier
-                            .noRippleClickable {
-                                // no-op
-                            }
-                            .size(dimensionResource(id = R.dimen.top_small_button_size))
-                            .background(
-                                color = Color.panelBg(isDark),
-                                shape = RoundedCornerShape(12.dp),
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.top_small_button_image_size)),
-                        painter = painterResource(id = R.drawable.validator_reports_icon),
-                        contentDescription = "",
-                    )
-                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_padding)))
-        }
 
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(
-                        dimensionResource(id = R.dimen.common_padding),
-                        0.dp,
-                        dimensionResource(id = R.dimen.common_padding),
-                        dimensionResource(id = R.dimen.common_padding),
-                    )
-                    .zIndex(5f)
-                    .verticalScroll(scrollState),
-            Arrangement.spacedBy(
-                dimensionResource(id = R.dimen.common_panel_padding),
-            ),
-        ) {
-            Spacer(
-                modifier =
-                    Modifier
-                        .padding(
-                            PaddingValues(
-                                0.dp,
-                                dimensionResource(id = R.dimen.validator_details_content_padding_top),
-                                0.dp,
-                                0.dp,
-                            ),
-                        )
-                        .statusBarsPadding(),
-            )
-            // content begins here
-            IdenticonView(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
-                accountId = state.accountId,
-            )
-            IdentityView(validator = state.validator)
-            // Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding) / 2))
-            BalanceView(
-                titleResourceId = R.string.validator_details_nomination_total,
-                network = state.network,
-                balance = state.validator?.nominationTotal(),
-            )
-            BalanceView(
-                titleResourceId = R.string.validator_details_self_stake,
-                network = state.network,
-                balance = state.validator?.selfStake?.activeAmount,
-            )
-            state.validator?.let { validator ->
-                validator.validatorStake?.let { validatorStake ->
-                    NominatorListView(
-                        titleResourceId = R.string.validator_details_active_stake,
-                        network = state.network,
-                        count = validatorStake.nominators.size,
-                        total = validatorStake.totalStake,
-                        nominations =
-                            validatorStake.nominators.map { nominator ->
-                                Triple(
-                                    nominator.account.address,
-                                    state.oneKVNominators.count { oneKVNominator ->
-                                        oneKVNominator.stashAccountId == nominator.account.id
-                                    } > 0,
-                                    nominator.stake,
-                                )
-                            }.sortedByDescending {
-                                it.third
-                            },
-                    )
-                }
-            }
-            NominatorListView(
-                titleResourceId = R.string.validator_details_inactive_nominations,
-                network = state.network,
-                count = state.validator?.inactiveNominations()?.size,
-                total = state.validator?.inactiveNominationTotal(),
-                nominations =
-                    state.validator?.inactiveNominations()?.map { nomination ->
-                        Triple(
-                            nomination.stashAccount.address,
-                            state.oneKVNominators.count { oneKVNominator ->
-                                oneKVNominator.stashAccountId == nomination.stashAccount.id
-                            } > 0,
-                            nomination.stake.activeAmount,
-                        )
-                    }?.sortedByDescending {
-                        it.third
-                    },
-            )
-            state.validator?.account?.discoveredAt?.let {
-                AccountAgeView(discoveredAt = it)
-            }
-            HorizontalDataView(
-                titleResourceId = R.string.validator_details_offline_faults,
-                text = state.validator?.offlineOffenceCount?.toString() ?: "-",
-                displayExclamation = (state.validator?.offlineOffenceCount ?: 0) > 0,
-            )
-            VerticalDataView(
-                modifier = Modifier.fillMaxWidth(),
-                titleResourceId = R.string.validator_details_reward_destination,
-                text =
-                    state.validator?.rewardDestination?.display(
-                        context = LocalContext.current,
-                        prefix = state.network?.ss58Prefix?.toShort() ?: 0,
-                    ) ?: "-",
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-            ) {
-                VerticalDataView(
-                    modifier = Modifier.weight(1.0f),
-                    titleResourceId = R.string.validator_details_commission,
-                    text =
-                        String.format(
-                            stringResource(id = R.string.percentage),
-                            formatDecimal(
-                                number =
-                                    (
-                                        state.validator?.preferences?.commissionPerBillion
-                                            ?: 0
-                                    ).toBigInteger(),
-                                tokenDecimalCount = 7,
-                                formatDecimalCount = 2,
-                            ),
-                        ),
-                )
-                VerticalDataView(
-                    modifier = Modifier.weight(1.0f),
-                    titleResourceId = R.string.validator_details_apr,
-                    text =
-                        String.format(
-                            stringResource(id = R.string.percentage),
-                            formatDecimal(
-                                number =
-                                    (
-                                        state.validator?.returnRatePerBillion
-                                            ?: 0
-                                    ).toBigInteger(),
-                                tokenDecimalCount = 7,
-                                formatDecimalCount = 2,
-                            ),
-                        ),
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
-            ) {
-                VerticalDataView(
-                    modifier = Modifier.weight(1.0f),
-                    titleResourceId = R.string.validator_details_era_blocks,
-                    text = state.validator?.blocksAuthored?.toString() ?: "-",
-                )
-                VerticalDataView(
-                    modifier = Modifier.weight(1.0f),
-                    titleResourceId = R.string.validator_details_era_points,
-                    text = state.validator?.rewardPoints?.toString() ?: "-",
-                )
-            }
-            state.validator?.let { validator ->
-                if (validator.onekvCandidateRecordId != null) {
-                    OneKVDetailsView(
-                        modifier = Modifier.fillMaxWidth(),
-                        validator = validator,
-                    )
-                }
-            }
-            Spacer(
-                modifier =
-                    Modifier
-                        .navigationBarsPadding()
-                        .padding(
-                            0.dp,
-                            0.dp,
-                            0.dp,
-                            dimensionResource(id = R.dimen.common_scrollable_content_margin_bottom),
-                        ),
-            )
-        }
-        state.validator?.let {
-            IconsView(
-                Modifier
-                    .padding(
-                        0.dp,
-                        0.dp,
-                        0.dp,
-                        dimensionResource(id = R.dimen.common_padding),
-                    )
-                    .navigationBarsPadding()
-                    .fillMaxWidth()
-                    .zIndex(10.0f)
-                    .align(Alignment.BottomCenter),
-                validator = it,
-            )
-        }
-        AnimatedVisibility(
-            modifier =
-                Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .zIndex(12.0f),
-            visible = state.feedbackIsVisible,
-            enter =
-                slideInVertically(
-                    initialOffsetY = {
-                        it
-                    },
-                ) + fadeIn(),
-            exit =
-                slideOutVertically(
-                    targetOffsetY = {
-                        it
-                    },
-                ) + fadeOut(),
-        ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            dimensionResource(id = R.dimen.common_padding),
+                            0.dp,
+                            dimensionResource(id = R.dimen.common_padding),
+                            dimensionResource(id = R.dimen.common_padding),
+                        )
+                        .zIndex(5f)
+                        .verticalScroll(scrollState),
+                Arrangement.spacedBy(
+                    dimensionResource(id = R.dimen.common_panel_padding),
+                ),
             ) {
-                val roundedCorner =
-                    RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius))
-                Row(
+                Spacer(
                     modifier =
                         Modifier
-                            .shadow(
-                                elevation = 12.dp,
-                                shape = roundedCorner,
-                                spotColor = Color.green().copy(alpha = 0.75f),
+                            .padding(
+                                PaddingValues(
+                                    0.dp,
+                                    dimensionResource(id = R.dimen.validator_details_content_padding_top),
+                                    0.dp,
+                                    0.dp,
+                                ),
                             )
-                            .background(color = Color.bg(isDark))
-                            .clip(shape = roundedCorner)
-                            .padding(dimensionResource(id = R.dimen.common_padding)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_padding)),
+                            .statusBarsPadding(),
+                )
+                // content begins here
+                if (state.showIdenticon) {
+                    IdenticonView(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
+                        accountId = state.accountId,
+                    )
+                }
+                IdentityView(validator = state.validator)
+                // Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding) / 2))
+                BalanceView(
+                    titleResourceId = R.string.validator_details_nomination_total,
+                    network = state.network,
+                    balance = state.validator?.nominationTotal(),
+                )
+                BalanceView(
+                    titleResourceId = R.string.validator_details_self_stake,
+                    network = state.network,
+                    balance = state.validator?.selfStake?.activeAmount,
+                )
+                state.validator?.let { validator ->
+                    validator.validatorStake?.let { validatorStake ->
+                        NominatorListView(
+                            titleResourceId = R.string.validator_details_active_stake,
+                            network = state.network,
+                            count = validatorStake.nominators.size,
+                            total = validatorStake.totalStake,
+                            nominations =
+                                validatorStake.nominators.map { nominator ->
+                                    Triple(
+                                        nominator.account.address,
+                                        state.oneKVNominators.count { oneKVNominator ->
+                                            oneKVNominator.stashAccountId == nominator.account.id
+                                        } > 0,
+                                        nominator.stake,
+                                    )
+                                }.sortedByDescending {
+                                    it.third
+                                },
+                        )
+                    }
+                }
+                NominatorListView(
+                    titleResourceId = R.string.validator_details_inactive_nominations,
+                    network = state.network,
+                    count = state.validator?.inactiveNominations()?.size,
+                    total = state.validator?.inactiveNominationTotal(),
+                    nominations =
+                        state.validator?.inactiveNominations()?.map { nomination ->
+                            Triple(
+                                nomination.stashAccount.address,
+                                state.oneKVNominators.count { oneKVNominator ->
+                                    oneKVNominator.stashAccountId == nomination.stashAccount.id
+                                } > 0,
+                                nomination.stake.activeAmount,
+                            )
+                        }?.sortedByDescending {
+                            it.third
+                        },
+                )
+                state.validator?.account?.discoveredAt?.let {
+                    AccountAgeView(discoveredAt = it)
+                }
+                HorizontalDataView(
+                    titleResourceId = R.string.validator_details_offline_faults,
+                    text = state.validator?.offlineOffenceCount?.toString() ?: "-",
+                    displayExclamation = (state.validator?.offlineOffenceCount ?: 0) > 0,
+                )
+                VerticalDataView(
+                    modifier = Modifier.fillMaxWidth(),
+                    titleResourceId = R.string.validator_details_reward_destination,
+                    text =
+                        state.validator?.rewardDestination?.display(
+                            context = LocalContext.current,
+                            prefix = state.network?.ss58Prefix?.toShort() ?: 0,
+                        ) ?: "-",
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
                 ) {
-                    Image(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = R.drawable.check),
-                        contentDescription = "",
-                    )
-                    Text(
+                    VerticalDataView(
+                        modifier = Modifier.weight(1.0f),
+                        titleResourceId = R.string.validator_details_commission,
                         text =
-                            stringResource(
-                                id =
-                                    if (state.isMyValidator) {
-                                        R.string.validator_details_validator_added
-                                    } else {
-                                        R.string.validator_details_validator_removed
-                                    },
+                            String.format(
+                                stringResource(id = R.string.percentage),
+                                formatDecimal(
+                                    number =
+                                        (
+                                            state.validator?.preferences?.commissionPerBillion
+                                                ?: 0
+                                        ).toBigInteger(),
+                                    tokenDecimalCount = 7,
+                                    formatDecimalCount = 2,
+                                ),
                             ),
-                        style = Font.semiBold(16.sp),
-                        color = Color.text(isDark),
                     )
+                    VerticalDataView(
+                        modifier = Modifier.weight(1.0f),
+                        titleResourceId = R.string.validator_details_apr,
+                        text =
+                            String.format(
+                                stringResource(id = R.string.percentage),
+                                formatDecimal(
+                                    number =
+                                        (
+                                            state.validator?.returnRatePerBillion
+                                                ?: 0
+                                        ).toBigInteger(),
+                                    tokenDecimalCount = 7,
+                                    formatDecimalCount = 2,
+                                ),
+                            ),
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.common_panel_padding)),
+                ) {
+                    VerticalDataView(
+                        modifier = Modifier.weight(1.0f),
+                        titleResourceId = R.string.validator_details_era_blocks,
+                        text = state.validator?.blocksAuthored?.toString() ?: "-",
+                    )
+                    VerticalDataView(
+                        modifier = Modifier.weight(1.0f),
+                        titleResourceId = R.string.validator_details_era_points,
+                        text = state.validator?.rewardPoints?.toString() ?: "-",
+                    )
+                }
+                state.validator?.let { validator ->
+                    if (validator.onekvCandidateRecordId != null) {
+                        OneKVDetailsView(
+                            modifier = Modifier.fillMaxWidth(),
+                            validator = validator,
+                        )
+                    }
                 }
                 Spacer(
                     modifier =
-                        Modifier.padding(
+                        Modifier
+                            .navigationBarsPadding()
+                            .padding(
+                                0.dp,
+                                0.dp,
+                                0.dp,
+                                dimensionResource(id = R.dimen.common_scrollable_content_margin_bottom),
+                            ),
+                )
+            }
+            state.validator?.let {
+                IconsView(
+                    Modifier
+                        .padding(
                             0.dp,
                             0.dp,
                             0.dp,
                             dimensionResource(id = R.dimen.common_padding),
-                        ).navigationBarsPadding(),
+                        )
+                        .navigationBarsPadding()
+                        .fillMaxWidth()
+                        .zIndex(10.0f)
+                        .align(Alignment.BottomCenter),
+                    validator = it,
                 )
             }
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.common_bottom_gradient_height))
+                        .zIndex(7.0f)
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            brush =
+                                Brush.verticalGradient(
+                                    colors =
+                                        listOf(
+                                            Color.transparent(),
+                                            Color
+                                                .bg(isDark)
+                                                .copy(alpha = 0.85f),
+                                            Color.bg(isDark),
+                                        ),
+                                ),
+                        ),
+            )
         }
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.common_bottom_gradient_height))
-                    .zIndex(7.0f)
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        brush =
-                            Brush.verticalGradient(
-                                colors =
-                                    listOf(
-                                        Color.transparent(),
-                                        Color
-                                            .bg(isDark)
-                                            .copy(alpha = 0.85f),
-                                        Color.bg(isDark),
-                                    ),
-                            ),
-                    ),
-        )
     }
 }
 
@@ -656,13 +633,16 @@ fun ValidatorDetailsScreenPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     network = PreviewData.networks[0],
                     accountId = PreviewData.stashAccountId,
                     validator = null,
+                    showIdenticon = false,
                     isMyValidator = false,
                     oneKVNominators = listOf(),
-                    feedbackIsVisible = false,
+                    snackbarIsVisible = false,
+                    snackbarType = SnackbarType.INFO,
+                    snackbarTextResourceId = R.string.validator_details_validator_added,
                 ),
-            onReloadMyValidators = {},
             onAddValidator = {},
             onRemoveValidator = {},
+            onSnackbarRetry = null,
             onBack = {},
         )
     }

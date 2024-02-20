@@ -46,6 +46,7 @@ import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.preview.PreviewData
 import io.helikon.subvt.ui.component.ActionButton
 import io.helikon.subvt.ui.component.SnackbarScaffold
+import io.helikon.subvt.ui.component.SnackbarType
 import io.helikon.subvt.ui.modifier.appear
 import io.helikon.subvt.ui.modifier.noRippleClickable
 import io.helikon.subvt.ui.style.Color
@@ -104,7 +105,8 @@ private fun NetworkSelectionScreenContent(
     onComplete: () -> Unit,
 ) {
     SnackbarScaffold(
-        snackbarText = stringResource(id = R.string.network_selection_get_networks_error),
+        type = SnackbarType.ERROR,
+        text = stringResource(id = R.string.network_selection_get_networks_error),
         modifier =
             modifier
                 .navigationBarsPadding()

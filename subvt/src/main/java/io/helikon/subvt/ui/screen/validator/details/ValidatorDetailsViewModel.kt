@@ -159,8 +159,12 @@ class ValidatorDetailsViewModel
                 ReportService(
                     "https://${this.network!!.reportServiceHost!!}:${this.network!!.reportServicePort!!}",
                 )
-            val result = reportService.getOneKVNominatorSummaries()
-            this.oneKVNominators = result.getOrNull() ?: this.oneKVNominators
+            try {
+                val result = reportService.getOneKVNominatorSummaries()
+                this.oneKVNominators = result.getOrNull() ?: this.oneKVNominators
+            } catch (e: Throwable) {
+                Timber.e("Error while getting 1KV nominators.", e)
+            }
         }
 
         override suspend fun onSubscribed(
@@ -211,13 +215,17 @@ class ValidatorDetailsViewModel
             myValidators.clear()
             _myValidatorsStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
-                val result = appService.getUserValidators()
-                if (result.isSuccess) {
-                    myValidators.addAll(result.getOrNull() ?: listOf())
-                    _isMyValidator.value = myValidators.count { it.validatorAccountId == accountId } > 0
-                    _myValidatorsStatus.value = DataRequestState.Success("")
-                } else {
-                    _myValidatorsStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                try {
+                    val result = appService.getUserValidators()
+                    if (result.isSuccess) {
+                        myValidators.addAll(result.getOrNull() ?: listOf())
+                        _isMyValidator.value = myValidators.count { it.validatorAccountId == accountId } > 0
+                        _myValidatorsStatus.value = DataRequestState.Success("")
+                    } else {
+                        _myValidatorsStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                    }
+                } catch (e: Throwable) {
+                    _myValidatorsStatus.value = DataRequestState.Error(e)
                 }
             }
         }
@@ -228,20 +236,24 @@ class ValidatorDetailsViewModel
             }
             _addRemoveValidatorStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
-                val request = NewUserValidator(networkId, accountId)
-                val result = appService.createUserValidator(request)
-                if (result.isSuccess) {
-                    val userValidator = result.getOrNull()
-                    if (userValidator != null) {
-                        myValidators.add(userValidator)
-                        _isMyValidator.value = true
-                        _addRemoveValidatorStatus.value = DataRequestState.Success("")
+                try {
+                    val request = NewUserValidator(networkId, accountId)
+                    val result = appService.createUserValidator(request)
+                    if (result.isSuccess) {
+                        val userValidator = result.getOrNull()
+                        if (userValidator != null) {
+                            myValidators.add(userValidator)
+                            _isMyValidator.value = true
+                            _addRemoveValidatorStatus.value = DataRequestState.Success("")
+                        } else {
+                            _addRemoveValidatorStatus.value =
+                                DataRequestState.Error(result.exceptionOrNull())
+                        }
                     } else {
-                        _addRemoveValidatorStatus.value =
-                            DataRequestState.Error(result.exceptionOrNull())
+                        _addRemoveValidatorStatus.value = DataRequestState.Error(result.exceptionOrNull())
                     }
-                } else {
-                    _addRemoveValidatorStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                } catch (e: Throwable) {
+                    _addRemoveValidatorStatus.value = DataRequestState.Error(e)
                 }
             }
         }
@@ -253,14 +265,18 @@ class ValidatorDetailsViewModel
             _addRemoveValidatorStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 myValidators.firstOrNull { it.validatorAccountId == accountId }?.let {
-                    val result = appService.deleteUserValidator(it.id)
-                    if (result.isSuccess) {
-                        myValidators.removeAll { myValidator -> myValidator.validatorAccountId == accountId }
-                        _isMyValidator.value = false
-                        _addRemoveValidatorStatus.value = DataRequestState.Success("")
-                    } else {
-                        _addRemoveValidatorStatus.value =
-                            DataRequestState.Error(result.exceptionOrNull())
+                    try {
+                        val result = appService.deleteUserValidator(it.id)
+                        if (result.isSuccess) {
+                            myValidators.removeAll { myValidator -> myValidator.validatorAccountId == accountId }
+                            _isMyValidator.value = false
+                            _addRemoveValidatorStatus.value = DataRequestState.Success("")
+                        } else {
+                            _addRemoveValidatorStatus.value =
+                                DataRequestState.Error(result.exceptionOrNull())
+                        }
+                    } catch (e: Throwable) {
+                        _addRemoveValidatorStatus.value = DataRequestState.Error(e)
                     }
                 }
             }
