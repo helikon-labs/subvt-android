@@ -78,7 +78,7 @@ fun IdenticonView(
                     color.blue,
                     0.0f,
                 )
-                material.setParameter("metallicFactor", 0.1f)
+                material.setParameter("metallicFactor", 0.0f)
                 material.setParameter("roughnessFactor", 1.0f)
             }
         },

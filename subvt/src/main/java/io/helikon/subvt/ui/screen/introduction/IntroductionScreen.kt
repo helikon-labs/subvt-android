@@ -77,11 +77,13 @@ fun IntroductionScreen(
         modifier = modifier,
         state =
             IntroductionScreenState(
-                isLoading = viewModel.createUserState == DataRequestState.Loading,
+                isLoading =
+                    viewModel.createUserState == DataRequestState.Loading ||
+                        viewModel.createUserState is DataRequestState.Success,
                 snackbarIsVisible = snackbarIsVisible,
             ),
         onCreateUser = {
-            viewModel.createUser(context)
+            viewModel.createUser()
         },
         onSnackbarClick = {
             snackbarIsVisible = false

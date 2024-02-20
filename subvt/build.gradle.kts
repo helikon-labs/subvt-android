@@ -116,14 +116,13 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // 3D
-    // implementation("io.github.sceneview:sceneview:2.0.3")
     implementation(project(":sceneview-android:sceneview"))
 
     // crypto
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")
 
     // data
-    implementation("com.github.helikon-labs:subvt-data-android:0.24.5")
+    implementation(project(":subvt-data-android:subvt-data"))
 
     // shadow fix
     implementation("com.github.zed-alpha.shadow-gadgets:compose:2.2.0")

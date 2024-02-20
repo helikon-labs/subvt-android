@@ -29,6 +29,10 @@ class IntroductionViewModel
         @ApplicationContext context: Context,
         private val userPreferencesRepository: UserPreferencesRepository,
     ) : ViewModel() {
+        init {
+            SubVTData.reset(context)
+        }
+
         var createUserState by mutableStateOf<DataRequestState<User>>(Idle)
             private set
         private val appService =
@@ -37,12 +41,11 @@ class IntroductionViewModel
                 "https://${BuildConfig.API_HOST}:${BuildConfig.APP_SERVICE_PORT}/",
             )
 
-        fun createUser(context: Context) {
+        fun createUser() {
             createUserState = Loading
             viewModelScope.launch(Dispatchers.IO) {
                 val response =
                     try {
-                        SubVTData.reset(context)
                         appService.createUser()
                     } catch (error: Throwable) {
                         createUserState = Error(error)

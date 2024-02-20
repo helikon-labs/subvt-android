@@ -29,6 +29,7 @@
     <dimen name="snackbar_vertical_padding">12dp</dimen>
     <dimen name="snackbar_border_radius">12dp</dimen>
     <dimen name="snackbar_item_spacing">10dp</dimen>
+    <dimen name="snackbar_icon_size">20dp</dimen>
 
     <dimen name="introduction_title_margin_top">100dp</dimen>
     <dimen name="introduction_subtitle_margin_top">18dp</dimen>

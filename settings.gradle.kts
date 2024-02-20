@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "SubVT"
 include(":subvt")
 include(":sceneview-android:sceneview")
+include(":subvt-data-android:subvt-data")

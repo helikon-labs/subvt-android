@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -132,6 +133,7 @@ fun Snackbar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
+                modifier = Modifier.size(dimensionResource(id = R.dimen.snackbar_icon_size)),
                 painter = painterResource(id = R.drawable.snackbar_exclamation_icon),
                 contentDescription = stringResource(id = R.string.snackbar_exclamation_icon_description),
             )

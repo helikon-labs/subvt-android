@@ -31,7 +31,6 @@ import io.helikon.subvt.data.service.ReportService
 import io.helikon.subvt.data.service.ValidatorDetailsService
 import io.helikon.subvt.ui.navigation.NavigationItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -59,17 +58,17 @@ class ValidatorDetailsViewModel
                 "https://${BuildConfig.API_HOST}:${BuildConfig.APP_SERVICE_PORT}/",
             )
         private var myValidators = mutableListOf<UserValidator>()
-        private val _gotMyValidators = mutableStateOf(false)
-        val gotMyValidators: State<Boolean> = _gotMyValidators
         private val _isMyValidator = mutableStateOf(false)
         val isMyValidator: State<Boolean> = _isMyValidator
-        private val _appServiceStatus = mutableStateOf<DataRequestState<Nothing>>(DataRequestState.Idle)
-        val appServiceStatus: State<DataRequestState<Nothing>> = _appServiceStatus
+        private val _myValidatorsStatus =
+            mutableStateOf<DataRequestState<String>>(DataRequestState.Idle)
+        val myValidatorsStatus: State<DataRequestState<String>> = _myValidatorsStatus
+        private val _addRemoveValidatorStatus =
+            mutableStateOf<DataRequestState<String>>(DataRequestState.Idle)
+        val addRemoveValidatorStatus: State<DataRequestState<String>> = _addRemoveValidatorStatus
 
         private val feedbackDuration =
             context.resources.getInteger(R.integer.snackbar_short_display_duration_ms)
-        private val _feedbackIsValidatorAdded = mutableStateOf<Boolean?>(null)
-        val feedbackIsValidatorAdded: State<Boolean?> = _feedbackIsValidatorAdded
 
         private val sensorManager: SensorManager
         private val sensor: Sensor?
@@ -80,13 +79,16 @@ class ValidatorDetailsViewModel
                 1.0f, 0.0f, 0.0f, 0.0f,
                 1.0f, 0.0f, 0.0f, 0.0f,
             )
-        private val orientation = floatArrayOf(0.0f, 0.0f, 0.0f)
+        private val _orientation = floatArrayOf(0.0f, 0.0f, 0.0f)
 
         var network by mutableStateOf<Network?>(null)
             private set
         var validator by mutableStateOf<ValidatorDetails?>(null)
             private set
         var oneKVNominators by mutableStateOf<List<OneKVNominatorSummary>>(listOf())
+            private set
+        private lateinit var initialOrientation: Triple<Int, Int, Int>
+        var orientation by mutableStateOf(Triple(0, 0, 0))
             private set
 
         init {
@@ -98,7 +100,7 @@ class ValidatorDetailsViewModel
         }
 
         fun startSensor() {
-            sensorManager.registerListener(this, sensor, 10_000)
+            sensorManager.registerListener(this, sensor, 100_000)
         }
 
         fun stopSensor() {
@@ -120,47 +122,45 @@ class ValidatorDetailsViewModel
                 )
                 SensorManager.getOrientation(
                     rotation,
-                    orientation,
+                    _orientation,
                 )
-                val yaw = ((orientation[0] * 180 / Math.PI) + 90).toInt()
-                // yaw += reset[0]
-                val pitch = ((-orientation[2] * 180 / Math.PI) - 90).toInt()
-                // pitch += reset[1]
-                val roll = (-orientation[1] * 180 / Math.PI).toInt()
-                // roll += reset[2]
-                // Timber.d("($yaw,$pitch,$roll)")
+                if (!::initialOrientation.isInitialized) {
+                    initialOrientation =
+                        Triple(
+                            ((_orientation[0] * 180 / Math.PI) + 90).toInt(),
+                            ((-_orientation[2] * 180 / Math.PI) - 90).toInt(),
+                            (-_orientation[1] * 180 / Math.PI).toInt(),
+                        )
+                }
+                orientation =
+                    Triple(
+                        ((_orientation[0] * 180 / Math.PI) + 90).toInt() - initialOrientation.first,
+                        ((-_orientation[2] * 180 / Math.PI) - 90).toInt() - initialOrientation.second,
+                        (-_orientation[1] * 180 / Math.PI).toInt() - initialOrientation.third,
+                    )
             }
         }
 
         fun subscribe() {
             viewModelScope.launch(Dispatchers.IO) {
-                networkRepository.findById(networkId)?.let { network ->
-                    this@ValidatorDetailsViewModel.network = network
-                    // get onekv nominators
-                    getOneKVNominators()
-                    network.validatorDetailsServiceHost?.let { host ->
-                        network.validatorDetailsServicePort?.let { port ->
-                            validatorDetailsService.subscribe(
-                                host,
-                                port,
-                                listOf(accountId.toString()),
-                            )
-                        }
-                    }
-                }
+                val network = networkRepository.findById(networkId)!!
+                this@ValidatorDetailsViewModel.network = network
+                getOneKVNominators()
+                validatorDetailsService.subscribe(
+                    network.validatorDetailsServiceHost!!,
+                    network.validatorDetailsServicePort!!,
+                    listOf(accountId.toString()),
+                )
             }
         }
 
         private suspend fun getOneKVNominators() {
-            this.network?.reportServiceHost?.let { host ->
-                this.network?.reportServicePort?.let { port ->
-                    val reportService = ReportService("https://$host:$port")
-                    val result = reportService.getOneKVNominatorSummaries()
-                    result.getOrNull()?.let {
-                        this.oneKVNominators = it
-                    }
-                }
-            }
+            val reportService =
+                ReportService(
+                    "https://${this.network!!.reportServiceHost!!}:${this.network!!.reportServicePort!!}",
+                )
+            val result = reportService.getOneKVNominatorSummaries()
+            this.oneKVNominators = result.getOrNull() ?: this.oneKVNominators
         }
 
         override suspend fun onSubscribed(
@@ -203,23 +203,30 @@ class ValidatorDetailsViewModel
         }
 
         fun getMyValidators() {
+            if (_myValidatorsStatus.value is DataRequestState.Loading ||
+                _myValidatorsStatus.value is DataRequestState.Success
+            ) {
+                return
+            }
             myValidators.clear()
-            _appServiceStatus.value = DataRequestState.Loading
+            _myValidatorsStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 val result = appService.getUserValidators()
                 if (result.isSuccess) {
                     myValidators.addAll(result.getOrNull() ?: listOf())
                     _isMyValidator.value = myValidators.count { it.validatorAccountId == accountId } > 0
-                    _appServiceStatus.value = DataRequestState.Idle
-                    _gotMyValidators.value = true
+                    _myValidatorsStatus.value = DataRequestState.Success("")
                 } else {
-                    _appServiceStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                    _myValidatorsStatus.value = DataRequestState.Error(result.exceptionOrNull())
                 }
             }
         }
 
         fun addValidator() {
-            _appServiceStatus.value = DataRequestState.Loading
+            if (_addRemoveValidatorStatus.value is DataRequestState.Loading) {
+                return
+            }
+            _addRemoveValidatorStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 val request = NewUserValidator(networkId, accountId)
                 val result = appService.createUserValidator(request)
@@ -228,33 +235,32 @@ class ValidatorDetailsViewModel
                     if (userValidator != null) {
                         myValidators.add(userValidator)
                         _isMyValidator.value = true
-                        _appServiceStatus.value = DataRequestState.Idle
-                        _feedbackIsValidatorAdded.value = true
-                        delay(feedbackDuration.toLong())
-                        _feedbackIsValidatorAdded.value = null
+                        _addRemoveValidatorStatus.value = DataRequestState.Success("")
                     } else {
-                        _appServiceStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                        _addRemoveValidatorStatus.value =
+                            DataRequestState.Error(result.exceptionOrNull())
                     }
                 } else {
-                    _appServiceStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                    _addRemoveValidatorStatus.value = DataRequestState.Error(result.exceptionOrNull())
                 }
             }
         }
 
         fun removeValidator() {
-            _appServiceStatus.value = DataRequestState.Loading
+            if (_addRemoveValidatorStatus.value is DataRequestState.Loading) {
+                return
+            }
+            _addRemoveValidatorStatus.value = DataRequestState.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 myValidators.firstOrNull { it.validatorAccountId == accountId }?.let {
                     val result = appService.deleteUserValidator(it.id)
                     if (result.isSuccess) {
                         myValidators.removeAll { myValidator -> myValidator.validatorAccountId == accountId }
                         _isMyValidator.value = false
-                        _appServiceStatus.value = DataRequestState.Idle
-                        _feedbackIsValidatorAdded.value = false
-                        delay(feedbackDuration.toLong())
-                        _feedbackIsValidatorAdded.value = null
+                        _addRemoveValidatorStatus.value = DataRequestState.Success("")
                     } else {
-                        _appServiceStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                        _addRemoveValidatorStatus.value =
+                            DataRequestState.Error(result.exceptionOrNull())
                     }
                 }
             }

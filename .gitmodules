@@ -2,3 +2,7 @@
 	path = sceneview-android
 	url = https://github.com/helikon-labs/sceneview-android.git
 	branch = helikon-texture-view-v2.0.3
+[submodule "subvt-data-android"]
+	path = subvt-data-android
+	url = https://github.com/helikon-labs/subvt-data-android.git
+	branch = main
