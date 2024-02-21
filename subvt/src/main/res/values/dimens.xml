@@ -61,4 +61,5 @@
     <dimen name="validator_details_content_padding_top">128dp</dimen>
     <dimen name="validator_details_nomination_list_max_height">120dp</dimen>
     <dimen name="validator_details_icon_size">38dp</dimen>
+    <dimen name="validator_details_margin_horizontal">4dp</dimen>
 </resources>
