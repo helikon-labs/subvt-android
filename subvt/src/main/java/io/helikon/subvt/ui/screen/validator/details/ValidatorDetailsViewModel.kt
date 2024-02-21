@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dev.romainguy.kotlin.math.Float3
 import io.helikon.subvt.BuildConfig
-import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.data.model.Network
 import io.helikon.subvt.data.model.app.NewUserValidator
@@ -67,9 +67,6 @@ class ValidatorDetailsViewModel
             mutableStateOf<DataRequestState<String>>(DataRequestState.Idle)
         val addRemoveValidatorStatus: State<DataRequestState<String>> = _addRemoveValidatorStatus
 
-        private val feedbackDuration =
-            context.resources.getInteger(R.integer.snackbar_short_display_duration_ms)
-
         private val sensorManager: SensorManager
         private val sensor: Sensor?
         private val rotation =
@@ -87,8 +84,8 @@ class ValidatorDetailsViewModel
             private set
         var oneKVNominators by mutableStateOf<List<OneKVNominatorSummary>>(listOf())
             private set
-        private lateinit var initialOrientation: Triple<Int, Int, Int>
-        var orientation by mutableStateOf(Triple(0, 0, 0))
+        private lateinit var initialOrientation: Float3
+        var orientation by mutableStateOf(Float3(0.0f, 0.0f, 0.0f))
             private set
 
         init {
@@ -124,19 +121,22 @@ class ValidatorDetailsViewModel
                     rotation,
                     _orientation,
                 )
+                val x = (-_orientation[1] * 180 / Math.PI).toFloat()
+                val y = ((-_orientation[2] * 180 / Math.PI) - 90).toFloat()
+                // val z = ((_orientation[0] * 180 / Math.PI) + 90).toFloat()
                 if (!::initialOrientation.isInitialized) {
                     initialOrientation =
-                        Triple(
-                            ((_orientation[0] * 180 / Math.PI) + 90).toInt(),
-                            ((-_orientation[2] * 180 / Math.PI) - 90).toInt(),
-                            (-_orientation[1] * 180 / Math.PI).toInt(),
+                        Float3(
+                            x,
+                            y,
+                            0.0f,
                         )
                 }
                 orientation =
-                    Triple(
-                        ((_orientation[0] * 180 / Math.PI) + 90).toInt() - initialOrientation.first,
-                        ((-_orientation[2] * 180 / Math.PI) - 90).toInt() - initialOrientation.second,
-                        (-_orientation[1] * 180 / Math.PI).toInt() - initialOrientation.third,
+                    Float3(
+                        x - initialOrientation.x,
+                        y - initialOrientation.y,
+                        0.0f,
                     )
             }
         }
@@ -219,7 +219,8 @@ class ValidatorDetailsViewModel
                     val result = appService.getUserValidators()
                     if (result.isSuccess) {
                         myValidators.addAll(result.getOrNull() ?: listOf())
-                        _isMyValidator.value = myValidators.count { it.validatorAccountId == accountId } > 0
+                        _isMyValidator.value =
+                            myValidators.count { it.validatorAccountId == accountId } > 0
                         _myValidatorsStatus.value = DataRequestState.Success("")
                     } else {
                         _myValidatorsStatus.value = DataRequestState.Error(result.exceptionOrNull())
@@ -250,7 +251,8 @@ class ValidatorDetailsViewModel
                                 DataRequestState.Error(result.exceptionOrNull())
                         }
                     } else {
-                        _addRemoveValidatorStatus.value = DataRequestState.Error(result.exceptionOrNull())
+                        _addRemoveValidatorStatus.value =
+                            DataRequestState.Error(result.exceptionOrNull())
                     }
                 } catch (e: Throwable) {
                     _addRemoveValidatorStatus.value = DataRequestState.Error(e)

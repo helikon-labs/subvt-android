@@ -47,6 +47,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.romainguy.kotlin.math.Float3
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.data.extension.display
@@ -93,6 +94,7 @@ data class ValidatorDetailsScreenState(
     val snackbarIsVisible: Boolean,
     val snackbarType: SnackbarType,
     val snackbarTextResourceId: Int,
+    val identiconRotation: Float3,
 )
 
 @Composable
@@ -180,6 +182,7 @@ fun ValidatorDetailsScreen(
                 snackbarIsVisible = snackbarIsVisible,
                 snackbarType = snackbarType,
                 snackbarTextResourceId = snackbarTextResourceId,
+                identiconRotation = viewModel.orientation,
             ),
         onAddValidator = { viewModel.addValidator() },
         onRemoveValidator = { viewModel.removeValidator() },
@@ -430,6 +433,7 @@ fun ValidatorDetailsScreenContent(
                                 .fillMaxWidth()
                                 .height(dimensionResource(id = R.dimen.validator_details_identicon_height)),
                         accountId = state.accountId,
+                        rotation = state.identiconRotation,
                     )
                 }
                 IdentityView(validator = state.validator)
@@ -639,6 +643,7 @@ fun ValidatorDetailsScreenPreview(isDark: Boolean = isSystemInDarkTheme()) {
                     snackbarIsVisible = false,
                     snackbarType = SnackbarType.INFO,
                     snackbarTextResourceId = R.string.validator_details_validator_added,
+                    identiconRotation = Float3(0.0f, 0.0f, 0.0f),
                 ),
             onAddValidator = {},
             onRemoveValidator = {},
