@@ -51,7 +51,7 @@ private fun leftScale(step: Step): Pair<Float, Float> =
     when (step) {
         Step.START ->
             Pair(
-                3.17f,
+                4.17f,
                 5.39f,
             )
 
@@ -129,7 +129,7 @@ private fun rightScale(
         when (step) {
             Step.START ->
                 Pair(
-                    3.68f,
+                    4.68f,
                     4.79f,
                 )
 

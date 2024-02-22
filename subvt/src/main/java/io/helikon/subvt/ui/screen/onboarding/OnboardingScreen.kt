@@ -129,7 +129,7 @@ private fun OnboardingScreenContent(
                                 else -> R.string.onboarding_4_title
                             },
                         ),
-                    style = Font.semiBold(22.sp),
+                    style = Font.semiBold(20.sp),
                     color = Color.text(isDark),
                     modifier =
                         Modifier.padding(
@@ -148,7 +148,7 @@ private fun OnboardingScreenContent(
                                 else -> R.string.onboarding_4_description
                             },
                         ),
-                    style = Font.light(14.sp, 20.sp),
+                    style = Font.light(13.sp, 18.sp),
                     color = Color.text(isDark),
                     modifier =
                         Modifier.padding(
@@ -204,7 +204,7 @@ private fun OnboardingScreenContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_skip),
-                    style = Font.semiBold(16.sp),
+                    style = Font.normal(16.sp),
                     color = Color.text(isDark),
                 )
             }
@@ -249,7 +249,7 @@ private fun OnboardingScreenContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_next),
-                    style = Font.light(16.sp),
+                    style = Font.semiBold(16.sp),
                     color = Color.text(isDark),
                 )
             }

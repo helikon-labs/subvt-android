@@ -39,7 +39,7 @@ fun LastEraTotalRewardView(
     Box(
         modifier =
             modifier
-                .height(112.dp)
+                .height(104.dp)
                 .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
                 .background(Color.panelBg(isDark))
                 .padding(dimensionResource(id = R.dimen.common_padding)),

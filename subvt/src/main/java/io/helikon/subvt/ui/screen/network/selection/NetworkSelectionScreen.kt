@@ -144,7 +144,7 @@ private fun NetworkSelectionScreenContent(
                             stringResource(
                                 id = R.string.network_selection_title,
                             ),
-                        style = Font.semiBold(24.sp),
+                        style = Font.semiBold(20.sp),
                         color = Color.text(isDark),
                     )
                     Spacer(Modifier.height(18.dp))
@@ -158,7 +158,7 @@ private fun NetworkSelectionScreenContent(
                             stringResource(
                                 id = R.string.network_selection_select_network,
                             ),
-                        style = Font.semiBold(14.sp, 20.sp),
+                        style = Font.light(13.sp, 18.sp),
                         color = Color.text(isDark),
                     )
                     Spacer(Modifier.height(40.dp))

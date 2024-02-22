@@ -51,7 +51,7 @@ fun NetworkSelectorButton(
                 .noRippleClickable {
                     onClick()
                 }
-                .padding(12.dp, 0.dp)
+                .padding(10.dp, 0.dp)
                 .height(dimensionResource(id = R.dimen.network_selector_button_height)),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,

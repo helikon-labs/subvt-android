@@ -86,7 +86,7 @@ fun ValidatorCountChart(
         style =
             BezierCurveStyle.CurveStroke(
                 brush = brush,
-                stroke = Stroke(width = 6.dp.value),
+                stroke = Stroke(width = 5.dp.value),
             ),
         visibleRatio = visibleRatio,
     )

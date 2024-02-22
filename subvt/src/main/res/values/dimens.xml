@@ -33,7 +33,7 @@
 
     <dimen name="introduction_title_margin_top">100dp</dimen>
     <dimen name="introduction_subtitle_margin_top">18dp</dimen>
-    <dimen name="introduction_subtitle_width">260dp</dimen>
+    <dimen name="introduction_subtitle_width">280dp</dimen>
     <dimen name="introduction_icon_volume_start_offset">-388dp</dimen>
 
     <dimen name="onboarding_content_margin_top">36dp</dimen>
@@ -46,7 +46,8 @@
     <dimen name="onboarding_page_indicator_padding">10dp</dimen>
     <dimen name="onboarding_bottom_content_padding">16dp</dimen>
 
-    <dimen name="network_status_panel_title_font_size">12sp</dimen>
+    <dimen name="network_status_panel_title_font_size">11sp</dimen>
+    <dimen name="network_status_panel_subtitle_font_size">10sp</dimen>
 
     <dimen name="status_indicator_circle_size">7dp</dimen>
 

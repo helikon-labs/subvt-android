@@ -42,10 +42,10 @@ fun ValidatorBackingsView(
 ) {
     Column(
         modifier =
-            modifier
-                .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
-                .background(Color.panelBg(isDark))
-                .padding(dimensionResource(id = R.dimen.common_padding)),
+        modifier
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.common_panel_border_radius)))
+            .background(Color.panelBg(isDark))
+            .padding(dimensionResource(id = R.dimen.common_padding)),
     ) {
         Text(
             text = stringResource(id = R.string.network_status_validator_backings),
@@ -53,38 +53,40 @@ fun ValidatorBackingsView(
             style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
             color = Color.text(isDark),
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_minimum),
-                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_subtitle_font_size).value.sp),
                     textAlign = TextAlign.Center,
-                    color = Color.text(isDark),
+                    color = Color.text(isDark).copy(alpha = 0.75f),
                 )
                 Text(
                     text =
-                        if (minStake != null) {
-                            formatDecimal(
-                                if (network.id == 1L) {
-                                    minStake
-                                } else {
-                                    minStake.div(BigInteger("${1_000_000}"))
-                                },
-                                network.tokenDecimalCount,
-                                formatDecimalCount =
-                                    if (network.id == 1L) {
-                                        0
-                                    } else {
-                                        4
-                                    },
-                            )
-                        } else {
-                            "-"
-                        },
+                    if (minStake != null) {
+                        formatDecimal(
+                            if (network.id == 1L) {
+                                minStake
+                            } else {
+                                minStake.div(BigInteger("${1_000_000}"))
+                            },
+                            network.tokenDecimalCount,
+                            formatDecimalCount =
+                            if (network.id == 1L) {
+                                0
+                            } else {
+                                4
+                            },
+                        )
+                    } else {
+                        "-"
+                    },
                     textAlign = TextAlign.Center,
                     style = Font.semiBold(20.sp),
                     color = Color.text(isDark),
@@ -97,33 +99,35 @@ fun ValidatorBackingsView(
                 style = Font.semiBold(20.sp),
                 color = Color.text(isDark),
             )
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_average),
-                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_subtitle_font_size).value.sp),
                     textAlign = TextAlign.Center,
-                    color = Color.text(isDark),
+                    color = Color.text(isDark).copy(alpha = 0.75f),
                 )
                 Text(
                     text =
-                        if (averageStake != null) {
-                            formatDecimal(
-                                if (network.id == 1L) {
-                                    averageStake
-                                } else {
-                                    averageStake.div(BigInteger("${1_000_000}"))
-                                },
-                                network.tokenDecimalCount,
-                                formatDecimalCount =
-                                    if (network.id == 1L) {
-                                        0
-                                    } else {
-                                        4
-                                    },
-                            )
-                        } else {
-                            "-"
-                        },
+                    if (averageStake != null) {
+                        formatDecimal(
+                            if (network.id == 1L) {
+                                averageStake
+                            } else {
+                                averageStake.div(BigInteger("${1_000_000}"))
+                            },
+                            network.tokenDecimalCount,
+                            formatDecimalCount =
+                            if (network.id == 1L) {
+                                0
+                            } else {
+                                4
+                            },
+                        )
+                    } else {
+                        "-"
+                    },
                     textAlign = TextAlign.Center,
                     style = Font.semiBold(20.sp),
                     color = Color.text(isDark),
@@ -136,33 +140,35 @@ fun ValidatorBackingsView(
                 style = Font.semiBold(20.sp),
                 color = Color.text(isDark),
             )
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 Text(
                     text = stringResource(id = R.string.network_status_validator_backings_maximum),
-                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_subtitle_font_size).value.sp),
                     textAlign = TextAlign.Center,
-                    color = Color.text(isDark),
+                    color = Color.text(isDark).copy(alpha = 0.75f),
                 )
                 Text(
                     text =
-                        if (maxStake != null) {
-                            formatDecimal(
-                                if (network.id == 1L) {
-                                    maxStake
-                                } else {
-                                    maxStake.div(BigInteger("${1_000_000}"))
-                                },
-                                network.tokenDecimalCount,
-                                formatDecimalCount =
-                                    if (network.id == 1L) {
-                                        0
-                                    } else {
-                                        4
-                                    },
-                            )
-                        } else {
-                            "-"
-                        },
+                    if (maxStake != null) {
+                        formatDecimal(
+                            if (network.id == 1L) {
+                                maxStake
+                            } else {
+                                maxStake.div(BigInteger("${1_000_000}"))
+                            },
+                            network.tokenDecimalCount,
+                            formatDecimalCount =
+                            if (network.id == 1L) {
+                                0
+                            } else {
+                                4
+                            },
+                        )
+                    } else {
+                        "-"
+                    },
                     color = Color.text(isDark),
                     textAlign = TextAlign.Center,
                     style = Font.semiBold(20.sp),
@@ -171,11 +177,11 @@ fun ValidatorBackingsView(
             Text(
                 modifier = Modifier.alpha(0.4f),
                 text =
-                    if (network.id == 1L) {
-                        network.tokenTicker
-                    } else {
-                        "M${network.tokenTicker}"
-                    },
+                if (network.id == 1L) {
+                    network.tokenTicker
+                } else {
+                    "M${network.tokenTicker}"
+                },
                 textAlign = TextAlign.Center,
                 style = Font.normal(20.sp),
                 color = Color.text(isDark),

@@ -28,10 +28,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.ui.component.ActionButton
+import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.component.SnackbarScaffold
 import io.helikon.subvt.ui.component.SnackbarType
 import io.helikon.subvt.ui.modifier.appear
@@ -110,6 +112,12 @@ private fun IntroductionScreenContent(
         snackbarIsVisible = state.snackbarIsVisible,
         onSnackbarClick = onSnackbarClick,
     ) {
+        AnimatedBackground(
+            modifier =
+            Modifier
+                .fillMaxSize()
+                .zIndex(0.0f),
+        )
         Box(
             Modifier.fillMaxHeight(),
         ) {
@@ -135,7 +143,7 @@ private fun IntroductionScreenContent(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_title_margin_top)))
             Text(
                 text = stringResource(R.string.introduction_title),
-                style = Font.semiBold(24.sp),
+                style = Font.semiBold(22.sp),
                 color = Color.text(isDark),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.appear(1),
@@ -143,7 +151,7 @@ private fun IntroductionScreenContent(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.introduction_subtitle_margin_top)))
             Text(
                 text = stringResource(R.string.introduction_subtitle),
-                style = Font.light(14.sp, 20.sp),
+                style = Font.light(13.sp, 18.sp),
                 color = Color.text(isDark),
                 textAlign = TextAlign.Center,
                 modifier =

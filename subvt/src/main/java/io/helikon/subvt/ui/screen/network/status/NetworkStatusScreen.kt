@@ -190,10 +190,10 @@ fun NetworkStatusScreenContent(
                         Text(
                             modifier = Modifier.padding(0.dp),
                             text = stringResource(id = R.string.network_status_title),
-                            style = Font.semiBold(24.sp),
+                            style = Font.semiBold(22.sp),
                             color = Color.text(isDark),
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         ServiceStatusIndicator(serviceStatus = state.serviceStatus)
                     }
                     Spacer(modifier = Modifier.weight(1.0f))

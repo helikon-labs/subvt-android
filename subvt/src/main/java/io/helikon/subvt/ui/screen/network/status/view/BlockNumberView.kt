@@ -49,7 +49,7 @@ fun BlockNumberView(
                 Text(
                     text = title,
                     textAlign = TextAlign.Center,
-                    style = Font.normal(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
                     color = Color.text(isDark),
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -60,7 +60,7 @@ fun BlockNumberView(
                         } else {
                             "$blockNumber"
                         },
-                    style = Font.semiBold(38.sp),
+                    style = Font.semiBold(36.sp),
                     color = Color.text(isDark),
                     textAlign = TextAlign.Center,
                 )
