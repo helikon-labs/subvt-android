@@ -87,7 +87,7 @@ fun AccountAgeView(
     ) {
         Text(
             text = stringResource(id = R.string.validator_details_account_age),
-            style = Font.light(12.sp),
+            style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             color = Color.text(isDark),
         )
         Spacer(
@@ -95,7 +95,7 @@ fun AccountAgeView(
         )
         Text(
             text = periodText.trim(),
-            style = Font.semiBold(20.sp),
+            style = Font.semiBold(18.sp),
             color = Color.text(isDark),
         )
     }

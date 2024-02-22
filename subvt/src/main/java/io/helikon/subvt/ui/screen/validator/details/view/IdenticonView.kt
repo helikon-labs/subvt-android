@@ -26,12 +26,13 @@ private val sphereOrdering =
 private fun getLightNode(
     engine: Engine,
     position: Float3,
+    intensity: Float = 1.0f,
 ) = LightNode(
     engine = engine,
     type = LightManager.Type.POINT,
     apply = {
         color(SceneView.DEFAULT_MAIN_LIGHT_COLOR)
-        intensity(SceneView.DEFAULT_MAIN_LIGHT_COLOR_INTENSITY * 0.10f)
+        intensity(SceneView.DEFAULT_MAIN_LIGHT_COLOR_INTENSITY * 0.10f * intensity)
         falloff(0.5f)
         position(position.x, position.y, position.z)
         castShadows(false)
@@ -53,7 +54,7 @@ fun IdenticonView(
                 assetFileLocation = "environment/cube_environment_1k.hdr",
             )!!
         }.apply {
-            this.indirectLight?.intensity = 40_000f
+            this.indirectLight?.intensity = 50_000f
         }
 
     val cameraNode =
@@ -97,6 +98,7 @@ fun IdenticonView(
                 getLightNode(
                     engine,
                     Float3(0.0f, 0.4f, 0.25f),
+                    1.5f,
                 ),
                 // top-right
                 getLightNode(
@@ -117,6 +119,7 @@ fun IdenticonView(
                 getLightNode(
                     engine,
                     Float3(0.0f, -0.4f, 0.25f),
+                    1.5f,
                 ),
                 // bottom-left
                 getLightNode(

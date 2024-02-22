@@ -44,7 +44,7 @@ fun BalanceView(
     ) {
         Text(
             text = stringResource(id = titleResourceId),
-            style = Font.light(12.sp),
+            style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             color = Color.text(isDark),
         )
         Spacer(
@@ -64,13 +64,13 @@ fun BalanceView(
                     } else {
                         "-"
                     },
-                style = Font.semiBold(28.sp),
+                style = Font.semiBold(26.sp),
                 color = Color.text(isDark),
             )
             if (network != null) {
                 Text(
                     text = network.tokenTicker,
-                    style = Font.normal(28.sp),
+                    style = Font.normal(26.sp),
                     color = Color.text(isDark).copy(alpha = 0.6f),
                 )
             }

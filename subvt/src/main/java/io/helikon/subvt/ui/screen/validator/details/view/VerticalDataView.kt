@@ -37,7 +37,7 @@ fun VerticalDataView(
     ) {
         Text(
             text = stringResource(id = titleResourceId),
-            style = Font.light(12.sp),
+            style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             color = Color.text(isDark),
         )
         Spacer(
@@ -45,7 +45,7 @@ fun VerticalDataView(
         )
         Text(
             text = text,
-            style = Font.semiBold(20.sp),
+            style = Font.semiBold(18.sp),
             color = color,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

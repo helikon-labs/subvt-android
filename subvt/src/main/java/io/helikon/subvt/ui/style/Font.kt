@@ -35,19 +35,21 @@ object Font {
         weight: FontWeight,
         size: TextUnit,
         lineHeight: TextUnit?,
-    ) = if (lineHeight != null) {
-        TextStyle(
-            fontFamily = LEXEND_DECA,
-            fontWeight = weight,
-            fontSize = size,
-            lineHeight = lineHeight,
-        )
-    } else {
-        TextStyle(
-            fontFamily = LEXEND_DECA,
-            fontWeight = weight,
-            fontSize = size,
-        )
+    ): TextStyle {
+        return if (lineHeight != null) {
+            TextStyle(
+                fontFamily = LEXEND_DECA,
+                fontWeight = weight,
+                fontSize = size,
+                lineHeight = lineHeight,
+            )
+        } else {
+            TextStyle(
+                fontFamily = LEXEND_DECA,
+                fontWeight = weight,
+                fontSize = size,
+            )
+        }
     }
 
     fun black(

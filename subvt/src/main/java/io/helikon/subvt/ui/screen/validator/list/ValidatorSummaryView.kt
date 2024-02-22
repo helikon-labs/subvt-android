@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.helikon.subvt.R
 import io.helikon.subvt.data.extension.identityDisplay
@@ -132,10 +134,11 @@ fun ValidatorSummaryView(
                     )
                 }
             }
+            Spacer(modifier = Modifier.width(2.dp))
             Text(
                 modifier = Modifier.weight(1.0f, fill = false).fillMaxWidth(),
                 text = validator.identityDisplay(),
-                style = Font.semiBold(17.sp),
+                style = Font.semiBold(16.sp),
                 color = Color.text(isDark),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -195,7 +198,7 @@ fun ValidatorSummaryView(
         ) {
             Text(
                 text = nominationsDisplay(network, validator),
-                style = Font.light(12.sp),
+                style = Font.light(11.sp),
                 color = Color.text(isDark),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

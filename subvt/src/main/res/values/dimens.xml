@@ -3,6 +3,7 @@
     <dimen name="common_padding">16dp</dimen>
     <dimen name="common_panel_padding">8dp</dimen>
     <dimen name="common_panel_border_radius">16dp</dimen>
+    <dimen name="common_panel_title_font_size">11sp</dimen>
     <dimen name="common_progress_size">26dp</dimen>
     <dimen name="common_progress_stroke_width">3dp</dimen>
     <dimen name="common_small_progress_size">14dp</dimen>
@@ -46,7 +47,6 @@
     <dimen name="onboarding_page_indicator_padding">10dp</dimen>
     <dimen name="onboarding_bottom_content_padding">16dp</dimen>
 
-    <dimen name="network_status_panel_title_font_size">11sp</dimen>
     <dimen name="network_status_panel_subtitle_font_size">10sp</dimen>
 
     <dimen name="status_indicator_circle_size">7dp</dimen>
@@ -54,7 +54,7 @@
     <dimen name="network_status_block_wave_size">40dp</dimen>
     <dimen name="network_status_icon_size">22dp</dimen>
     <dimen name="network_status_icon_spacing">6dp</dimen>
-    <dimen name="network_status_balance_margin_top">12dp</dimen>
+    <dimen name="network_status_balance_margin_top">13dp</dimen>
 
     <dimen name="validator_list_content_padding_top">158dp</dimen>
 

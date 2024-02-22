@@ -41,7 +41,7 @@ fun EraPointsView(
                 text = stringResource(R.string.network_status_era_points),
                 textAlign = TextAlign.Center,
                 color = Color.text(isDark),
-                style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(

@@ -44,7 +44,7 @@ fun HorizontalDataView(
     ) {
         Text(
             text = stringResource(id = titleResourceId),
-            style = Font.light(12.sp),
+            style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             color = Color.text(isDark),
         )
         Spacer(modifier = Modifier.weight(1.0f))

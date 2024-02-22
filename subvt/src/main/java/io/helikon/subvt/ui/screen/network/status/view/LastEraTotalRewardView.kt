@@ -49,7 +49,7 @@ fun LastEraTotalRewardView(
                 text = stringResource(id = R.string.network_status_last_era_total_reward),
                 textAlign = TextAlign.Center,
                 color = Color.text(isDark),
-                style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
             )
             Spacer(modifier = Modifier.weight(1f))
             Row {

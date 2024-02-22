@@ -138,7 +138,7 @@ fun ValidatorCountPanel(
             ) {
                 Text(
                     text = title,
-                    style = Font.light(dimensionResource(id = R.dimen.network_status_panel_title_font_size).value.sp),
+                    style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
                     color = Color.text(isDark),
                 )
                 Spacer(modifier = Modifier.weight(1f))

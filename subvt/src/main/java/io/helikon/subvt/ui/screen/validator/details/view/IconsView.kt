@@ -99,7 +99,7 @@ fun IconsView(
                                     color = Color.bg(isDark),
                                     shape = RoundedCornerShape(8.dp),
                                 )
-                                .padding(12.dp, 8.dp),
+                                .padding(12.dp, 10.dp),
                         color = Color.text(isDark),
                         style = Font.light(11.sp),
                         text = stringResource(id = it.textResourceId()),

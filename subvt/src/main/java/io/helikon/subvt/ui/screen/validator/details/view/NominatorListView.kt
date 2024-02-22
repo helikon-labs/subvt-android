@@ -85,7 +85,7 @@ fun NominatorListView(
                         } else {
                             ""
                         },
-                style = Font.light(12.sp),
+                style = Font.light(dimensionResource(id = R.dimen.common_panel_title_font_size).value.sp),
                 color = Color.text(isDark),
             )
             if (!nominations.isNullOrEmpty()) {
@@ -109,19 +109,19 @@ fun NominatorListView(
                     } else {
                         "-"
                     },
-                style = Font.semiBold(28.sp),
+                style = Font.semiBold(26.sp),
                 color = Color.text(isDark),
             )
             if (network != null) {
                 Text(
                     text = network.tokenTicker,
-                    style = Font.normal(28.sp),
+                    style = Font.normal(26.sp),
                     color = Color.text(isDark).copy(alpha = 0.6f),
                 )
             }
         }
         if (isOpen) {
-            val monospaceFont = Font.normal(12.sp).copy(fontFamily = FontFamily(Typeface.MONOSPACE))
+            val monospaceFont = Font.normal(11.sp).copy(fontFamily = FontFamily(Typeface.MONOSPACE))
             Spacer(
                 modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding)),
             )
@@ -145,7 +145,7 @@ fun NominatorListView(
                                         ""
                                     },
                             style = monospaceFont,
-                            color = Color.text(isDark = isDark),
+                            color = Color.text(isDark = isDark).copy(alpha = 0.75f),
                         )
                         Spacer(modifier = Modifier.weight(1.0f))
                         Text(
@@ -155,7 +155,7 @@ fun NominatorListView(
                                     network?.tokenDecimalCount ?: 0,
                                 ),
                             style = monospaceFont,
-                            color = Color.text(isDark = isDark),
+                            color = Color.text(isDark = isDark).copy(alpha = 0.75f),
                         )
                     }
                 }

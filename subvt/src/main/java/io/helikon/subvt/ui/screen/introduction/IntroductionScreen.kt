@@ -114,9 +114,9 @@ private fun IntroductionScreenContent(
     ) {
         AnimatedBackground(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .zIndex(0.0f),
+                Modifier
+                    .fillMaxSize()
+                    .zIndex(0.0f),
         )
         Box(
             Modifier.fillMaxHeight(),

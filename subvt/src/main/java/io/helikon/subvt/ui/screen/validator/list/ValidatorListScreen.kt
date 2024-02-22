@@ -192,11 +192,17 @@ fun ValidatorListScreenContent(
                 .noRippleClickable { focusManager.clearFocus() },
     ) {
         AnimatedBackground(
-            modifier = Modifier.fillMaxSize().zIndex(0.0f),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .zIndex(0.0f),
         )
         if (progressIndicatorIsVisible) {
             Box(
-                modifier = Modifier.fillMaxSize().zIndex(4.0f),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .zIndex(4.0f),
             ) {
                 CircularProgressIndicator(
                     modifier =
@@ -336,9 +342,27 @@ fun ValidatorListScreenContent(
                             ),
                         textStyle =
                             Font.normal(14.sp)
-                                .copy(color = Color.text(isDark), lineHeight = 36.sp),
+                                .copy(
+                                    color = Color.text(isDark),
+                                    lineHeight = 36.sp,
+                                    letterSpacing = 0.5.sp,
+                                ),
                         onValueChange = onFilterChange,
                         enabled = filterIsEnabled,
+                        decorationBox = { innerTextField ->
+                            Box {
+                                if (state.filter.text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(id = R.string.search),
+                                        style =
+                                            Font.normal(14.sp)
+                                                .copy(lineHeight = 36.sp, letterSpacing = 0.5.sp),
+                                        color = Color.text(isDark).copy(alpha = 0.5f),
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        },
                     )
                     Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.common_panel_padding)))
                 }
@@ -426,12 +450,14 @@ fun ValidatorListScreenContent(
             item {
                 Spacer(
                     modifier =
-                        Modifier.navigationBarsPadding().padding(
-                            0.dp,
-                            0.dp,
-                            0.dp,
-                            dimensionResource(id = R.dimen.common_scrollable_content_margin_bottom),
-                        ),
+                        Modifier
+                            .navigationBarsPadding()
+                            .padding(
+                                0.dp,
+                                0.dp,
+                                0.dp,
+                                dimensionResource(id = R.dimen.common_scrollable_content_margin_bottom),
+                            ),
                 )
             }
         }

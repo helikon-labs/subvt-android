@@ -350,7 +350,7 @@ fun ValidatorDetailsScreenContent(
                     ) {
                         Text(
                             text = stringResource(id = R.string.validator_details_rewards_icon),
-                            style = Font.light(16.sp),
+                            style = Font.light(14.sp),
                             color = Color.text(isDark),
                         )
                     }
@@ -369,7 +369,7 @@ fun ValidatorDetailsScreenContent(
                     ) {
                         Text(
                             text = stringResource(id = R.string.validator_details_para_validation_icon),
-                            style = Font.light(14.sp),
+                            style = Font.light(12.sp),
                             color = Color.text(isDark),
                         )
                     }
@@ -437,6 +437,7 @@ fun ValidatorDetailsScreenContent(
                     )
                 }
                 IdentityView(validator = state.validator)
+                Spacer(modifier = Modifier.height(4.dp))
                 // Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding) / 2))
                 BalanceView(
                     titleResourceId = R.string.validator_details_nomination_total,
