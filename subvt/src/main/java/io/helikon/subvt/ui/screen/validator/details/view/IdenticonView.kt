@@ -69,6 +69,34 @@ fun IdenticonView(
             )
         }
 
+    val topLight =
+        rememberNode {
+            LightNode(
+                engine = engine,
+                type = LightManager.Type.DIRECTIONAL,
+                apply = {
+                    color(SceneView.DEFAULT_MAIN_LIGHT_COLOR)
+                    intensity(SceneView.DEFAULT_MAIN_LIGHT_COLOR_INTENSITY / 20.0f)
+                    direction(0.0f, -1.0f, 0.0f)
+                    castShadows(true)
+                },
+            )
+        }
+
+    val bottomLight =
+        rememberNode {
+            LightNode(
+                engine = engine,
+                type = LightManager.Type.DIRECTIONAL,
+                apply = {
+                    color(SceneView.DEFAULT_MAIN_LIGHT_COLOR)
+                    intensity(SceneView.DEFAULT_MAIN_LIGHT_COLOR_INTENSITY / 7.0f)
+                    direction(-1.0f, 1.0f, 0.0f)
+                    castShadows(true)
+                },
+            )
+        }
+
     Scene(
         modifier = modifier,
         engine = engine,
@@ -79,53 +107,8 @@ fun IdenticonView(
         childNodes =
             listOf(
                 modelNode,
-                // center
-                getLightNode(
-                    engine,
-                    Float3(0.0f, 0.0f, 0.25f),
-                ),
-                // left
-                getLightNode(
-                    engine,
-                    Float3(-0.4f, 0.0f, 0.3f),
-                ),
-                // top-left
-                getLightNode(
-                    engine,
-                    Float3(-0.25f, 0.25f, 0.25f),
-                ),
-                // top
-                getLightNode(
-                    engine,
-                    Float3(0.0f, 0.4f, 0.25f),
-                    1.5f,
-                ),
-                // top-right
-                getLightNode(
-                    engine,
-                    Float3(0.25f, 0.25f, 0.25f),
-                ),
-                // right
-                getLightNode(
-                    engine,
-                    Float3(0.4f, 0.0f, 0.25f),
-                ),
-                // bottom-right
-                getLightNode(
-                    engine,
-                    Float3(0.25f, -0.25f, 0.25f),
-                ),
-                // bottom
-                getLightNode(
-                    engine,
-                    Float3(0.0f, -0.4f, 0.25f),
-                    1.5f,
-                ),
-                // bottom-left
-                getLightNode(
-                    engine,
-                    Float3(-0.25f, -0.25f, 0.25f),
-                ),
+                topLight,
+                bottomLight,
             ),
         environment = environment,
         // cameraManipulator = null,
@@ -156,7 +139,7 @@ fun IdenticonView(
                     0.0f,
                 )
                 material.setParameter("metallicFactor", 0.0f)
-                material.setParameter("roughnessFactor", 1.0f)
+                material.setParameter("roughnessFactor", 0.25f)
             }
         },
         onFrame = {
