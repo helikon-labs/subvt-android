@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.stringResource
 import io.helikon.subvt.R
+import io.helikon.subvt.data.model.Network
+import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.ui.component.AnimatedBackground
 import io.helikon.subvt.ui.screen.network.status.NetworkStatusScreen
 import io.helikon.subvt.ui.screen.notification.list.NotificationsScreen
@@ -19,13 +21,15 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     onActiveValidatorListButtonClicked: () -> Unit,
     onInactiveValidatorListButtonClicked: () -> Unit,
+    onSelectValidator: (Network, ValidatorSummary) -> Unit,
 ) {
     LaunchedEffect(Unit) {
     }
     MainScreenContent(
-        modifier,
-        onActiveValidatorListButtonClicked,
-        onInactiveValidatorListButtonClicked,
+        modifier = modifier,
+        onActiveValidatorListButtonClicked = onActiveValidatorListButtonClicked,
+        onInactiveValidatorListButtonClicked = onInactiveValidatorListButtonClicked,
+        onSelectValidator = onSelectValidator,
     )
 }
 
@@ -34,6 +38,7 @@ private fun MainScreenContent(
     modifier: Modifier = Modifier,
     onActiveValidatorListButtonClicked: () -> Unit,
     onInactiveValidatorListButtonClicked: () -> Unit,
+    onSelectValidator: (Network, ValidatorSummary) -> Unit,
 ) {
     Box(
         modifier =
@@ -62,7 +67,10 @@ private fun MainScreenContent(
                     activeImageResourceId = R.drawable.tab_icon_my_validators_active,
                     inactiveImageResourceId = R.drawable.tab_icon_my_validators_inactive,
                     content = {
-                        MyValidatorsScreen()
+                        MyValidatorsScreen(
+                            onAddValidatorButtonClicked = {},
+                            onSelectValidator = onSelectValidator,
+                        )
                     },
                 ),
                 Tab(

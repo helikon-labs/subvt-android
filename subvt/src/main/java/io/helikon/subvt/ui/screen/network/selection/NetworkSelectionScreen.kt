@@ -287,7 +287,7 @@ fun NetworkSelectionScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()
             state =
                 NetworkSelectionScreenState(
                     isLoading = false,
-                    snackbarIsVisible = false,
+                    snackbarIsVisible = true,
                     networks = PreviewData.networks,
                     selectedNetwork = PreviewData.networks[1],
                 ),

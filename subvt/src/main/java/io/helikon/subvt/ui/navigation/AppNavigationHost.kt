@@ -63,6 +63,13 @@ fun AppNavigationHost(
                 navController.navigate((NavigationItem.ValidatorList(true).route))
             }, onInactiveValidatorListButtonClicked = {
                 navController.navigate((NavigationItem.ValidatorList(false).route))
+            }, onSelectValidator = { network, validator ->
+                navController.navigate(
+                    NavigationItem.ValidatorDetails(
+                        networkId = network.id,
+                        accountId = validator.accountId,
+                    ).route,
+                )
             })
         }
         composable(

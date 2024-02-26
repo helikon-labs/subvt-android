@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -352,7 +353,7 @@ fun NetworkStatusScreenContent(
                 modifier =
                     Modifier
                         .navigationBarsPadding()
-                        .padding(0.dp, 44.dp),
+                        .height(dimensionResource(id = R.dimen.common_scrollable_tab_content_margin_bottom)),
             )
         }
     }

@@ -32,6 +32,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -51,6 +52,7 @@ enum class SnackbarType {
 @Composable
 fun SnackbarScaffold(
     modifier: Modifier = Modifier,
+    snackbarBottomPadding: Dp = 0.dp,
     isDark: Boolean = isSystemInDarkTheme(),
     zIndex: Float = 0.0f,
     type: SnackbarType,
@@ -69,6 +71,7 @@ fun SnackbarScaffold(
                     .zIndex(zIndex),
         ) {
             Snackbar(
+                bottomPadding = snackbarBottomPadding,
                 type = type,
                 text = text,
                 isDark = isDark,
@@ -83,10 +86,11 @@ fun SnackbarScaffold(
 
 @Composable
 fun Snackbar(
+    modifier: Modifier = Modifier,
+    bottomPadding: Dp = 0.dp,
+    isDark: Boolean = isSystemInDarkTheme(),
     type: SnackbarType,
     text: String,
-    modifier: Modifier = Modifier,
-    isDark: Boolean = isSystemInDarkTheme(),
     isVisible: Boolean = false,
     onClick: (() -> Unit)? = null,
     onRetry: (() -> Unit)? = null,
@@ -107,7 +111,7 @@ fun Snackbar(
     )
     val yOffsetAnim by animateDpAsState(
         if (isVisible) {
-            -dimensionResource(id = R.dimen.common_padding)
+            -dimensionResource(id = R.dimen.common_padding) - bottomPadding
         } else {
             dimensionResource(id = R.dimen.common_padding).times(10)
         },
@@ -188,10 +192,10 @@ fun Snackbar(
 @ThemePreviews
 @Composable
 fun SnackbarPreview() {
-    Snackbar(
-        type = SnackbarType.SUCCESS,
-        isVisible = true,
-        text = stringResource(id = R.string.introduction_user_create_error),
-        onRetry = {},
-    )
+    SnackbarScaffold(
+        type = SnackbarType.ERROR,
+        text = "Error happened.",
+        snackbarIsVisible = true,
+        onSnackbarRetry = {},
+    ) {}
 }
