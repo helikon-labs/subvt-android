@@ -60,6 +60,7 @@
     <string name="my_validators_tab_title">My Validators</string>
     <string name="my_validators_title">My Validators</string>
     <string name="my_validators_add_validator">Add Validator</string>
+    <string name="my_validators_no_validators">You haven\'t added\nany validators.</string>
     <string name="my_validators_error">Error while fetching your validators.</string>
 
     <string name="notifications_tab_title">Notifications</string>

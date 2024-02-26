@@ -16,6 +16,7 @@ import io.helikon.subvt.data.model.app.ValidatorSummary
 import io.helikon.subvt.data.repository.NetworkRepository
 import io.helikon.subvt.data.service.AppService
 import io.helikon.subvt.data.service.ReportService
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +37,7 @@ class MyValidatorsViewModel
             )
         private lateinit var reportServices: List<Pair<Long, ReportService>>
 
-        var validators by mutableStateOf(listOf<ValidatorSummary>().toImmutableList())
+        var validators by mutableStateOf<ImmutableList<ValidatorSummary>?>(null)
             private set
         var dataRequestState by mutableStateOf<DataRequestState<String>>(DataRequestState.Idle)
             private set
@@ -78,18 +79,26 @@ class MyValidatorsViewModel
                                     validatorSummaries.add(validatorSummaryReport.validatorSummary)
                                 }
                             } else {
+                                /*
                                 dataRequestState =
                                     DataRequestState.Error(validatorSummaryResult.exceptionOrNull())
                                 return@launch
+                                 */
                             }
                         }
                         validatorSummaries.sortWith(validatorIdentityComparator)
                         validators = validatorSummaries.toImmutableList()
                         dataRequestState = DataRequestState.Success("")
                     } else {
+                        if (validators?.isEmpty() == true) {
+                            validators = null
+                        }
                         dataRequestState = DataRequestState.Error(result.exceptionOrNull())
                     }
                 } catch (e: Throwable) {
+                    if (validators?.isEmpty() == true) {
+                        validators = null
+                    }
                     dataRequestState = DataRequestState.Error(e)
                 }
             }

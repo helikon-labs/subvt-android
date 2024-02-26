@@ -40,6 +40,7 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -57,13 +58,16 @@ import io.helikon.subvt.ui.screen.validator.list.ValidatorSummaryView
 import io.helikon.subvt.ui.style.Color
 import io.helikon.subvt.ui.style.Font
 import io.helikon.subvt.ui.util.ThemePreviews
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 data class MyValidatorsScreenState(
     val dataRequestState: DataRequestState<String>,
     val networks: List<Network>,
-    val validators: List<ValidatorSummary>,
+    val validators: List<ValidatorSummary>?,
 )
+
+private const val REFRESH_PERIOD_MS = 15_000L
 
 @Composable
 fun MyValidatorsScreen(
@@ -77,6 +81,13 @@ fun MyValidatorsScreen(
     LaunchedEffect(networks) {
         networks?.let {
             viewModel.initReportServices(it)
+            viewModel.getMyValidators()
+        }
+    }
+
+    LaunchedEffect(viewModel.dataRequestState) {
+        if (viewModel.dataRequestState is DataRequestState.Success) {
+            delay(REFRESH_PERIOD_MS)
             viewModel.getMyValidators()
         }
     }
@@ -214,7 +225,7 @@ fun MyValidatorsScreenContent(
                     )
                 }
                 items(
-                    state.validators,
+                    state.validators ?: listOf(),
                     key = {
                         it.accountId.getBytes()
                     },
@@ -246,7 +257,16 @@ fun MyValidatorsScreenContent(
                     )
                 }
             }
-            if (state.dataRequestState is DataRequestState.Success) {
+            if (state.dataRequestState !is DataRequestState.Error && state.validators != null) {
+                if (state.validators.isEmpty()) {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center).zIndex(5.0f),
+                        textAlign = TextAlign.Center,
+                        text = stringResource(id = R.string.my_validators_no_validators),
+                        style = Font.light(14.sp),
+                        color = Color.text(isDark),
+                    )
+                }
                 Column(
                     modifier =
                         Modifier
