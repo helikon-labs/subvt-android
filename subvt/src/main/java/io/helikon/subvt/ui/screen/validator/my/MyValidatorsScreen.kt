@@ -106,6 +106,9 @@ fun MyValidatorsScreen(
         },
         onAddValidatorButtonClicked = onAddValidatorButtonClicked,
         onSelectValidator = onSelectValidator,
+        onDeleteValidator = { validator ->
+            viewModel.removeValidator(validator)
+        },
     )
 }
 
@@ -117,6 +120,7 @@ fun MyValidatorsScreenContent(
     onSnackbarRetry: () -> Unit,
     onAddValidatorButtonClicked: () -> Unit,
     onSelectValidator: (Network, ValidatorSummary) -> Unit,
+    onDeleteValidator: (ValidatorSummary) -> Unit,
 ) {
     val scrollState = rememberLazyListState()
     var scrollOffset by rememberSaveable {
@@ -235,9 +239,8 @@ fun MyValidatorsScreenContent(
                         displayNetworkIcon = true,
                         displayActiveStatus = true,
                         validator = validator,
-                        onClick = { network, selectedValidator ->
-                            onSelectValidator(network, selectedValidator)
-                        },
+                        onClick = onSelectValidator,
+                        onDelete = onDeleteValidator,
                     )
                 }
 
@@ -338,6 +341,7 @@ fun MyValidatorsScreenContentPreview(isDark: Boolean = isSystemInDarkTheme()) {
             onSnackbarRetry = {},
             onAddValidatorButtonClicked = {},
             onSelectValidator = { _, _ -> },
+            onDeleteValidator = { _ -> },
         )
     }
 }

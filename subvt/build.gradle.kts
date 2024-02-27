@@ -69,7 +69,7 @@ android {
 dependencies {
     val roomVersion = "2.6.1"
     val daggerHiltVersion = "2.50"
-    val hiltVersion = "1.1.0"
+    val hiltVersion = "1.2.0"
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -106,11 +106,11 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     // live data
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.2")
     // Dependency Injection
     implementation("com.google.dagger:hilt-android:$daggerHiltVersion")
     ksp("com.google.dagger:hilt-android-compiler:$daggerHiltVersion")
-    implementation("androidx.hilt:hilt-work:1.1.0")
+    implementation("androidx.hilt:hilt-work:1.2.0")
     ksp("androidx.hilt:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltVersion")
     implementation("androidx.work:work-runtime-ktx:2.9.0")

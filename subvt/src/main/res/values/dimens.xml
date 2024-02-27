@@ -67,4 +67,6 @@
 
     <dimen name="my_validators_add_validator_button_width">266dp</dimen>
     <dimen name="my_validators_add_validator_button_height">52dp</dimen>
+    <dimen name="my_validators_delete_action_container_width">60dp</dimen>
+    <dimen name="my_validators_delete_button_size">42dp</dimen>
 </resources>
