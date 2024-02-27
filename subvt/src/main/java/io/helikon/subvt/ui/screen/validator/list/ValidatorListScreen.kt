@@ -100,8 +100,6 @@ fun ValidatorListScreen(
 ) {
     val serviceStatus by viewModel.serviceStatus.collectAsStateWithLifecycle()
     DisposableEffect(lifecycleOwner) {
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
         val observer =
             LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_START) {

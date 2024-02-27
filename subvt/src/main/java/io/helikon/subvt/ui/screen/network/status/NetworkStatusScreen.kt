@@ -84,8 +84,6 @@ fun NetworkStatusScreen(
     val networks by viewModel.networks.observeAsState(listOf())
 
     DisposableEffect(lifecycleOwner) {
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
         val observer =
             LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_START) {

@@ -25,10 +25,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import io.helikon.subvt.R
 import io.helikon.subvt.data.DataRequestState
 import io.helikon.subvt.data.model.Network
@@ -73,6 +79,7 @@ private const val REFRESH_PERIOD_MS = 15_000L
 fun MyValidatorsScreen(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme(),
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: MyValidatorsViewModel = hiltViewModel(),
     onAddValidatorButtonClicked: () -> Unit,
     onSelectValidator: (Network, ValidatorSummary) -> Unit,
@@ -85,10 +92,29 @@ fun MyValidatorsScreen(
         }
     }
 
+    var isStopped by rememberSaveable { mutableStateOf(true) }
+    DisposableEffect(lifecycleOwner) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_STOP) {
+                    isStopped = true
+                } else if (event == Lifecycle.Event.ON_RESUME) {
+                    isStopped = false
+                }
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     LaunchedEffect(viewModel.dataRequestState) {
         if (viewModel.dataRequestState is DataRequestState.Success) {
             delay(REFRESH_PERIOD_MS)
-            viewModel.getMyValidators()
+            if (!isStopped) {
+                viewModel.getMyValidators()
+            }
         }
     }
 
