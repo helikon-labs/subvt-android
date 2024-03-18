@@ -304,7 +304,7 @@ fun ValidatorSummaryView(
                     Modifier.noRippleClickable {
                         onDelete?.invoke(validator)
                     }.size(dimensionResource(id = R.dimen.my_validators_delete_button_size)),
-                painter = painterResource(id = R.drawable.trash_icon),
+                painter = painterResource(id = R.drawable.trash_icon_red),
                 contentDescription = "",
                 contentScale = ContentScale.None,
             )

@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
@@ -324,7 +325,7 @@ fun ValidatorDetailsScreenContent(
                                             painterResource(
                                                 id =
                                                     if (state.isMyValidator) {
-                                                        R.drawable.remove_validator_icon
+                                                        R.drawable.trash_icon
                                                     } else {
                                                         R.drawable.add_validator_icon
                                                     },

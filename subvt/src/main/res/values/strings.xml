@@ -64,8 +64,11 @@
     <string name="my_validators_error">Error while fetching your validators.</string>
 
     <string name="notifications_tab_title">Notifications</string>
+    <string name="notifications_no_notifications">You have no notifications.</string>
 
     <string name="network_reports_tab_title">Netw. Reports</string>
+    <string name="network_reports_title">Network Reports</string>
+    <string name="network_reports_error">Error while fetching network reports.</string>
 
     <string name="validator_list_active_title">Active Validators</string>
     <string name="validator_list_inactive_title">Inactive Validators</string>

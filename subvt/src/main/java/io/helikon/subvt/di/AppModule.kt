@@ -8,6 +8,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.helikon.subvt.data.db.SubVTDatabase
 import io.helikon.subvt.data.repository.NetworkRepository
+import io.helikon.subvt.data.repository.NotificationRepository
 import io.helikon.subvt.data.repository.UserPreferencesRepository
 
 @Module
@@ -22,4 +23,9 @@ class AppModule {
     fun provideNetworkRepository(
         @ApplicationContext context: Context,
     ): NetworkRepository = NetworkRepository(SubVTDatabase.getInstance(context).networkDAO())
+
+    @Provides
+    fun provideNotificationRepository(
+        @ApplicationContext context: Context,
+    ): NotificationRepository = NotificationRepository(SubVTDatabase.getInstance(context).notificationDAO())
 }

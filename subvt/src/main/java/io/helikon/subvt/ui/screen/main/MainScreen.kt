@@ -78,7 +78,10 @@ private fun MainScreenContent(
                     activeImageResourceId = R.drawable.tab_icon_notifications_active,
                     inactiveImageResourceId = R.drawable.tab_icon_notifications_inactive,
                     content = {
-                        NotificationsScreen()
+                        NotificationsScreen(
+                            onSettingsButtonClicked = {
+                            },
+                        )
                     },
                 ),
                 Tab(
@@ -86,7 +89,9 @@ private fun MainScreenContent(
                     activeImageResourceId = R.drawable.tab_icon_network_reports_active,
                     inactiveImageResourceId = R.drawable.tab_icon_network_reports_inactive,
                     content = {
-                        NetworkReportsScreen()
+                        NetworkReportsScreen(
+                            viewReportsButtonClicked = {},
+                        )
                     },
                 ),
             )

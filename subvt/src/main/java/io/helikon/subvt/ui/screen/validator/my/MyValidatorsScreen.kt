@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
@@ -73,7 +74,7 @@ data class MyValidatorsScreenState(
     val validators: List<ValidatorSummary>?,
 )
 
-private const val REFRESH_PERIOD_MS = 15_000L
+private const val REFRESH_PERIOD_MS = 5_000L
 
 @Composable
 fun MyValidatorsScreen(
@@ -88,7 +89,6 @@ fun MyValidatorsScreen(
     LaunchedEffect(networks) {
         networks?.let {
             viewModel.initReportServices(it)
-            viewModel.getMyValidators()
         }
     }
 
@@ -100,6 +100,7 @@ fun MyValidatorsScreen(
                     isStopped = true
                 } else if (event == Lifecycle.Event.ON_RESUME) {
                     isStopped = false
+                    viewModel.getMyValidators()
                 }
             }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -289,7 +290,10 @@ fun MyValidatorsScreenContent(
             if (state.dataRequestState !is DataRequestState.Error && state.validators != null) {
                 if (state.validators.isEmpty()) {
                     Text(
-                        modifier = Modifier.align(Alignment.Center).zIndex(5.0f),
+                        modifier =
+                            Modifier
+                                .align(Alignment.Center)
+                                .zIndex(5.0f),
                         textAlign = TextAlign.Center,
                         text = stringResource(id = R.string.my_validators_no_validators),
                         style = Font.light(14.sp),
@@ -304,12 +308,23 @@ fun MyValidatorsScreenContent(
                             .zIndex(8.0f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    val buttonTextColor =
+                        if (isDark) {
+                            Color.green()
+                        } else {
+                            Color.blue()
+                        }
                     Row(
                         modifier =
                             Modifier
                                 .noRippleClickable {
                                     onAddValidatorButtonClicked()
                                 }
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = RoundedCornerShape(16.dp),
+                                    spotColor = Color.networkButtonShadow(true).copy(alpha = 0.35f),
+                                )
                                 .background(
                                     color =
                                         Color
@@ -327,14 +342,14 @@ fun MyValidatorsScreenContent(
                         Text(
                             text = stringResource(id = R.string.my_validators_add_validator),
                             style = Font.light(14.sp),
-                            color = Color.green(),
+                            color = buttonTextColor,
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             modifier = Modifier.offset(0.dp, (-1).dp),
                             text = "+",
                             style = Font.light(20.sp),
-                            color = Color.green(),
+                            color = buttonTextColor,
                         )
                     }
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.common_panel_padding)))
